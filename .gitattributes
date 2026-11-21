@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.woff2 binary
+
+# Referência visual do protótipo: guardada byte a byte, sem normalizar fim de linha
+docs/design/** -text

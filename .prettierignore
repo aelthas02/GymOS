@@ -1,0 +1,8 @@
+/dist
+/coverage
+/.nx/cache
+/.nx/workspace-data
+/.angular
+pnpm-lock.yaml
+# Referência visual copiada do protótipo: não pode ser reformatada
+/docs/design/
