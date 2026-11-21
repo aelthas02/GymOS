@@ -257,6 +257,9 @@ importers:
       '@nx/angular':
         specifier: 24.0.6
         version: 24.0.6(549e9eab9798183e466c5dd1e2376e7b)
+      '@nx/devkit':
+        specifier: 24.0.6
+        version: 24.0.6(nx@24.0.6)
       '@nx/esbuild':
         specifier: 24.0.6
         version: 24.0.6(@babel/traverse@7.29.15(supports-color@7.2.0))(esbuild@0.27.7)(nx@24.0.6)(supports-color@7.2.0)

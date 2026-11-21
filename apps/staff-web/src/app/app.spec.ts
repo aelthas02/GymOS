@@ -1,18 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { render } from '@testing-library/angular';
 import { App } from './app';
-import { NxWelcome } from './nx-welcome';
+import { appConfig } from './app.config';
 
-describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [App, NxWelcome],
-    }).compileComponents();
-  });
+describe('App (staff-web)', () => {
+  it('renderiza o componente raiz com a saída do roteador e sem conteúdo de exemplo', async () => {
+    const { container } = await render(App, { providers: appConfig.providers });
 
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Welcome staff-web');
+    expect(container.querySelector('router-outlet')).not.toBeNull();
+    expect(container.textContent?.trim()).toBe('');
   });
 });
