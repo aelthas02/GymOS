@@ -1,0 +1,45 @@
+name: PR
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, teste e build (affected)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: nrwl/nx-set-shas@v5
+
+      - name: Formatação
+        run: pnpm nx format:check --base="$NX_BASE" --head="$NX_HEAD"
+
+      - name: Lint e typecheck
+        run: pnpm nx affected -t lint typecheck
+
+      - name: Testes
+        run: pnpm nx affected -t test
+
+      - name: Build
+        run: pnpm nx affected -t build
