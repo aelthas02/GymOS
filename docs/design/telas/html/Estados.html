@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Estados vazios e de erro</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div style="width:100%;max-width:1280px;position:relative;min-height:800px;box-sizing:border-box;display:flex;flex-wrap:wrap;background:#F3F5F2;color:#0C1722;font-family:Inter,system-ui,sans-serif">
+<button aria-label="Ajuda" style="position:absolute;top:24px;right:32px;z-index:5;width:44px;height:44px;border-radius:12px;border:1px solid #D5DDD8;background:#fff;font:600 15px Inter,sans-serif;color:#0C1722;cursor:pointer">?</button>
+
+<main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:24px 32px 32px;display:flex;flex-direction:column;gap:22px">
+<div style="max-width:1100px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:22px"><header style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between"><div><h1 style="margin:0;font-size:26px;font-weight:700">Estados vazios e de erro</h1><p style="margin:4px 0 0;font-size:14px;color:#4A5A6B">Como o sistema se comporta quando não há dados ou algo falha.</p></div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-right:56px"></div></header><div style="display:flex;flex-wrap:wrap;gap:20px"><section style="flex:1 1 440px;min-width:0;background:#fff;border:1px solid #D5DDD8;border-radius:16px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px"><div><div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#4A5A6B;font-weight:600">Alunos</div><h2 style="margin:2px 0 0;font-size:16px;font-weight:700">Lista vazia</h2></div><div style="border:1px dashed #B9C4BE;border-radius:14px;padding:28px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center"><span style="width:52px;height:52px;border-radius:50%;background:#E8F7F0;display:block"></span><b style="font-size:16px">Nenhum aluno cadastrado ainda</b><span style="font-size:14px;color:#4A5A6B;max-width:320px">Cadastre o primeiro aluno ou traga todos de uma vez por planilha.</span><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#22C98A;border:0;color:#0C1722;">Cadastrar aluno</button><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#fff;border:1px solid #D5DDD8;color:#0C1722;">Importar planilha</button></div></div></section><section style="flex:1 1 440px;min-width:0;background:#fff;border:1px solid #D5DDD8;border-radius:16px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px"><div><div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#4A5A6B;font-weight:600">Alunos</div><h2 style="margin:2px 0 0;font-size:16px;font-weight:700">Busca sem resultado</h2></div><div style="border:1px dashed #B9C4BE;border-radius:14px;padding:28px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center"><b style="font-size:16px">Nada encontrado para "Marcelo Dias"</b><span style="font-size:14px;color:#4A5A6B;max-width:320px">Confira a grafia, tente o CPF ou o telefone, ou limpe os filtros.</span><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#fff;border:1px solid #D5DDD8;color:#0C1722;">Limpar filtros</button></div></section></div><div style="display:flex;flex-wrap:wrap;gap:20px"><section style="flex:1 1 440px;min-width:0;background:#fff;border:1px solid #D5DDD8;border-radius:16px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px"><div><div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#4A5A6B;font-weight:600">Aviso no Início</div><h2 style="margin:2px 0 0;font-size:16px;font-weight:700">Catraca offline</h2></div><div style="background:#FDECE8;border:1px solid #F3C4B9;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px"><b style="font-size:15px;color:#9B2C17">Catraca sem conexão desde 08h12</b><span style="font-size:14px;line-height:1.5;color:#5C2417">Os alunos continuam entrando pelo QR. O agente local guarda os acessos e envia tudo quando a conexão voltar.</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#fff;border:1px solid #D5DDD8;color:#0C1722;">Testar conexão</button><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#fff;border:1px solid #D5DDD8;color:#0C1722;">Ver detalhes</button></div></div></section><section style="flex:1 1 440px;min-width:0;background:#fff;border:1px solid #D5DDD8;border-radius:16px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px"><div><div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#4A5A6B;font-weight:600">Sem internet</div><h2 style="margin:2px 0 0;font-size:16px;font-weight:700">Erro ao salvar</h2></div><div style="background:#FFF3D6;border:1px solid #EBD08A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px"><b style="font-size:15px;color:#7A5200">Não foi possível salvar o plano</b><span style="font-size:14px;line-height:1.5;color:#4D3500">Você está sem internet. Suas alterações continuam na tela. Tentamos de novo assim que a conexão voltar.</span><div style="display:flex;gap:8px"><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#fff;border:1px solid #D5DDD8;color:#0C1722;">Tentar agora</button></div></div></section></div></div>
+<p style="margin:0;font-size:12px;color:#4A5A6B">Tela ilustrativa, dados fictícios.</p>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#22C98A","options":["#22C98A","#3AA6F0","#FF8A3D","#A78BFA"]}}'>
+class Component extends DCLogic {
+renderVals() {
+return { accent: this.props.accent ?? '#22C98A' };
+}
+}
+</script>
+</body>
+</html>

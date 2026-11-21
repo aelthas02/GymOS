@@ -1,0 +1,22 @@
+{
+  "color": {
+    "ink": "#0C1722",
+    "muted": "#4A5A6B",
+    "border": "#D5DDD8",
+    "divider": "#E3E9E5",
+    "page": "#F3F5F2",
+    "surface": "#FFFFFF",
+    "accent": { "default": "#22C98A", "note": "Configurável por academia (Identidade visual). Reflete no painel e no app do aluno." },
+    "tutorial": "#F57C00",
+    "badge": {
+      "ok":   { "bg": "#DDF5EA", "fg": "#0F6E4B" },
+      "late": { "bg": "#FDECE8", "fg": "#9B2C17" },
+      "soon": { "bg": "#FFF3D6", "fg": "#7A5200" },
+      "off":  { "bg": "#E8ECEA", "fg": "#4A5A6B" }
+    },
+    "modules": { "aulas": "#F57C00", "marketing": "#7C5CFF", "loja": "#0E9AA7", "saude": "#22C98A" }
+  },
+  "font": { "family": "Inter, system-ui, sans-serif", "weights": [400, 500, 600, 700] },
+  "radius": { "card": "16px", "control": "10px", "pill": "999px", "phone": "34px" },
+  "layout": { "desktopBoard": 1280, "phoneBoard": [390, 844], "sidebar": 250, "pagePadding": 32, "cardPadding": 20, "gap": 20 }
+}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Entrar no app</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;display:flex;flex-direction:column;background:#F3F5F2;color:#0C1722;font-family:Inter,system-ui,sans-serif;overflow:hidden">
+<header style="display:flex;justify-content:flex-end;padding:28px 20px 0"><button aria-label="Ajuda" style="width:44px;height:44px;border-radius:14px;border:1px solid #D5DDD8;background:#fff;font:600 16px Inter,sans-serif;color:#0C1722;cursor:pointer">?</button></header>
+<main style="flex:1;overflow:hidden;padding:0 20px;display:flex;flex-direction:column;gap:12px">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;padding-top:40px">
+<div style="width:64px;height:64px;border-radius:18px;background:#22C98A"></div>
+<div><h1 style="margin:0;font-size:28px;font-weight:700">Academia Ritmo</h1><p style="margin:6px 0 0;font-size:15px;color:#4A5A6B;line-height:1.5">Entre para ver seu treino, reservar aulas e cuidar do seu plano.</p></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">CPF ou e-mail</label><input type="text" value="pedro@email.com" style="height:48px;border:1px solid #D5DDD8;border-radius:12px;padding:0 14px;font:400 15px Inter,sans-serif;background:#fff;box-sizing:border-box;width:100%"></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:13px;font-weight:600">Senha</label><input type="text" value="••••••••" style="height:48px;border:1px solid #D5DDD8;border-radius:12px;padding:0 14px;font:400 15px Inter,sans-serif;background:#fff;box-sizing:border-box;width:100%"></div>
+<button style="min-height:44px;padding:0 18px;border-radius:12px;font:700 14px Inter,sans-serif;cursor:pointer;background:#22C98A;color:#0C1722;border:0;height:52px;font-size:16px">Entrar</button>
+<a href="#" style="text-align:center;font-size:14px;font-weight:600;text-decoration:underline">Esqueci minha senha</a>
+</div>
+<div style="padding-bottom:28px;display:flex;flex-direction:column;gap:10px"><div style="text-align:center;font-size:13px;color:#4A5A6B">Primeiro acesso? Use o código que a recepção enviou.</div><button style="min-height:44px;padding:0 18px;border-radius:12px;font:700 14px Inter,sans-serif;cursor:pointer;background:#fff;color:#0C1722;border:1px solid #D5DDD8;width:100%">Tenho um código</button></div>
+</main>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#22C98A","options":["#22C98A","#3AA6F0","#FF8A3D","#A78BFA"]}}'>
+class Component extends DCLogic {
+renderVals() {
+return { accent: this.props.accent ?? '#22C98A' };
+}
+}
+</script>
+</body>
+</html>

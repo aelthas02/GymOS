@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Entrar no painel</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div style="width:100%;max-width:1280px;position:relative;min-height:760px;box-sizing:border-box;display:flex;flex-wrap:wrap;background:#F3F5F2;color:#0C1722;font-family:Inter,system-ui,sans-serif">
+<button aria-label="Ajuda" style="position:absolute;top:24px;right:32px;z-index:5;width:44px;height:44px;border-radius:12px;border:1px solid #D5DDD8;background:#fff;font:600 15px Inter,sans-serif;color:#0C1722;cursor:pointer">?</button>
+
+<main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:24px 32px 32px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-wrap:wrap;margin:-24px -32px -32px;min-height:760px"><div style="flex:1 1 420px;min-width:0;background:#0C1722;color:#F2F5F0;padding:48px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;min-height:760px"><div style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px"><span style="width:32px;height:32px;border-radius:9px;background:#22C98A;display:inline-block"></span>GymOS</div><div><h1 style="margin:0;font-size:44px;line-height:1.1;font-weight:700">Sua academia sem <span style="color:#22C98A">dor de cabeça</span>.</h1><p style="margin:16px 0 0;font-size:16px;line-height:1.5;color:#C9D5E1;max-width:420px">Alunos, planos, cobranças e aulas no mesmo lugar.</p></div><p style="margin:0;font-size:12px;color:#9FB0C2">Tela ilustrativa.</p></div><div style="flex:1 1 420px;min-width:0;display:flex;align-items:center;justify-content:center;padding:48px;box-sizing:border-box"><form style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px"><div><div style="font-size:13px;color:#4A5A6B">Academia Ritmo</div><h2 style="margin:4px 0 0;font-size:26px;font-weight:700">Entrar no painel</h2></div><div style="display:flex;flex-direction:column;gap:6px;flex:1 1 100%"><label style="font-size:13px;font-weight:600">E-mail</label><input type="text" value="carla@academiaritmo.com" style="height:44px;border:1px solid #D5DDD8;border-radius:10px;padding:0 12px;font:400 14px Inter,sans-serif;color:#0C1722;background:#fff;box-sizing:border-box;width:100%"></div><div style="display:flex;flex-direction:column;gap:6px;flex:1 1 100%"><label style="font-size:13px;font-weight:600">Senha</label><input type="text" value="••••••••••" style="height:44px;border:1px solid #D5DDD8;border-radius:10px;padding:0 12px;font:400 14px Inter,sans-serif;color:#0C1722;background:#fff;box-sizing:border-box;width:100%"></div><a href="#" style="font-size:13px;font-weight:600;text-decoration:underline">Esqueci minha senha</a><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#22C98A;border:0;color:#0C1722;height:48px;font-size:15px">Entrar</button><div style="border-top:1px solid #D5DDD8;padding-top:16px;font-size:13px;color:#4A5A6B;line-height:1.5">Primeiro acesso? Use o link do convite enviado ao seu e-mail pelo administrador.</div></form></div></div>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#22C98A","options":["#22C98A","#3AA6F0","#FF8A3D","#A78BFA"]}}'>
+class Component extends DCLogic {
+renderVals() {
+return { accent: this.props.accent ?? '#22C98A' };
+}
+}
+</script>
+</body>
+</html>

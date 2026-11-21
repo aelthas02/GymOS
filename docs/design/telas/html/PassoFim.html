@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tudo pronto</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div style="width:100%;max-width:1280px;position:relative;min-height:820px;box-sizing:border-box;display:flex;flex-wrap:wrap;background:#F3F5F2;color:#0C1722;font-family:Inter,system-ui,sans-serif">
+<button aria-label="Ajuda" style="position:absolute;top:24px;right:32px;z-index:5;width:44px;height:44px;border-radius:12px;border:1px solid #D5DDD8;background:#fff;font:600 15px Inter,sans-serif;color:#0C1722;cursor:pointer">?</button>
+
+<main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:24px 32px 32px;display:flex;flex-direction:column;gap:22px">
+<div style="max-width:1100px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:22px"><header style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px"><span style="width:28px;height:28px;border-radius:8px;background:#22C98A;display:inline-block"></span>GymOS</header><section style="max-width:720px;margin:0 auto;width:100%;background:#fff;border:1px solid #D5DDD8;border-radius:16px;padding:32px;box-sizing:border-box"><span style="width:56px;height:56px;border-radius:50%;background:#22C98A;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700">&#10003;</span><h1 style="margin:16px 0 6px;font-size:28px;font-weight:700">Tudo pronto, Carla</h1><p style="margin:0 0 16px;font-size:15px;color:#4A5A6B;line-height:1.5">A Academia Ritmo já pode usar o GymOS. Você pode mudar qualquer coisa depois.</p><div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #E3E9E5"><span style="width:28px;height:28px;border-radius:50%;background:#22C98A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">&#10003;</span><div><div style="font-size:14px;font-weight:600">Identidade visual</div><div style="font-size:13px;color:#4A5A6B">Nome, logotipo e cor definidos</div></div></div><div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #E3E9E5"><span style="width:28px;height:28px;border-radius:50%;background:#22C98A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">&#10003;</span><div><div style="font-size:14px;font-weight:600">Planos</div><div style="font-size:13px;color:#4A5A6B">3 planos ativos: Mensal, Trimestral e Anual</div></div></div><div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #E3E9E5"><span style="width:28px;height:28px;border-radius:50%;background:#22C98A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">&#10003;</span><div><div style="font-size:14px;font-weight:600">Equipe</div><div style="font-size:13px;color:#4A5A6B">3 convites enviados</div></div></div><div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #E3E9E5"><span style="width:28px;height:28px;border-radius:50%;background:#E0A82E;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">!</span><div><div style="font-size:14px;font-weight:600">Catraca</div><div style="font-size:13px;color:#4A5A6B">Aguardando conexão do agente. Termine em Configurações.</div></div></div><div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #E3E9E5"><span style="width:28px;height:28px;border-radius:50%;background:#22C98A;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">&#10003;</span><div><div style="font-size:14px;font-weight:600">Alunos</div><div style="font-size:13px;color:#4A5A6B">300 alunos importados, 12 linhas para corrigir</div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px"><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#22C98A;border:0;color:#0C1722;height:48px;font-size:15px">Ir para o Início</button><button style="min-height:40px;padding:0 16px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;background:#fff;border:1px solid #D5DDD8;color:#0C1722;height:48px">Ver linhas para corrigir</button></div></section></div>
+<p style="margin:0;font-size:12px;color:#4A5A6B">Tela ilustrativa, dados fictícios.</p>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#22C98A","options":["#22C98A","#3AA6F0","#FF8A3D","#A78BFA"]}}'>
+class Component extends DCLogic {
+renderVals() {
+return { accent: this.props.accent ?? '#22C98A' };
+}
+}
+</script>
+</body>
+</html>
