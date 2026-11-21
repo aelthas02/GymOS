@@ -28,7 +28,9 @@ describe('fronteiras entre projetos e camadas', () => {
       "import { App } from '../../../../apps/staff-web/src/app/app';\n\nexport const app = App;\n",
     );
 
-    expect(errorsOf(messages, BOUNDARIES)).not.toHaveLength(0);
+    expect(errorsOf(messages, BOUNDARIES).map((error) => error.message)).toContain(
+      'Projects cannot be imported by a relative or absolute path, and must begin with a npm scope',
+    );
   });
 
   it('libs/ui (type:ui) não importa uma lib type:data-access', async () => {
