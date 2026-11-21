@@ -37,11 +37,11 @@
         "ciTargetName": "test-ci",
         "testMode": "run"
       }
-    },
-    "@nx/js/tsx"
+    }
   ],
   "analytics": false,
   "targetDefaults": {
+    "typecheck": { "cache": true, "inputs": ["default", "^production"] },
     "@angular/build:application": {
       "cache": true,
       "dependsOn": ["^build"],
@@ -90,8 +90,6 @@
       "linter": "eslint",
       "unitTestRunner": "vitest-analog"
     },
-    "@nx/angular:component": {
-      "style": "css"
-    }
+    "@nx/angular:component": { "style": "css", "changeDetection": "OnPush" }
   }
 }

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "prepare": "husky",
-    "lint": "nx run-many -t lint",
+    "lint": "nx run-many -t lint typecheck",
     "test": "nx run-many -t test",
     "build": "nx run-many -t build",
     "format": "nx format:write",
@@ -76,7 +76,6 @@
     "nx": "24.0.6",
     "prettier": "^3.10.1",
     "tslib": "^2.9.1",
-    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.73.0",
     "vite": "^8.3.5",

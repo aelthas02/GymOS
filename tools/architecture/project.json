@@ -15,6 +15,13 @@
         "{workspaceRoot}/tsconfig.base.json",
         "{workspaceRoot}/nx.json"
       ]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --noEmit -p {projectRoot}/tsconfig.spec.json"],
+        "parallel": false
+      }
     }
   }
 }

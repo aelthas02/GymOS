@@ -86,6 +86,13 @@
         "staticFilePath": "dist/apps/student-app/browser",
         "spa": true
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --noEmit -p {projectRoot}/tsconfig.spec.json"],
+        "parallel": false
+      }
     }
   }
 }

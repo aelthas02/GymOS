@@ -5,6 +5,16 @@
   "prefix": "ui",
   "projectType": "library",
   "tags": ["scope:shared", "type:ui"],
-  "// targets": "to see all targets run: nx show project ui --web",
-  "targets": {}
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --noEmit -p {projectRoot}/tsconfig.lib.json",
+          "tsc --noEmit -p {projectRoot}/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    }
+  }
 }
