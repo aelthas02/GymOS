@@ -1,0 +1,79 @@
+# Donos de cada pasta, por agente (ver docs/design e o índice de tickets).
+# A última regra que casa com o arquivo vence; por isso as regras gerais vêm primeiro.
+# Os times @gymos/agente-* precisam existir na organização do GitHub (ver README, "Revisão").
+# Pastas de feature e de módulo que ainda não existem seguem os nomes de domínio do plano;
+# quem criar a pasta com outro nome ajusta a linha no mesmo PR.
+
+# Agente 1 · Arquiteto e Plataforma: tudo o que não tem dono mais específico
+*                                   @gymos/agente-01-plataforma
+
+# Agente 2 · Design System
+/libs/ui/                           @gymos/agente-02-design-system
+
+# Agente 3 · Formulários e Utilitários
+/libs/shared/**/money/              @gymos/agente-03-formularios
+/libs/shared/**/validation/         @gymos/agente-03-formularios
+/libs/shared/**/pipes/              @gymos/agente-03-formularios
+/libs/shared/**/forms/              @gymos/agente-03-formularios
+/libs/shared/**/templates/          @gymos/agente-03-formularios
+/libs/shared/**/testing/            @gymos/agente-03-formularios
+
+# Agente 4 · Backend Core: plataforma do back e contrato da API
+/apps/api/                          @gymos/agente-04-backend-core
+/libs/api-contracts/                @gymos/agente-04-backend-core
+/libs/shared/**/events/             @gymos/agente-04-backend-core
+
+# A inicialização, a validação de env e o build da API continuam com a Plataforma
+/apps/api/src/main.ts               @gymos/agente-01-plataforma @gymos/agente-04-backend-core
+/apps/api/src/config/               @gymos/agente-01-plataforma @gymos/agente-04-backend-core
+/apps/api/project.json              @gymos/agente-01-plataforma
+/apps/api/webpack.config.js         @gymos/agente-01-plataforma
+
+# Agente 5 · Painel, Base 1: shell do painel, entrada, alunos, planos e contratos
+/apps/staff-web/src/                @gymos/agente-05-base-1
+/apps/api/src/modules/alunos/       @gymos/agente-05-base-1
+/apps/api/src/modules/planos/       @gymos/agente-05-base-1
+/apps/api/src/modules/contratos/    @gymos/agente-05-base-1
+
+# Agente 6 · Painel, Base 2: financeiro, cobrança, notas fiscais, leads e relatórios
+/apps/staff-web/src/app/features/financeiro/   @gymos/agente-06-base-2
+/apps/staff-web/src/app/features/relatorios/   @gymos/agente-06-base-2
+/apps/staff-web/src/app/features/crm/          @gymos/agente-06-base-2
+/apps/api/src/modules/cobranca/                @gymos/agente-06-base-2
+/apps/api/src/modules/notas-fiscais/           @gymos/agente-06-base-2
+/apps/api/src/modules/financeiro/              @gymos/agente-06-base-2
+/apps/api/src/modules/leads/                   @gymos/agente-06-base-2
+/apps/api/src/modules/relatorios/              @gymos/agente-06-base-2
+
+# Agente 7 · Painel, Operação: acesso, catraca, treinos, equipe, permissões, configurações
+/apps/staff-web/src/app/features/acesso/        @gymos/agente-07-operacao
+/apps/staff-web/src/app/features/treinos/       @gymos/agente-07-operacao
+/apps/staff-web/src/app/features/equipe/        @gymos/agente-07-operacao
+/apps/staff-web/src/app/features/permissoes/    @gymos/agente-07-operacao
+/apps/staff-web/src/app/features/configuracoes/ @gymos/agente-07-operacao
+/apps/api/src/modules/acesso/                   @gymos/agente-07-operacao
+/apps/api/src/modules/treinos/                  @gymos/agente-07-operacao
+/apps/api/src/modules/funcionarios/             @gymos/agente-07-operacao
+/apps/turnstile-agent/src/                      @gymos/agente-07-operacao
+/libs/shared/**/acesso/                         @gymos/agente-07-operacao
+
+# Agente 8 · Módulos extras: aulas, loja, saúde e marketing
+/apps/staff-web/src/app/features/modulos/       @gymos/agente-08-modulos
+/apps/api/src/modules/aulas/                    @gymos/agente-08-modulos
+/apps/api/src/modules/loja/                     @gymos/agente-08-modulos
+/apps/api/src/modules/saude/                    @gymos/agente-08-modulos
+/apps/api/src/modules/marketing/                @gymos/agente-08-modulos
+
+# Agente 9 · App do aluno (PWA)
+/apps/student-app/src/                          @gymos/agente-09-app-aluno
+
+# Agente 10 · Qualidade e Segurança
+/apps/e2e/                                      @gymos/agente-10-qualidade
+/docs/design/                                   @gymos/agente-10-qualidade
+/tools/architecture/                            @gymos/agente-01-plataforma @gymos/agente-10-qualidade
+
+# Plataforma: configuração do monorepo, CI, ambiente de dev e decisões
+/docker-compose.yml                 @gymos/agente-01-plataforma
+/.github/                           @gymos/agente-01-plataforma
+/docs/adr/                          @gymos/agente-01-plataforma
+/CODEOWNERS                         @gymos/agente-01-plataforma

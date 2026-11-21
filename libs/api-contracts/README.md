@@ -1,7 +1,7 @@
-# api-contracts
+# @gymos/api-contracts
 
-This library was generated with [Nx](https://nx.dev).
+Contrato da API: o `openapi.json` gerado pelo `@nestjs/swagger`, os tipos do `openapi-typescript` e o
+cliente HTTP fino (ADR-005). Dono: Agente 4 (T11). Nada aqui é escrito à mão.
 
-## Running unit tests
-
-Run `nx test api-contracts` to execute the unit tests via [Vitest](https://vitest.dev/).
+Tags `scope:shared` e `type:data-access`: `libs/ui` não importa esta lib. Testes:
+`pnpm nx test api-contracts`.
