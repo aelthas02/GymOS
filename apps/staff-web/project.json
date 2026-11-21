@@ -67,7 +67,7 @@
     },
     "test": {
       "executor": "@angular/build:unit-test",
-      "outputs": ["{workspaceRoot}/coverage/apps/staff-web"],
+      "outputs": ["{workspaceRoot}/coverage/staff-web"],
       "options": {
         "watch": false,
         "coverage": true,

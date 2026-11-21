@@ -66,7 +66,7 @@
     },
     "test": {
       "executor": "@angular/build:unit-test",
-      "outputs": ["{workspaceRoot}/coverage/apps/student-app"],
+      "outputs": ["{workspaceRoot}/coverage/student-app"],
       "options": {
         "watch": false,
         "coverage": true,
