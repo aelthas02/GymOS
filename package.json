@@ -10,6 +10,8 @@
   },
   "scripts": {
     "prepare": "husky",
+    "dev": "node tools/scripts/ensure-env.mjs && docker compose up -d --wait && nx run-many -t serve -p api staff-web student-app",
+    "dev:down": "docker compose down",
     "lint": "nx run-many -t lint typecheck",
     "test": "nx run-many -t test",
     "build": "nx run-many -t build",
