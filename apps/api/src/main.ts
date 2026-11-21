@@ -9,9 +9,9 @@ async function bootstrap(): Promise<void> {
   const env = loadEnv(process.env);
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix(GLOBAL_PREFIX);
-  await app.listen(env.PORT);
+  await app.listen(env.API_PORT);
   await signalReadyToNx(app);
-  Logger.log(`API ouvindo em http://localhost:${env.PORT}/${GLOBAL_PREFIX}`, 'Bootstrap');
+  Logger.log(`API ouvindo em http://localhost:${env.API_PORT}/${GLOBAL_PREFIX}`, 'Bootstrap');
 }
 
 // O `nx serve` espera este sinal para considerar a API pronta (readyWhen.signal).

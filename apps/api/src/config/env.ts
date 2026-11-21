@@ -5,7 +5,7 @@ const required = z.string().trim().min(1);
 
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  PORT: port.default(3000),
+  API_PORT: port.default(3000),
   DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
   REDIS_URL: z.url({ protocol: /^rediss?$/ }),
   SMTP_HOST: required,
