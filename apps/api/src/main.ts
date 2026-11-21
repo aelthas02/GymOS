@@ -1,26 +1,33 @@
-import { Logger } from '@nestjs/common';
+import { Logger, type INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
+import { loadEnv } from './config/env';
 
-async function bootstrap() {
+const GLOBAL_PREFIX = 'api';
+
+async function bootstrap(): Promise<void> {
+  const env = loadEnv(process.env);
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env['PORT'] ?? 3000;
-  await app.listen(port);
-  // Set when Nx waits for this server to be ready
-  if (process.env['NX_READY_SIGNAL_SOCKET']) {
-    try {
-      // Function keeps TypeScript and bundlers from rewriting or bundling the import
-      const load = new Function('s', 'return import(s)') as (
-        s: string,
-      ) => Promise<{ emitReadySignal(server: unknown): boolean }>;
-      (await load('@nx/js/ready-signal')).emitReadySignal(app.getHttpServer());
-    } catch {
-      // @nx/js isn't installed
-    }
-  }
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  app.setGlobalPrefix(GLOBAL_PREFIX);
+  await app.listen(env.PORT);
+  await signalReadyToNx(app);
+  Logger.log(`API ouvindo em http://localhost:${env.PORT}/${GLOBAL_PREFIX}`, 'Bootstrap');
 }
 
-bootstrap();
+// O `nx serve` espera este sinal para considerar a API pronta (readyWhen.signal).
+async function signalReadyToNx(app: INestApplication): Promise<void> {
+  if (!process.env['NX_READY_SIGNAL_SOCKET']) {
+    return;
+  }
+  // new Function evita que o webpack tente empacotar o import dinâmico.
+  const load = new Function('s', 'return import(s)') as (
+    specifier: string,
+  ) => Promise<{ emitReadySignal(server: unknown): boolean }>;
+  const { emitReadySignal } = await load('@nx/js/ready-signal');
+  emitReadySignal(app.getHttpServer());
+}
+
+bootstrap().catch((error: unknown) => {
+  Logger.error(error instanceof Error ? error.message : String(error), 'Bootstrap');
+  process.exit(1);
+});
