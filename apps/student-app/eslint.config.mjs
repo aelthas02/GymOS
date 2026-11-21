@@ -16,6 +16,7 @@ export default [
           style: 'camelCase',
         },
       ],
+      '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@angular-eslint/component-selector': [
         'error',
         {
@@ -25,10 +26,5 @@ export default [
         },
       ],
     },
-  },
-  {
-    files: ['**/*.html'],
-    // Override or add rules here
-    rules: {},
   },
 ];
