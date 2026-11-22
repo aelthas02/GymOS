@@ -53,8 +53,11 @@ Gere pelo Nx e dê as tags de escopo e de tipo (ver [`ARCHITECTURE.md`](ARCHITEC
 
 ```sh
 pnpm nx g @nx/angular:library libs/<nome> --tags="scope:shared,type:ui"
-pnpm nx g @nx/js:library libs/<nome> --bundler=none --unitTestRunner=vitest --tags="scope:shared,type:util"
+pnpm nx g @nx/js:library libs/shared/<pacote> --name=shared-<pacote> \
+  --importPath=@gymos/shared-<pacote> --bundler=none --unitTestRunner=vitest \
+  --tags="scope:shared,type:util"
 ```
 
-Acrescente o alvo `typecheck` no `project.json`, como nos projetos existentes, e a linha do dono no
-`CODEOWNERS`.
+Pacotes compartilhados seguem a convenção de `libs/shared/<pacote>` descrita no `ARCHITECTURE.md`.
+Acrescente o alvo `typecheck` no `project.json`, como nos projetos existentes, e confira a linha do dono
+no `CODEOWNERS`.

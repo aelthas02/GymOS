@@ -7,7 +7,8 @@ Visão das camadas do GymOS e das regras de import. As decisões e o porquê de 
 
 Workspace Nx integrado com pnpm (ADR-001). Cada projeto tem um `project.json` com duas tags: o
 **escopo** (de quem é o código) e o **tipo** (em que camada ele está). Os aliases de import ficam em
-`tsconfig.base.json` (`@gymos/ui`, `@gymos/shared`, `@gymos/api-contracts`).
+`tsconfig.base.json` (`@gymos/ui`, `@gymos/api-contracts` e um `@gymos/shared-<pacote>` por pacote
+compartilhado).
 
 | Projeto           | Caminho                | Escopo          | Tipo               |
 | ----------------- | ---------------------- | --------------- | ------------------ |
@@ -16,7 +17,6 @@ Workspace Nx integrado com pnpm (ADR-001). Cada projeto tem um `project.json` co
 | `api`             | `apps/api`             | `scope:api`     | `type:app`         |
 | `turnstile-agent` | `apps/turnstile-agent` | `scope:agent`   | `type:app`         |
 | `ui`              | `libs/ui`              | `scope:shared`  | `type:ui`          |
-| `shared`          | `libs/shared`          | `scope:shared`  | `type:util`        |
 | `api-contracts`   | `libs/api-contracts`   | `scope:shared`  | `type:data-access` |
 | `architecture`    | `tools/architecture`   | `scope:shared`  | `type:util`        |
 
@@ -56,6 +56,40 @@ Consequências diretas:
 
 Ao criar um projeto, dê as duas tags no gerador (`--tags="scope:<escopo>,type:<tipo>"`). Os testes em
 `tools/architecture` provam as regras com fixtures de lint e rodam em todo PR.
+
+## Pacotes compartilhados (`libs/shared/<pacote>`)
+
+`libs/shared/` é só uma pasta de agrupamento, sem projeto na raiz. Cada pacote compartilhado é um
+projeto Nx próprio, criado pelo ticket que precisa dele:
+
+- caminho `libs/shared/<pacote>`, um nível abaixo de `libs/shared/`;
+- nome do projeto `shared-<pacote>` e alias `@gymos/shared-<pacote>`;
+- tags `scope:shared` e exatamente um tipo: `type:util` (utilitários, formatação, componentes simples)
+  ou `type:domain` (regras de negócio puras, sem framework).
+
+```sh
+pnpm nx g @nx/js:library libs/shared/<pacote> --name=shared-<pacote> \
+  --importPath=@gymos/shared-<pacote> --bundler=none --unitTestRunner=vitest \
+  --tags="scope:shared,type:util"
+```
+
+Pacotes com Angular (diretivas, componentes) usam `@nx/angular:library` com os mesmos nome, alias e
+tags. O teste `tools/architecture/src/shared-packages.spec.ts` confere a convenção.
+
+| Pacote       | Conteúdo                                                  | Ticket | Tipo          |
+| ------------ | --------------------------------------------------------- | ------ | ------------- |
+| `money`      | tipo Centavos, arredondamento, rateio                     | T08    | `type:util`   |
+| `validation` | validadores (CPF, CNPJ, telefone, e-mail, datas)          | T08    | `type:util`   |
+| `pipes`      | pipes de exibição (`brl`, `cpf`, `dateBr`…)               | T08    | `type:util`   |
+| `templates`  | variáveis de mensagem                                     | T08    | `type:util`   |
+| `forms`      | máscaras e diretivas de formulário                        | T09    | `type:util`   |
+| `testing`    | harness de teclado para testes                            | T10    | `type:util`   |
+| `ambiente`   | banner DEV/STAGING (não depende de `libs/ui`)             | T02    | `type:util`   |
+| `events`     | tipos dos eventos de domínio                              | T13a   | `type:util`   |
+| `acesso`     | regras de acesso usadas pela API e pelo agente da catraca | T23a   | `type:domain` |
+
+O tipo da tabela é o esperado; o ticket confirma ao criar o pacote, e o dono do pacote está no
+`CODEOWNERS`.
 
 ## Front-end (Angular)
 

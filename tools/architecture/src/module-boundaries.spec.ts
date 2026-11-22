@@ -42,19 +42,19 @@ describe('fronteiras entre projetos e camadas', () => {
     expect(errorsOf(messages, BOUNDARIES)).not.toHaveLength(0);
   });
 
-  it('libs/shared (type:util) não importa uma lib type:ui', async () => {
+  it('um projeto type:util não importa uma lib type:ui', async () => {
     const messages = await lintFixture(
-      'libs/shared/src/lib/fixture.ts',
+      'tools/architecture/src/fixture.ts',
       "export * from '@gymos/ui';\n",
     );
 
     expect(errorsOf(messages, BOUNDARIES)).not.toHaveLength(0);
   });
 
-  it('libs/ui pode importar uma lib type:util', async () => {
+  it('um app (type:app) pode importar libs type:ui e type:data-access', async () => {
     const messages = await lintFixture(
-      'libs/ui/src/lib/fixture.ts',
-      "export * from '@gymos/shared';\n",
+      'apps/staff-web/src/app/fixture.ts',
+      "export * from '@gymos/ui';\nexport * from '@gymos/api-contracts';\n",
     );
 
     expect(errorsOf(messages, BOUNDARIES)).toHaveLength(0);
@@ -78,9 +78,9 @@ describe('fronteiras entre projetos e camadas', () => {
     expect(errorsOf(messages, RESTRICTED_IMPORTS)).toHaveLength(2);
   });
 
-  it('any explícito em libs/shared gera erro de no-explicit-any', async () => {
+  it('any explícito gera erro de no-explicit-any', async () => {
     const messages = await lintFixture(
-      'libs/shared/src/lib/fixture.ts',
+      'libs/ui/src/lib/fixture.ts',
       'export const valor: any = 1;\n',
     );
 

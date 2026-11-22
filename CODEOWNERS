@@ -11,17 +11,17 @@
 /libs/ui/                           @gymos/agente-02-design-system
 
 # Agente 3 · Formulários e Utilitários
-/libs/shared/**/money/              @gymos/agente-03-formularios
-/libs/shared/**/validation/         @gymos/agente-03-formularios
-/libs/shared/**/pipes/              @gymos/agente-03-formularios
-/libs/shared/**/forms/              @gymos/agente-03-formularios
-/libs/shared/**/templates/          @gymos/agente-03-formularios
-/libs/shared/**/testing/            @gymos/agente-03-formularios
+/libs/shared/money/              @gymos/agente-03-formularios
+/libs/shared/validation/         @gymos/agente-03-formularios
+/libs/shared/pipes/              @gymos/agente-03-formularios
+/libs/shared/forms/              @gymos/agente-03-formularios
+/libs/shared/templates/          @gymos/agente-03-formularios
+/libs/shared/testing/            @gymos/agente-03-formularios
 
 # Agente 4 · Backend Core: plataforma do back e contrato da API
 /apps/api/                          @gymos/agente-04-backend-core
 /libs/api-contracts/                @gymos/agente-04-backend-core
-/libs/shared/**/events/             @gymos/agente-04-backend-core
+/libs/shared/events/             @gymos/agente-04-backend-core
 
 # A inicialização, a validação de env e o build da API continuam com a Plataforma
 /apps/api/src/main.ts               @gymos/agente-01-plataforma @gymos/agente-04-backend-core
@@ -55,7 +55,7 @@
 /apps/api/src/modules/treinos/                  @gymos/agente-07-operacao
 /apps/api/src/modules/funcionarios/             @gymos/agente-07-operacao
 /apps/turnstile-agent/src/                      @gymos/agente-07-operacao
-/libs/shared/**/acesso/                         @gymos/agente-07-operacao
+/libs/shared/acesso/                         @gymos/agente-07-operacao
 
 # Agente 8 · Módulos extras: aulas, loja, saúde e marketing
 /apps/staff-web/src/app/features/modulos/       @gymos/agente-08-modulos
@@ -77,3 +77,5 @@
 /.github/                           @gymos/agente-01-plataforma
 /docs/adr/                          @gymos/agente-01-plataforma
 /CODEOWNERS                         @gymos/agente-01-plataforma
+/libs/shared/README.md              @gymos/agente-01-plataforma
+/libs/shared/ambiente/              @gymos/agente-01-plataforma

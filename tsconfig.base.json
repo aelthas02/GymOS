@@ -20,7 +20,6 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@gymos/ui": ["./libs/ui/src/index.ts"],
-      "@gymos/shared": ["./libs/shared/src/index.ts"],
       "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"]
     }
   },
