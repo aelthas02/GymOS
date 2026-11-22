@@ -6,6 +6,11 @@ allowBuilds:
   '@parcel/watcher': false
   unrs-resolver: false
   '@nestjs/core': false
+  # Telemetria do swagger-ui-dist (dependência do @nestjs/swagger).
+  '@scarf/scarf': false
+  # O postinstall baixa o schema engine usado pelo `prisma migrate` (ADR-003).
+  '@prisma/engines': true
+  prisma: true
 
 # Alinha o architect à versão do Angular CLI em uso (22.2). O 0.2203 passou a declarar
 # "exports" e o Nx 24.0.6 importa um subcaminho que deixou de existir (ver ADR-002).
