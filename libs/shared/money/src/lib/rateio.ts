@@ -15,13 +15,14 @@ export function ratear(total: Centavos, parcelas: number): Centavos[] {
 
 function validarPesos(pesos: readonly number[]): bigint {
   const validos = pesos.every((peso) => Number.isSafeInteger(peso) && peso >= 0);
-  const soma = pesos.reduce((acumulado, peso) => acumulado + peso, 0);
-  if (!validos || soma <= 0) {
+  // Em BigInt: a soma de pesos grandes (centavos de cada setor, por exemplo) pode passar de 2^53.
+  const soma = validos ? pesos.reduce((acumulado, peso) => acumulado + BigInt(peso), 0n) : 0n;
+  if (soma <= 0n) {
     throw new RangeError(
       `Os pesos precisam ser inteiros não negativos com soma positiva: ${JSON.stringify(pesos)}`,
     );
   }
-  return BigInt(soma);
+  return soma;
 }
 
 /**

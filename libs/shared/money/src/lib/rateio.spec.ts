@@ -71,6 +71,12 @@ describe('ratearPorPeso', () => {
     expect(partes).toEqual([3_000_000_000_000_000, 6_000_000_000_000_001]);
   });
 
+  it('pesos cuja soma passa do inteiro seguro continuam exatos', () => {
+    const peso = Number.MAX_SAFE_INTEGER;
+
+    expect(ratearPorPeso(centavos(3), [peso, peso, peso])).toEqual([1, 1, 1]);
+  });
+
   it.each([[[]], [[0, 0]], [[1, -1]], [[1.5, 1]], [[Number.NaN]]])(
     'recusa os pesos %j',
     (pesos) => {
