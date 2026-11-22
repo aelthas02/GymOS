@@ -1,0 +1,20 @@
+{
+  "name": "shared-forms",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/forms/src",
+  "prefix": "app",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --noEmit -p {projectRoot}/tsconfig.lib.json",
+          "tsc --noEmit -p {projectRoot}/tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

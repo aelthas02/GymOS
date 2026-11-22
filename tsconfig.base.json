@@ -20,7 +20,13 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@gymos/ui": ["./libs/ui/src/index.ts"],
-      "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"]
+      "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"],
+      "@gymos/shared-money": ["./libs/shared/money/src/index.ts"],
+      "@gymos/shared-validation": ["./libs/shared/validation/src/index.ts"],
+      "@gymos/shared-templates": ["./libs/shared/templates/src/index.ts"],
+      "@gymos/shared-pipes": ["./libs/shared/pipes/src/index.ts"],
+      "@gymos/shared-pipes/formatadores": ["./libs/shared/pipes/src/formatadores/index.ts"],
+      "@gymos/shared-forms": ["./libs/shared/forms/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
