@@ -1,6 +1,8 @@
 import { centavos, pontosBase, type Centavos } from './centavos';
 import { formatarBrl, formatarPercentual, interpretarBrl } from './texto';
 
+const NBSP = String.fromCharCode(0xa0);
+
 describe('formatarBrl', () => {
   it.each([
     [4832000, 'R$ 48.320,00'],
@@ -30,7 +32,7 @@ describe('interpretarBrl', () => {
     ['119', 11900],
     ['119,5', 11950],
     ['0,05', 5],
-    ['  R$ 119,00  ', 11900],
+    [` R$${NBSP}119,00${NBSP}`, 11900],
     ['R$119,00', 11900],
     ['-0,00', 0],
   ])('%j → %i centavos', (texto, valor) => {
