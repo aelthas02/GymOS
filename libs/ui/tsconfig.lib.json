@@ -7,8 +7,9 @@
     "inlineSources": true,
     "types": []
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "styles/**/*.ts"],
   "exclude": [
+    "styles/**/*.spec.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "vite.config.ts",
