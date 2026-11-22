@@ -1,0 +1,62 @@
+/**
+ * Espelho tipado de `tokens.css`: cada chave é o nome da custom property sem o `--`.
+ * `tokens.spec.ts` confere que os dois arquivos têm as mesmas chaves e os mesmos valores.
+ * Fonte: `docs/design/tokens/design-tokens.json`.
+ */
+export const tokens = {
+  ink: '#0C1722',
+  muted: '#4A5A6B',
+  border: '#D5DDD8',
+  divider: '#E3E9E5',
+  page: '#F3F5F2',
+  surface: '#FFFFFF',
+  tutorial: '#F57C00',
+
+  // Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014).
+  accent: '#22C98A',
+  'accent-contrast': '#0C1722',
+  'accent-text': '#167F58',
+
+  'badge-ok-bg': '#DDF5EA',
+  'badge-ok-fg': '#0F6E4B',
+  'badge-late-bg': '#FDECE8',
+  'badge-late-fg': '#9B2C17',
+  'badge-soon-bg': '#FFF3D6',
+  'badge-soon-fg': '#7A5200',
+  'badge-off-bg': '#E8ECEA',
+  'badge-off-fg': '#4A5A6B',
+
+  'mod-aulas': '#F57C00',
+  'mod-marketing': '#7C5CFF',
+  'mod-loja': '#0E9AA7',
+  'mod-saude': '#22C98A',
+
+  font: 'Inter, system-ui, sans-serif',
+  'font-weight-regular': '400',
+  'font-weight-medium': '500',
+  'font-weight-semibold': '600',
+  'font-weight-bold': '700',
+
+  'radius-card': '16px',
+  'radius-control': '10px',
+  'radius-pill': '999px',
+  'radius-phone': '34px',
+
+  'sidebar-width': '250px',
+  'page-padding': '32px',
+  'card-padding': '20px',
+  gap: '20px',
+  'board-desktop-width': '1280px',
+  'board-phone-width': '390px',
+  'board-phone-height': '844px',
+} as const;
+
+export type TokenName = keyof typeof tokens;
+
+/** `var(--nome)` de um token, para estilos montados em TypeScript. */
+export function cssVar<Name extends TokenName>(name: Name): `var(--${Name})` {
+  return `var(--${name})`;
+}
+
+/** Cores sugeridas na tela Identidade visual. */
+export const suggestedAccents = ['#22C98A', '#3AA6F0', '#FF8A3D', '#A78BFA'] as const;

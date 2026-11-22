@@ -1,0 +1,52 @@
+/*
+ * Tokens do GymOS. Fonte: docs/design/tokens/design-tokens.json.
+ * Espelho tipado em tokens.ts; tokens.spec.ts confere que os dois têm as mesmas chaves e valores.
+ * Fora de libs/ui/styles nenhuma cor é escrita à mão: use var(--token).
+ */
+:root {
+  --ink: #0c1722;
+  --muted: #4a5a6b;
+  --border: #d5ddd8;
+  --divider: #e3e9e5;
+  --page: #f3f5f2;
+  --surface: #ffffff;
+  --tutorial: #f57c00;
+
+  /* Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014). */
+  --accent: #22c98a;
+  --accent-contrast: #0c1722;
+  --accent-text: #167f58;
+
+  --badge-ok-bg: #ddf5ea;
+  --badge-ok-fg: #0f6e4b;
+  --badge-late-bg: #fdece8;
+  --badge-late-fg: #9b2c17;
+  --badge-soon-bg: #fff3d6;
+  --badge-soon-fg: #7a5200;
+  --badge-off-bg: #e8ecea;
+  --badge-off-fg: #4a5a6b;
+
+  --mod-aulas: #f57c00;
+  --mod-marketing: #7c5cff;
+  --mod-loja: #0e9aa7;
+  --mod-saude: #22c98a;
+
+  --font: Inter, system-ui, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --radius-card: 16px;
+  --radius-control: 10px;
+  --radius-pill: 999px;
+  --radius-phone: 34px;
+
+  --sidebar-width: 250px;
+  --page-padding: 32px;
+  --card-padding: 20px;
+  --gap: 20px;
+  --board-desktop-width: 1280px;
+  --board-phone-width: 390px;
+  --board-phone-height: 844px;
+}
