@@ -20,7 +20,8 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@gymos/ui": ["./libs/ui/src/index.ts"],
-      "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"]
+      "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"],
+      "@gymos/shared-ambiente": ["./libs/shared/ambiente/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -12,6 +12,7 @@
         "{workspaceRoot}/eslint.config.mjs",
         "{workspaceRoot}/{apps,libs}/**/eslint.config.mjs",
         "{workspaceRoot}/{apps,libs}/**/project.json",
+        "{workspaceRoot}/apps/*/src/environments/*.ts",
         "{workspaceRoot}/tsconfig.base.json",
         "{workspaceRoot}/nx.json"
       ]
