@@ -17,7 +17,9 @@ fica atrás de `deploy.sh`, para que a troca de provedor não mude o pipeline.
 ## Premissa
 
 Região brasileira por LGPD e latência; o provedor ainda será escolhido. Em dev, o `docker-compose.yml`
-sobe Postgres 16, Redis 7, Mailpit e MinIO.
+sobe Postgres 16, Redis 7, Mailpit e MinIO. O MinIO de dev é a imagem comunitária `pgsty/minio`
+(o `minio/minio` saiu do Docker Hub), usada apenas em desenvolvimento; staging e prod usam o
+armazenamento S3 gerenciado do provedor escolhido.
 
 **Quando decidir:** antes do primeiro deploy em staging.
 

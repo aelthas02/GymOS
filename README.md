@@ -41,6 +41,9 @@ inicialização e não sobe se faltar alguma; a mensagem lista cada variável co
 O bucket `gymos` do MinIO ainda não é criado automaticamente: quem implementar o armazenamento (T13d)
 cria o bucket na inicialização em dev.
 
+O MinIO do compose usa `pgsty/minio`, imagem comunitária (o `minio/minio` saiu do Docker Hub), apenas
+em desenvolvimento; staging e prod usam o S3 gerenciado do provedor (ADR-017).
+
 ## Scripts
 
 | Script                              | O que faz                                    |
@@ -65,7 +68,7 @@ apps/
   turnstile-agent/  agente local da catraca (Node)
 libs/
   ui/               design system (Angular)
-  shared/           utilitários sem dependência de framework de UI
+  shared/<pacote>/  pacotes compartilhados, um projeto por pacote (ver ARCHITECTURE.md)
   api-contracts/    contrato OpenAPI e cliente gerado
 tools/
   architecture/     testes das regras de fronteira entre projetos
