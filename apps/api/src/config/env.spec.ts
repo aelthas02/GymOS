@@ -104,7 +104,7 @@ describe('variáveis de ambiente e observabilidade', () => {
     expect(result.ok && result.env.SENTRY_RELEASE).toBeUndefined();
   });
 
-  it('rejeita SENTRY_DSN que não é URL https', () => {
+  it('rejeita SENTRY_DSN que não é URL http(s)', () => {
     expect(invalidVariables(withOverrides({ SENTRY_DSN: 'chave-solta' }))).toEqual(['SENTRY_DSN']);
   });
 
