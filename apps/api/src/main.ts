@@ -1,14 +1,17 @@
-import { Logger, type INestApplication } from '@nestjs/common';
+import './instrument';
+import { ConsoleLogger, Logger, type INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
+import { configureApp, GLOBAL_PREFIX } from './app/configure-app';
 import { loadEnv } from './config/env';
 
-const GLOBAL_PREFIX = 'api';
+// Até o pino assumir (configureApp), os logs do Nest também saem em JSON.
+Logger.overrideLogger(new ConsoleLogger({ json: true }));
 
 async function bootstrap(): Promise<void> {
   const env = loadEnv(process.env);
-  const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix(GLOBAL_PREFIX);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  configureApp(app);
   await app.listen(env.API_PORT);
   await signalReadyToNx(app);
   Logger.log(`API ouvindo em http://localhost:${env.API_PORT}/${GLOBAL_PREFIX}`, 'Bootstrap');

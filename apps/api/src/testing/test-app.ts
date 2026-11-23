@@ -35,12 +35,21 @@ export function readEnvExample(): Record<string, string> {
 
 const responds = (): Promise<void> => Promise.resolve();
 
+// O nestjs-pino cria o logger uma vez por processo e o reaproveita nas apps seguintes; por isso o
+// destino é um só e cada app lê os logs a partir de onde começou.
+const logSink = {
+  lines: [] as string[],
+  write(line: string): void {
+    this.lines.push(line);
+  },
+};
+
 /**
  * Sobe o AppModule numa porta livre com o .env.example, os logs em memória e verificações de
  * prontidão falsas (sem Postgres nem Redis de verdade).
  */
 export async function createTestApp(options: TestAppOptions = {}): Promise<TestApp> {
-  const lines: string[] = [];
+  const firstLine = logSink.lines.length;
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule],
     controllers: options.controllers ?? [],
@@ -48,7 +57,7 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
     .overrideProvider(ENV)
     .useValue(loadEnv({ ...readEnvExample(), ...options.env }))
     .overrideProvider(LOG_DESTINATION)
-    .useValue({ write: (line: string) => lines.push(line) })
+    .useValue(logSink)
     .overrideProvider(PostgresCheck)
     .useValue({ name: 'postgres', check: options.postgres ?? responds })
     .overrideProvider(RedisCheck)
@@ -63,7 +72,7 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
   return {
     nest,
     get: (path, headers) => fetch(`${baseUrl}${path}`, { headers }),
-    logs: () => lines.map((line) => JSON.parse(line) as LogLine),
+    logs: () => logSink.lines.slice(firstLine).map((line) => JSON.parse(line) as LogLine),
     close: () => nest.close(),
   };
 }

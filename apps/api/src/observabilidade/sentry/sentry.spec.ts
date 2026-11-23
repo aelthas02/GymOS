@@ -24,7 +24,12 @@ describe('sentryOptions', () => {
       dsn: DSN,
       environment: 'staging',
       release: 'gymos-api@1.4.0',
-      sendDefaultPii: false,
+      dataCollection: expect.objectContaining({
+        userInfo: false,
+        cookies: false,
+        httpHeaders: false,
+        httpBodies: [],
+      }),
     });
   });
 });
@@ -53,7 +58,6 @@ describe('erros da API no Sentry', () => {
     Sentry.init({
       ...options,
       defaultIntegrations: false,
-      skipOpenTelemetrySetup: true,
       // Guarda o evento em memória e não envia nada pela rede.
       beforeSend: (event) => {
         events.push(event);

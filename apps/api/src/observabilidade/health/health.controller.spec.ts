@@ -3,14 +3,21 @@ import { createTestApp, type TestApp } from '../../testing/test-app';
 const offline = () => Promise.reject(new Error('connect ECONNREFUSED 127.0.0.1:6379'));
 
 describe('health checks', () => {
-  let app: TestApp | undefined;
+  const postgres = vi.fn<() => Promise<void>>();
+  const redis = vi.fn<() => Promise<void>>();
+  let app: TestApp;
 
-  afterEach(() => app?.close());
+  beforeEach(async () => {
+    postgres.mockReset().mockResolvedValue(undefined);
+    redis.mockReset().mockResolvedValue(undefined);
+    app = await createTestApp({ postgres: () => postgres(), redis: () => redis() });
+  });
+
+  afterEach(() => app.close());
 
   it('/health/live responde 200 sem consultar as dependências', async () => {
-    const postgres = vi.fn(offline);
-    const redis = vi.fn(offline);
-    app = await createTestApp({ postgres, redis });
+    postgres.mockImplementation(offline);
+    redis.mockImplementation(offline);
 
     const response = await app.get('/health/live');
 
@@ -21,8 +28,6 @@ describe('health checks', () => {
   });
 
   it('/health/ready responde 200 quando Postgres e Redis respondem', async () => {
-    app = await createTestApp();
-
     const response = await app.get('/health/ready');
 
     expect(response.status).toBe(200);
@@ -33,7 +38,7 @@ describe('health checks', () => {
   });
 
   it('/health/ready responde 503 quando o Redis está fora', async () => {
-    app = await createTestApp({ redis: offline });
+    redis.mockImplementation(offline);
 
     const response = await app.get('/health/ready');
 
@@ -45,7 +50,7 @@ describe('health checks', () => {
   });
 
   it('/health/ready responde 503 quando o Postgres está fora', async () => {
-    app = await createTestApp({ postgres: offline });
+    postgres.mockImplementation(offline);
 
     const response = await app.get('/health/ready');
 
@@ -53,17 +58,18 @@ describe('health checks', () => {
     expect(await response.json()).toMatchObject({ checks: { postgres: 'down', redis: 'up' } });
   });
 
-  it('não expõe a mensagem de erro da dependência na resposta', async () => {
-    app = await createTestApp({ redis: offline });
+  it('não expõe a mensagem de erro da dependência na resposta, só no log', async () => {
+    redis.mockImplementation(offline);
 
     const response = await app.get('/health/ready');
 
     expect(await response.text()).not.toContain('ECONNREFUSED');
+    expect(app.logs()).toContainEqual(
+      expect.objectContaining({ dependency: 'redis', err: expect.anything() }),
+    );
   });
 
   it('as rotas de saúde ficam fora do prefixo /api', async () => {
-    app = await createTestApp();
-
     expect((await app.get('/api/health/live')).status).toBe(404);
   });
 });
