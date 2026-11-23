@@ -12,20 +12,7 @@ import {
   urlComBanco,
 } from '../infra/database/preparar-banco';
 import { carregarArquivoEnv, lerAmbienteDeTeste } from './ambiente-de-teste';
-
-export interface ConfiguracaoDoBancoDeTeste {
-  urlAdmin: string;
-  urlApp: string;
-  urlMigrador: string;
-  modelo: string;
-  prefixo: string;
-}
-
-declare module 'vitest' {
-  export interface ProvidedContext {
-    bancoDeTeste: ConfiguracaoDoBancoDeTeste;
-  }
-}
+import type { ConfiguracaoDoBancoDeTeste } from './banco-de-teste';
 
 export function aplicarMigracoes(urlMigrador: string): void {
   const prisma = join(workspaceRoot, 'node_modules/prisma/build/index.js');
@@ -63,6 +50,6 @@ export default async function setup(project: TestProject): Promise<() => Promise
     urlMigrador: ambiente.DATABASE_MIGRATOR_URL,
     modelo,
     prefixo,
-  });
+  } satisfies ConfiguracaoDoBancoDeTeste);
   return () => apagarBancosComPrefixo(urlAdmin, prefixo);
 }

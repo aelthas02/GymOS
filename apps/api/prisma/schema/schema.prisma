@@ -1,0 +1,15 @@
+// Cliente e conexão. Os modelos ficam um arquivo por domínio nesta pasta (<dominio>.prisma).
+// Toda tabela de domínio nasce pelo gerador `nx g @gymos/api:tabela` (convenção de RLS, ADR-003).
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../../src/generated/prisma"
+  moduleFormat           = "cjs"
+  runtime                = "nodejs"
+  generatedFileExtension = "ts"
+  importFileExtension    = ""
+}
+
+datasource db {
+  provider = "postgresql"
+}

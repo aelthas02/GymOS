@@ -1,0 +1,48 @@
+/// Academia cliente. Fora da convenção de RLS: é lida antes de existir contexto de tenant, só pelas
+/// funções gymos_* da plataforma (o papel gymos_app não tem acesso direto à tabela).
+model Tenant {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug                String              @unique
+  nome                String
+  corDestaque         String              @map("cor_destaque")
+  logotipoUrl         String?             @map("logotipo_url")
+  plano               String              @default("base")
+  configurada         Boolean             @default(false)
+  criadoEm            DateTime            @default(now()) @map("criado_em") @db.Timestamptz(3)
+  unidades            Unidade[]
+  referenciasExternas ReferenciaExterna[]
+
+  @@map("tenant")
+}
+
+/// Unidade da academia. Toda academia nasce com uma.
+model Unidade {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String   @map("tenant_id") @db.Uuid
+  nome     String
+  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("unidade")
+}
+
+/// Liga o id de um recurso num provedor externo ao tenant dono, para webhooks que não carregam o
+/// tenant. A resolução sem contexto é feita pela função gymos_tenant_da_referencia_externa.
+model ReferenciaExterna {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  provedor       String
+  idExterno      String    @map("id_externo")
+  recurso        String
+  recursoId      String    @map("recurso_id") @db.Uuid
+  ultimoEvento   String?   @map("ultimo_evento")
+  ultimoEventoEm DateTime? @map("ultimo_evento_em") @db.Timestamptz(3)
+  criadoEm       DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  tenant         Tenant    @relation(fields: [tenantId], references: [id])
+
+  @@unique([provedor, idExterno])
+  @@index([tenantId, recurso, recursoId])
+  @@map("referencia_externa")
+}

@@ -25,7 +25,7 @@ export default defineConfig(() => ({
     },
     projects: [
       {
-        extends: true,
+        extends: true as const,
         test: {
           name: 'api',
           include: ['{src,generators}/**/*.spec.ts'],
@@ -34,7 +34,7 @@ export default defineConfig(() => ({
       },
       {
         // Integração contra o Postgres de TEST_DATABASE_ADMIN_URL (ver README, "Testes de integração").
-        extends: true,
+        extends: true as const,
         test: {
           name: 'api-integracao',
           include: [`{src,generators}/${integracao}`],

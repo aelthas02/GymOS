@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { Client } from 'pg';
-import { inject } from 'vitest';
+import { afterAll, beforeAll, inject } from 'vitest';
 import {
   apagarBanco,
   concederAcesso,
@@ -8,6 +8,20 @@ import {
   criarBanco,
   urlComBanco,
 } from '../infra/database/preparar-banco';
+
+export interface ConfiguracaoDoBancoDeTeste {
+  urlAdmin: string;
+  urlApp: string;
+  urlMigrador: string;
+  modelo: string;
+  prefixo: string;
+}
+
+declare module 'vitest' {
+  export interface ProvidedContext {
+    bancoDeTeste: ConfiguracaoDoBancoDeTeste;
+  }
+}
 
 export interface BancoDeTeste {
   readonly nome: string;
