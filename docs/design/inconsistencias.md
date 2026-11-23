@@ -17,3 +17,5 @@ fixture. Cada linha aponta a tela, o que diverge e o que foi decidido.
 
 | Tela | Divergência | Decisão |
 | ---- | ----------- | ------- |
+| `Importar.html`, `Passo5.html` | O CPF `123.456.789-00` aparece como "Ok" (Importar, linha de CPF; Passo 5, Rafael Souza), mas o dígito verificador correto é `-09`. | O validador recusa `123.456.789-00`; fixture e seed usam um CPF válido (`123.456.789-09`) quando a regra importa, e o fixture visual pode manter o texto da tela. T08. |
+| `Configuracoes.html`, `TutConfig.html` | O CNPJ de exemplo `12.345.678/0001-90` tem dígito verificador errado; o correto é `12.345.678/0001-95`. | O validador recusa `-90`; seed e testes de regra usam `12.345.678/0001-95`. T08. |
