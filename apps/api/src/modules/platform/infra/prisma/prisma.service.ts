@@ -1,6 +1,6 @@
 import { Inject, Injectable, type OnModuleDestroy } from '@nestjs/common';
-import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../../../generated/prisma/client';
+import { adaptadorPg } from './criar-cliente';
 import { CONFIGURACAO_DA_PLATAFORMA, type ConfiguracaoDaPlataforma } from '../configuracao';
 
 /**
@@ -11,7 +11,7 @@ import { CONFIGURACAO_DA_PLATAFORMA, type ConfiguracaoDaPlataforma } from '../co
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleDestroy {
   constructor(@Inject(CONFIGURACAO_DA_PLATAFORMA) config: ConfiguracaoDaPlataforma) {
-    super({ adapter: new PrismaPg({ connectionString: config.urlDoBanco }) });
+    super({ adapter: adaptadorPg(config.urlDoBanco) });
   }
 
   async onModuleDestroy(): Promise<void> {

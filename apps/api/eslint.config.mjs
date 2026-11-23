@@ -23,6 +23,12 @@ const relogio = [
   },
 ];
 
+// No flat config, a última no-restricted-syntax que casa com o arquivo vence: o domínio herda as
+// restrições da raiz (dinheiro em inteiros, T08) e soma as do relógio.
+const restricoesDaRaizNoDominio = baseConfig
+  .filter((config) => config.files?.includes('**/domain/**/*.ts'))
+  .flatMap((config) => config.rules?.['no-restricted-syntax']?.slice(1) ?? []);
+
 // Regra de negócio nunca usa o relógio do banco: o instante vem do Relogio, como parâmetro.
 const sqlSemRelogio = {
   selector:
@@ -71,7 +77,11 @@ export default [
     },
   },
   {
-    files: ['src/**/domain/**/*.ts', 'src/**/application/**/*.ts'],
+    files: ['src/**/domain/**/*.ts'],
+    rules: { 'no-restricted-syntax': ['error', ...restricoesDaRaizNoDominio, ...relogio] },
+  },
+  {
+    files: ['src/**/application/**/*.ts'],
     rules: { 'no-restricted-syntax': ['error', ...relogio] },
   },
   {

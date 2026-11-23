@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { GLOBAL_PREFIX } from '../../../app/configure-app';
 import { CONFIGURACAO_DA_PLATAFORMA, type ConfiguracaoDaPlataforma } from '../infra/configuracao';
-import { PREFIXO_DA_API } from '../interface/openapi/contrato';
 import { PlatformModule } from '../platform.module';
 import type { BancoDeTeste } from './banco-de-teste';
 
@@ -24,7 +24,7 @@ export async function criarAppDeTeste(
     } satisfies ConfiguracaoDaPlataforma)
     .compile();
   const app = modulo.createNestApplication({ logger: false });
-  app.setGlobalPrefix(PREFIXO_DA_API);
+  app.setGlobalPrefix(GLOBAL_PREFIX);
   await app.init();
   banco.aoFinal(() => app.close());
   return app;

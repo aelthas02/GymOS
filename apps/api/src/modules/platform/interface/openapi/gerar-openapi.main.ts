@@ -2,11 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { AppModule } from '../../../../app/app.module';
+import { configureApp } from '../../../../app/configure-app';
 import {
   ContratoDivergenteError,
   criarDocumentoOpenApi,
   gerarTipos,
-  PREFIXO_DA_API,
   serializarContrato,
   verificarContrato,
 } from './contrato';
@@ -19,11 +19,12 @@ const ARQUIVO_DOS_TIPOS = 'libs/api-contracts/src/generated/schema.ts';
 
 async function principal(): Promise<void> {
   // Só monta o app para ler os controllers: sem .env (CI), valem os valores de exemplo.
+  process.env['LOG_LEVEL'] = 'silent';
   if (existsSync('.env.example')) {
     process.loadEnvFile('.env.example');
   }
   const app = await NestFactory.create(AppModule, { logger: false });
-  app.setGlobalPrefix(PREFIXO_DA_API);
+  configureApp(app);
   const contrato = serializarContrato(criarDocumentoOpenApi(app));
   await app.close();
   const tipos = await gerarTipos(contrato);

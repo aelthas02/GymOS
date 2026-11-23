@@ -73,4 +73,22 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
     },
   },
+  {
+    // T08: dinheiro em centavos e alíquotas em pontos-base, sempre inteiros, com @gymos/shared-money.
+    files: ['**/domain/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        ...[
+          ":matches(BinaryExpression[operator='*'], AssignmentExpression[operator='*=']) > Literal[raw=/^0?\\./]",
+          ":matches(BinaryExpression[operator='/'], AssignmentExpression[operator='/=']) > Literal.right[value=100]",
+          ":matches(BinaryExpression[operator='/'], AssignmentExpression[operator='/=']) > Literal.right[value=10000]",
+        ].map((selector) => ({
+          selector,
+          message:
+            'Dinheiro e alíquota em inteiros: use centavos, pontos-base e aplicarAliquota de @gymos/shared-money.',
+        })),
+      ],
+    },
+  },
 ];

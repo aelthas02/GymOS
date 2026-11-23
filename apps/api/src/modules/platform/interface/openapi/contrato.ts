@@ -1,9 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, type OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { existsSync, readFileSync } from 'node:fs';
-
-/** Prefixo global das rotas; o main.ts usa o mesmo valor. */
-export const PREFIXO_DA_API = 'api';
+import { GLOBAL_PREFIX } from '../../../../app/configure-app';
 
 export const COMANDO_DE_REGENERACAO = 'pnpm nx run api:openapi';
 
@@ -23,7 +21,12 @@ export function criarDocumentoOpenApi(app: INestApplication): OpenAPIObject {
     .setDescription('Contrato único da API do GymOS, gerado pelo @nestjs/swagger (ADR-005).')
     .setVersion('1')
     .build();
-  return SwaggerModule.createDocument(app, config);
+  const documento = SwaggerModule.createDocument(app, config);
+  // Só as rotas da API entram no contrato dos fronts; sondas e métricas ficam fora de /api.
+  documento.paths = Object.fromEntries(
+    Object.entries(documento.paths).filter(([caminho]) => caminho.startsWith(`/${GLOBAL_PREFIX}/`)),
+  );
+  return documento;
 }
 
 function ordenarChaves(valor: unknown): unknown {

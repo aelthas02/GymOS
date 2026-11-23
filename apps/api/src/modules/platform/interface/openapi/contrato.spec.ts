@@ -4,6 +4,7 @@ import { Test } from '@nestjs/testing';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { GLOBAL_PREFIX } from '../../../../app/configure-app';
 import {
   ContratoDivergenteError,
   criarDocumentoOpenApi,
@@ -41,6 +42,7 @@ async function contratoCom(dto: typeof ExemploDto | typeof ExemploDtoAlterado): 
 
   const modulo = await Test.createTestingModule({ imports: [ExemploModule] }).compile();
   const app = modulo.createNestApplication({ logger: false });
+  app.setGlobalPrefix(GLOBAL_PREFIX);
   await app.init();
   try {
     return serializarContrato(criarDocumentoOpenApi(app));
@@ -58,6 +60,8 @@ describe('divergência do contrato OpenAPI', () => {
 
   it('passa quando o contrato gerado é igual ao commitado', async () => {
     const gerado = await contratoCom(ExemploDto);
+
+    expect(JSON.parse(gerado).paths).toHaveProperty(`/${GLOBAL_PREFIX}/exemplo`);
 
     expect(() => verificarContrato(commitado, gerado)).not.toThrow();
   });

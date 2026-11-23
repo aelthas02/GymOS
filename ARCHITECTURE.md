@@ -82,14 +82,22 @@ tags. O teste `tools/architecture/src/shared-packages.spec.ts` confere a conven�
 | `validation` | validadores (CPF, CNPJ, telefone, e-mail, datas)          | T08    | `type:util`   |
 | `pipes`      | pipes de exibição (`brl`, `cpf`, `dateBr`…)               | T08    | `type:util`   |
 | `templates`  | variáveis de mensagem                                     | T08    | `type:util`   |
-| `forms`      | máscaras e diretivas de formulário                        | T09    | `type:util`   |
+| `forms`      | `ValidatorFn` e mensagens (T08); máscaras e diretivas     | T09    | `type:util`   |
 | `testing`    | harness de teclado para testes                            | T10    | `type:util`   |
-| `ambiente`   | banner DEV/STAGING (não depende de `libs/ui`)             | T02    | `type:util`   |
+| `ambiente`   | banner DEV/STAGING, correlationId e Sentry do front       | T02    | `type:util`   |
 | `events`     | tipos dos eventos de domínio                              | T13a   | `type:util`   |
 | `acesso`     | regras de acesso usadas pela API e pelo agente da catraca | T23a   | `type:domain` |
 
 O tipo da tabela é o esperado; o ticket confirma ao criar o pacote, e o dono do pacote está no
 `CODEOWNERS`.
+
+`money`, `validation`, `templates` e os formatadores de `pipes` também rodam no back, por isso o lint
+proíbe `@angular/*` neles. O back importa os formatadores (`formatarBrl`, `formatarDataBr`…) pelo
+alias `@gymos/shared-pipes/formatadores`, que não carrega os pipes Angular. Esses pacotes exigem 100%
+de cobertura de linhas e branches no `vitest` de cada um.
+
+Nos arquivos de `domain/`, o lint proíbe `* 0.`, `/ 100` e `/ 10000`: dinheiro é centavo inteiro e
+alíquota é ponto-base inteiro, com as funções de `money` (`aplicarAliquota`, `ratear`, `ratearPorPeso`).
 
 ## Front-end (Angular)
 
@@ -158,6 +166,26 @@ portas com adapter fake determinístico (ADRs 008 a 012).
 A API valida as variáveis de ambiente com Zod em `apps/api/src/config/env.ts`. `main.ts` chama
 `loadEnv(process.env)` antes de criar a aplicação; se faltar ou estiver inválida alguma variável, registra
 a lista e encerra com código 1. Toda variável nova entra no schema e no `.env.example` no mesmo PR.
+As variáveis já validadas chegam aos providers pelo token `ENV` (`config/env.module.ts`).
+
+### Observabilidade
+
+Em `apps/api/src/observabilidade/` (T02):
+
+- **Logs**: JSON pelo pino (`nestjs-pino`); use o `Logger` do `@nestjs/common`. Todo log feito
+  durante uma requisição leva o `correlationId`, que vem do cabeçalho `x-correlation-id` (o front o
+  envia em cada requisição) ou é gerado, e volta no cabeçalho da resposta.
+- **Saúde**: `/health/live` (processo de pé) e `/health/ready` (Postgres e Redis; 503 se algum
+  falha), fora do prefixo `/api`.
+- **Métricas**: `/metrics` no formato do Prometheus, fora do prefixo `/api` e só na rede interna;
+  latência e erros 5xx por rota do Nest. Cada fila registra a contagem de jobs no `QueueMetrics`.
+- **Sentry**: `instrument.ts` inicia antes do Nest; erros que não são `HttpException` vão com a tag
+  `correlationId`, o `APP_ENV` como ambiente e o `SENTRY_RELEASE`. Sem `SENTRY_DSN`, desligado. Os
+  eventos não levam dados pessoais.
+
+No front, `@gymos/shared-ambiente` dá o banner DEV/STAGING, o interceptor do `x-correlation-id` e o
+Sentry dos dois apps. Cada app tem `environment.dev.ts`, `environment.staging.ts` e
+`environment.prod.ts`, trocados por `fileReplacements` nas configurações de build de mesmo nome.
 
 ## Agente da catraca
 

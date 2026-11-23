@@ -73,6 +73,52 @@ describe('valores aceitos e rejeitados pelo schema', () => {
   });
 });
 
+describe('variáveis de ambiente e observabilidade', () => {
+  it('usa "development" quando APP_ENV está ausente', () => {
+    const result = parseEnv(withoutKeys('APP_ENV'));
+
+    expect(result.ok && result.env.APP_ENV).toBe('development');
+  });
+
+  it('aceita APP_ENV "staging" com NODE_ENV "production"', () => {
+    const result = parseEnv(withOverrides({ APP_ENV: 'staging', NODE_ENV: 'production' }));
+
+    expect(result.ok && result.env.APP_ENV).toBe('staging');
+  });
+
+  it('rejeita APP_ENV fora do enum', () => {
+    expect(invalidVariables(withOverrides({ APP_ENV: 'homologacao' }))).toEqual(['APP_ENV']);
+  });
+
+  it('usa "info" quando LOG_LEVEL está ausente e rejeita nível desconhecido', () => {
+    const result = parseEnv(withoutKeys('LOG_LEVEL'));
+
+    expect(result.ok && result.env.LOG_LEVEL).toBe('info');
+    expect(invalidVariables(withOverrides({ LOG_LEVEL: 'verbose' }))).toEqual(['LOG_LEVEL']);
+  });
+
+  it('trata SENTRY_DSN e SENTRY_RELEASE vazios como não definidos', () => {
+    const result = parseEnv(withOverrides({ SENTRY_DSN: '', SENTRY_RELEASE: '' }));
+
+    expect(result.ok && result.env.SENTRY_DSN).toBeUndefined();
+    expect(result.ok && result.env.SENTRY_RELEASE).toBeUndefined();
+  });
+
+  it('rejeita SENTRY_DSN que não é URL http(s)', () => {
+    expect(invalidVariables(withOverrides({ SENTRY_DSN: 'chave-solta' }))).toEqual(['SENTRY_DSN']);
+  });
+
+  it('aceita SENTRY_DSN e SENTRY_RELEASE definidos', () => {
+    const dsn = 'https://chave@o0.ingest.sentry.io/1';
+    const result = parseEnv(withOverrides({ SENTRY_DSN: dsn, SENTRY_RELEASE: 'gymos-api@1.0.0' }));
+
+    expect(result.ok && result.env).toMatchObject({
+      SENTRY_DSN: dsn,
+      SENTRY_RELEASE: 'gymos-api@1.0.0',
+    });
+  });
+});
+
 describe('mensagens de erro das variáveis', () => {
   it('diz "obrigatória e não definida" quando a variável está ausente', () => {
     const result = parseEnv(withoutKeys('SMTP_HOST'));

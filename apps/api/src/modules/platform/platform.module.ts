@@ -6,7 +6,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { loadEnv } from '../../config/env';
+import type { Env } from '../../config/env';
+import { ENV } from '../../config/env.module';
 import { AtualizarIdentidadeDoTenant, CriarAcademia } from './application/casos-de-uso';
 import {
   ConviteDoAdministrador,
@@ -53,7 +54,8 @@ export const ROTAS_SEM_TENANT = [
   providers: [
     {
       provide: CONFIGURACAO_DA_PLATAFORMA,
-      useFactory: (): ConfiguracaoDaPlataforma => configuracaoDoAmbiente(loadEnv(process.env)),
+      useFactory: (env: Env): ConfiguracaoDaPlataforma => configuracaoDoAmbiente(env),
+      inject: [ENV],
     },
     PrismaService,
     ContextoDoTenant,
@@ -77,7 +79,15 @@ export const ROTAS_SEM_TENANT = [
       useValue: new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
     },
   ],
-  exports: [ContextoDoTenant, ExecutorDeTenant, Relogio, CriarAcademia, RepositorioDeTenants],
+  exports: [
+    ContextoDoTenant,
+    ExecutorDeTenant,
+    Relogio,
+    CriarAcademia,
+    RepositorioDeTenants,
+    // Só para a sonda de prontidão do Postgres (observabilidade), que usa o pool da API.
+    PrismaService,
+  ],
 })
 export class PlatformModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
