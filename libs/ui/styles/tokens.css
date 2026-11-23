@@ -21,8 +21,6 @@
   --state-error-fg: #5c2417;
   --state-warn-border: #ebd08a;
   --state-warn-fg: #4d3500;
-  --on-ink: #f2f5f0;
-  --border-dashed: #b9c4bd;
 
   /* Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014). */
   --accent: #22c98a;
