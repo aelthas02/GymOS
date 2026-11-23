@@ -1,0 +1,26 @@
+/*
+ * Utilitários de layout. Breakpoints: mobile < 768, tablet 768–1279, desktop ≥ 1280.
+ * Custom properties não funcionam em @media: use os mixins de _breakpoints.scss ou as constantes
+ * de breakpoints.ts. As áreas seguras do iPhone valem 0 fora dele.
+ */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* Altura da tela inteira; 100dvh acompanha a barra do navegador no celular. */
+.ui-full-height {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Afasta o conteúdo do entalhe e da barra de gestos. */
+.ui-safe-area {
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+
+.ui-safe-area-bottom {
+  padding-bottom: var(--safe-bottom);
+}
