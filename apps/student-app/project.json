@@ -18,9 +18,17 @@
           {
             "glob": "**/*",
             "input": "apps/student-app/public"
+          },
+          {
+            "glob": "*.woff2",
+            "input": "libs/ui/styles/fonts/inter",
+            "output": "fonts/inter"
           }
         ],
-        "styles": ["apps/student-app/src/styles.css"]
+        "styles": ["libs/ui/styles/index.css", "apps/student-app/src/styles.css"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/ui/styles"]
+        }
       },
       "configurations": {
         "production": {
