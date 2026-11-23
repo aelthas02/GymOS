@@ -50,11 +50,10 @@ export type Permissao = `${string}:${Acao}`;
 const CHAVES = new Set(CATALOGO_DE_MODULOS.map((modulo) => modulo.chave));
 
 export function ehPermissao(valor: string): valor is Permissao {
-  const [modulo, acao, ...resto] = valor.split(':');
+  const separador = valor.lastIndexOf(':');
   return (
-    resto.length === 0 &&
-    CHAVES.has(modulo ?? '') &&
-    (ACOES as readonly string[]).includes(acao ?? '')
+    CHAVES.has(valor.slice(0, separador)) &&
+    (ACOES as readonly string[]).includes(valor.slice(separador + 1))
   );
 }
 
