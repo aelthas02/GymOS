@@ -15,7 +15,7 @@ export class IdentidadeDoTenantDto implements IdentidadeDoTenant {
 
   @ApiProperty({ type: String, nullable: true, example: null, format: 'uri', maxLength: 2048 })
   @ValidateIf((_dto, valor) => valor !== null)
-  @IsUrl({ require_tld: false, protocols: ['http', 'https'] })
+  @IsUrl({ require_tld: false, require_protocol: true, protocols: ['http', 'https'] })
   @MaxLength(2048)
   logotipoUrl!: string | null;
 }

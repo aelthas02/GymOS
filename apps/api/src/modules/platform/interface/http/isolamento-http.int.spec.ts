@@ -124,6 +124,7 @@ describe('isolamento pela API HTTP', () => {
       ['nome com mais de 80 caracteres', { ...corpoValido, nome: 'x'.repeat(81) }],
       ['logotipo com protocolo javascript', { ...corpoValido, logotipoUrl: 'javascript:alert(1)' }],
       ['logotipo com protocolo ftp', { ...corpoValido, logotipoUrl: 'ftp://x.com/logo.png' }],
+      ['logotipo sem protocolo', { ...corpoValido, logotipoUrl: 'nao-e-url' }],
       ['logotipo com espaço', { ...corpoValido, logotipoUrl: 'http://x .com' }],
       ['corpo vazio', {}],
     ])('com %s responde 400 e não altera nada', async (_descricao, corpo) => {
