@@ -23,6 +23,7 @@ export default defineConfig(() => ({
       provider: 'v8' as const,
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: '../../coverage/libs/ui',
+      exclude: ['src/stories/**', '.storybook/**'],
     },
   },
 }));
