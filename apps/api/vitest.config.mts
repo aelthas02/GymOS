@@ -13,6 +13,8 @@ export default defineConfig(() => ({
     environment: 'node',
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     passWithNoTests: true,
+    // Vários testes sobem a aplicação Nest numa porta; a primeira carga é lenta com o CI ocupado.
+    testTimeout: 15_000,
     reporters: ['default'],
     coverage: {
       enabled: true,
