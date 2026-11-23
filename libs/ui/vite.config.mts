@@ -14,7 +14,7 @@ export default defineConfig(() => ({
     watch: false,
     globals: true,
     environment: 'jsdom',
-    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['{src,styles,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: ['src/test-setup.ts'],
     passWithNoTests: true,
     reporters: ['default'],
@@ -23,6 +23,7 @@ export default defineConfig(() => ({
       provider: 'v8' as const,
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: '../../coverage/libs/ui',
+      exclude: ['src/stories/**', '.storybook/**'],
     },
   },
 }));

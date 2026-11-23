@@ -1,0 +1,5 @@
+/* Estilos globais do design system; os apps e o Storybook carregam este arquivo. */
+@import './fonts.css';
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
