@@ -18,7 +18,9 @@
     "src/**/*.spec.js",
     "src/**/*.test.jsx",
     "src/**/*.spec.jsx",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "src/stories/**/*.ts",
+    "src/testing/**/*.ts"
   ],
   "files": ["src/test-setup.ts"]
 }
