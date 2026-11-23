@@ -10,6 +10,7 @@
       "inputs": [
         "default",
         "{workspaceRoot}/eslint.config.mjs",
+        "{workspaceRoot}/tools/lint/**",
         "{workspaceRoot}/{apps,libs}/**/eslint.config.mjs",
         "{workspaceRoot}/{apps,libs}/**/project.json",
         "{workspaceRoot}/tsconfig.base.json",

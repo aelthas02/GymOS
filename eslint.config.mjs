@@ -1,4 +1,6 @@
+import css from '@eslint/css';
 import nx from '@nx/eslint-plugin';
+import gymos from './tools/lint/no-hardcoded-color.mjs';
 
 const scopeConstraints = [
   { sourceTag: 'scope:staff', onlyDependOnLibsWithTags: ['scope:staff', 'scope:shared'] },
@@ -71,6 +73,31 @@ export default [
     files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+  // CSS e SCSS passam pelo ESLint; o modo tolerante aceita a sintaxe do SCSS.
+  {
+    files: ['**/*.css', '**/*.scss'],
+    plugins: { css },
+    language: 'css/css',
+    languageOptions: { tolerant: true },
+  },
+  // Cor só por token no front (T04): libs/ui/styles é o único lugar que declara cor. Testes,
+  // fixtures e histórias do Storybook usam cores como dado de entrada e ficam de fora.
+  // basePath fixa os padrões na raiz, já que cada projeto reexporta esta configuração.
+  {
+    basePath: import.meta.dirname,
+    files: ['{apps/staff-web,apps/student-app,libs}/**/*.{ts,mts,cts,js,mjs,cjs,html,css,scss}'],
+    ignores: [
+      'libs/ui/styles/**',
+      '**/*.{spec,test}.ts',
+      '**/*.fixture.ts',
+      '**/*.stories.ts',
+      '**/.storybook/**',
+    ],
+    plugins: { gymos },
+    rules: {
+      'gymos/no-hardcoded-color': 'error',
     },
   },
 ];

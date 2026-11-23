@@ -58,6 +58,15 @@ describe('nenhuma cor fixa fora de libs/ui/styles', () => {
     ).toEqual([]);
   });
 
+  it.each([
+    'libs/ui/src/lib/theme/fixture.spec.ts',
+    'apps/staff-web/src/app/features/alunos/testing/Alunos.fixture.ts',
+    'libs/ui/src/lib/fixture.stories.ts',
+    'libs/ui/.storybook/preview.ts',
+  ])('%s usa cor como dado de entrada e fica fora da regra', async (file) => {
+    expect(await colorErrors(file, "export const acento = '#1E3A8A';\n")).toEqual([]);
+  });
+
   it('string com hex em TypeScript de front gera erro', async () => {
     const ts = "export const destaque = '#22C98A';\nexport const sombra = `rgba(0, 0, 0, 0.2)`;\n";
 
