@@ -41,4 +41,22 @@ describe('EnvironmentBanner', () => {
 
     expect(screen.getByRole('note', { name: 'Ambiente de staging' })).toBeTruthy();
   });
+
+  it('expõe o ambiente em data-environment', async () => {
+    const { container } = await renderBanner(environment({ name: 'staging' }));
+
+    expect(container.querySelector('[data-environment="staging"]')).toBeTruthy();
+  });
+
+  it('em desenvolvimento o aria-label diz "Ambiente de development"', async () => {
+    await renderBanner(environment({ name: 'development' }));
+
+    expect(screen.getByRole('note', { name: 'Ambiente de development' })).toBeTruthy();
+  });
+
+  it('não renderiza com name = "production" mesmo com production = false', async () => {
+    const { container } = await renderBanner(environment({ name: 'production' }));
+
+    expect(container.querySelector('[data-environment]')).toBeNull();
+  });
 });

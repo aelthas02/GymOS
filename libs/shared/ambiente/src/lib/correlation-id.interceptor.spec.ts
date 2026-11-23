@@ -47,6 +47,17 @@ describe('correlationIdInterceptor', () => {
     expect(sentHeader(`${location.origin}/api/alunos`)).toMatch(UUID_V4);
   });
 
+  it('envia para URL relativa sem barra inicial', () => {
+    expect(sentHeader('api/alunos')).toMatch(UUID_V4);
+  });
+
+  it('não envia para a mesma máquina em outra porta (origem diferente)', () => {
+    const outraPorta = new URL(location.origin);
+    outraPorta.port = String(Number(outraPorta.port || 80) + 1);
+
+    expect(sentHeader(`${outraPorta.origin}/api/alunos`)).toBeNull();
+  });
+
   it('não envia para outras origens, para não disparar preflight de CORS', () => {
     expect(sentHeader('https://bucket.s3.amazonaws.com/upload')).toBeNull();
     expect(sentHeader('//cdn.example.com/arquivo.js')).toBeNull();
