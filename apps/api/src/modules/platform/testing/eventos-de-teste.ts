@@ -1,0 +1,108 @@
+import type { INestApplicationContext } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import type { NovoEvento, PayloadDoEvento } from '@gymos/shared-events';
+import { randomUUID } from 'node:crypto';
+import type { Client } from 'pg';
+import type { Tenant } from '../domain/tenant';
+import { EventosModule } from '../eventos.module';
+import { CONFIGURACAO_DA_PLATAFORMA, type ConfiguracaoDaPlataforma } from '../infra/configuracao';
+import {
+  CONFIGURACAO_DAS_FILAS,
+  type ConfiguracaoDasFilas,
+} from '../infra/filas/configuracao-das-filas';
+import { PlatformModule } from '../platform.module';
+import { CHAVE_DE_OPERACAO_DE_TESTE } from './app-de-teste';
+import type { BancoDeTeste } from './banco-de-teste';
+import { comTenant } from './fabricas';
+import type { RedisDeTeste } from './redis-de-teste';
+
+/**
+ * Um "processo" da API com a plataforma e o módulo de eventos, ligado ao banco e ao Redis do arquivo
+ * de teste. Dois módulos sobre o mesmo banco e prefixo fazem o papel de dois workers. Os workers não
+ * sobem sozinhos: o teste inicia os que precisa.
+ */
+export async function criarModuloDeEventos(
+  banco: BancoDeTeste,
+  redis: RedisDeTeste,
+  configuracao: Partial<ConfiguracaoDasFilas> = {},
+): Promise<INestApplicationContext> {
+  const modulo = await Test.createTestingModule({ imports: [PlatformModule, EventosModule] })
+    .overrideProvider(CONFIGURACAO_DA_PLATAFORMA)
+    .useValue({
+      ambiente: 'test',
+      urlDoBanco: banco.urlApp,
+      dominioBase: 'localhost',
+      chaveDeOperacao: CHAVE_DE_OPERACAO_DE_TESTE,
+      urlDoPainel: 'http://{tenant}.localhost:4200',
+    } satisfies ConfiguracaoDaPlataforma)
+    .overrideProvider(CONFIGURACAO_DAS_FILAS)
+    .useValue({
+      urlDoRedis: redis.url,
+      prefixo: redis.prefixo,
+      processar: false,
+      painel: false,
+      tentativas: 5,
+      atrasoInicialMs: 10,
+      intervaloDoDespachoMs: 100,
+      tamanhoDoLote: 50,
+      ...configuracao,
+    } satisfies ConfiguracaoDasFilas)
+    .compile();
+  modulo.useLogger(false);
+  await modulo.init();
+  banco.aoFinal(() => modulo.close());
+  return modulo;
+}
+
+export function pagamentoConfirmado(
+  payload: Partial<PayloadDoEvento<'PagamentoConfirmado'>> = {},
+): NovoEvento<'PagamentoConfirmado'> {
+  return {
+    tipo: 'PagamentoConfirmado',
+    payload: {
+      pagamentoId: randomUUID(),
+      cobrancaId: randomUUID(),
+      alunoId: randomUUID(),
+      valorEmCentavos: 14_990,
+      meio: 'pix',
+      confirmadoEm: '2026-11-23T14:00:00.000Z',
+      ...payload,
+    },
+  };
+}
+
+/** Tenant só em memória, para testes que não tocam o banco (cache e tempo real). */
+export function tenantFicticio(slug: string): Tenant {
+  return {
+    id: randomUUID(),
+    slug,
+    nome: `Academia ${slug}`,
+    corDestaque: '#22C98A',
+    logotipoUrl: null,
+    plano: 'base',
+    configurada: true,
+  };
+}
+
+/** Quantas vezes o efeito de teste (uma unidade com o nome `efeito:<evento>`) aconteceu. */
+export function contarEfeitos(app: Client, tenantId: string, eventoId: string): Promise<number> {
+  return comTenant(app, tenantId, async () => {
+    const { rows } = await app.query<{ total: number }>(
+      'SELECT count(*)::int AS total FROM unidade WHERE nome = $1',
+      [`efeito:${eventoId}`],
+    );
+    return rows[0]?.total ?? 0;
+  });
+}
+
+/** Eventos do tenant no outbox, lidos como o dono da tabela (a política do despachante). */
+export async function eventosNoOutbox(
+  migrador: Client,
+  tenantId: string,
+): Promise<Array<{ id: string; publicado: boolean }>> {
+  const { rows } = await migrador.query<{ id: string; publicado: boolean }>(
+    'SELECT id, publicado_em IS NOT NULL AS publicado FROM evento_outbox WHERE tenant_id = $1',
+    [tenantId],
+  );
+  return rows;
+}

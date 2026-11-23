@@ -23,6 +23,7 @@
       "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"],
       "@gymos/shared-ambiente": ["./libs/shared/ambiente/src/index.ts"],
       "@gymos/shared-money": ["./libs/shared/money/src/index.ts"],
+      "@gymos/shared-events": ["./libs/shared/events/src/index.ts"],
       "@gymos/shared-validation": ["./libs/shared/validation/src/index.ts"],
       "@gymos/shared-templates": ["./libs/shared/templates/src/index.ts"],
       "@gymos/shared-pipes": ["./libs/shared/pipes/src/index.ts"],
