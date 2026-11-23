@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "GymosApiTabela",
+  "title": "Tabela de domínio com RLS por tenant",
+  "type": "object",
+  "properties": {
+    "dominio": {
+      "type": "string",
+      "description": "Módulo dono da tabela, em kebab-case (pasta em apps/api/src/modules).",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": { "$source": "argv", "index": 0 },
+      "x-prompt": "Domínio (ex.: alunos)"
+    },
+    "nome": {
+      "type": "string",
+      "description": "Nome da tabela em kebab-case; vira snake_case no banco e PascalCase no Prisma.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": { "$source": "argv", "index": 1 },
+      "x-prompt": "Tabela (ex.: contrato-de-plano)"
+    }
+  },
+  "required": ["dominio", "nome"]
+}

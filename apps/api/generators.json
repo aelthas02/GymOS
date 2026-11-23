@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "tabela": {
+      "factory": "./generators/tabela/gerador.ts",
+      "schema": "./generators/tabela/schema.json",
+      "description": "Tabela de domínio com tenant_id e RLS por tenant: modelo Prisma, migração e teste de convenção (ADR-003)."
+    }
+  }
+}

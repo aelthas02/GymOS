@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "@gymos/api",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -12,5 +12,6 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.0"
-  }
+  },
+  "generators": "./generators.json"
 }

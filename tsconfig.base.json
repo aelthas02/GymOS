@@ -20,7 +20,8 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@gymos/ui": ["./libs/ui/src/index.ts"],
-      "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"]
+      "@gymos/api-contracts": ["./libs/api-contracts/src/index.ts"],
+      "@gymos/api": ["./apps/api/generators/tabela/gerador.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
