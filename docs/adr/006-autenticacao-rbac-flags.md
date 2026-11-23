@@ -27,8 +27,8 @@ e-mail.
 - Cookies `gymos_rt_staff` e `gymos_rt_aluno`, host-only, com `Path` `/api/auth/staff` e
   `/api/auth/aluno` (o prefixo global `/api` entra no caminho). Refresh de 7 dias no painel e de 30
   dias no app.
-- CSRF no refresh e no logout: exige o cabeçalho `x-gymos-csrf: 1` e recusa `Sec-Fetch-Site:
-cross-site` e `Origin` de outro host.
+- CSRF no refresh e no logout: exige o cabeçalho `x-gymos-csrf: 1` e recusa pedido de outro site
+  (`Sec-Fetch-Site`) ou com `Origin` de outro host.
 - Senhas com o argon2id do próprio Node (`crypto.argon2`, parâmetros mínimos da OWASP).
 - Limite de tentativas em janela deslizante no Redis: 5 erros por conta e 20 por IP em 15 minutos,
   por tenant.
