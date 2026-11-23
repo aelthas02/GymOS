@@ -5,7 +5,7 @@ import request from 'supertest';
 import { criarAppDeTeste } from '../../../platform/testing/app-de-teste';
 import { usarBancoDeTeste } from '../../../platform/testing/banco-de-teste';
 import { criarTenant, type TenantCriado } from '../../../platform/testing/fabricas';
-import { AoNegarPermissao } from '../../application/portas';
+import { AoNegarPermissao, EnvioDeEmail, LocalizadorDeAlunoPorCpf } from '../../application/portas';
 import { EnvioDeEmailFake } from '../../infra/email/envio-de-email.fake';
 import { LocalizadorDeAlunoEmMemoria } from '../../infra/localizador-de-aluno';
 import {
@@ -60,7 +60,7 @@ describe('autenticação, RBAC e módulos (T12)', () => {
 
   beforeAll(async () => {
     app = await criarAppDeTeste(banco, {}, { controllers: [RotasDeTesteController] });
-    email = app.get(EnvioDeEmailFake);
+    email = app.get(EnvioDeEmail) as EnvioDeEmailFake;
     conexao = await banco.conectarComoApp();
     a = await criarTenant(conexao);
     b = await criarTenant(conexao);
@@ -115,7 +115,11 @@ describe('autenticação, RBAC e módulos (T12)', () => {
       email: 'paulo@exemplo.com',
       senha: SENHA,
     });
-    app.get(LocalizadorDeAlunoEmMemoria).registrar(a.id, '12345678909', alunoId);
+    (app.get(LocalizadorDeAlunoPorCpf) as LocalizadorDeAlunoEmMemoria).registrar(
+      a.id,
+      '12345678909',
+      alunoId,
+    );
 
     for (const identificador of ['123.456.789-09', '12345678909', 'Paulo@Exemplo.com']) {
       const resposta = await http()

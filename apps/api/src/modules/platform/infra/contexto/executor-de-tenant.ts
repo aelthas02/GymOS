@@ -42,12 +42,15 @@ export class ExecutorDeTenant {
     if (!tenantId) {
       throw new TenantObrigatorioError();
     }
-    const atual = this.contexto.estado()?.tenant;
+    const estado = this.contexto.estado();
+    const atual = estado?.tenant;
     if (atual) {
-      if (atual.id === tenantId) {
-        return fn();
+      if (atual.id !== tenantId) {
+        throw new TenantAninhadoError();
       }
-      throw new TenantAninhadoError();
+      // Tenant resolvido pela requisição, mas ainda sem transação (guards rodam antes do
+      // interceptor): abre a transação do próprio tenant.
+      return estado.cliente ? fn() : this.executarNaTransacao(atual, fn);
     }
     const tenant = await this.tenants.porId(tenantId);
     if (!tenant) {

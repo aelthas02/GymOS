@@ -25,6 +25,7 @@ import {
   CONFIGURACAO_DA_PLATAFORMA,
   type ConfiguracaoDaPlataforma,
 } from '../../infra/configuracao';
+import { Publica } from './acesso-publico';
 import { cabecalho } from './cabecalho';
 import { CriarAcademiaDto } from './dto/criar-academia.dto';
 
@@ -56,6 +57,7 @@ export class ChaveDeOperacaoGuard implements CanActivate {
 }
 
 @ApiExcludeController()
+@Publica()
 @UseGuards(ChaveDeOperacaoGuard)
 @Controller('interno/academias')
 export class InternoController {

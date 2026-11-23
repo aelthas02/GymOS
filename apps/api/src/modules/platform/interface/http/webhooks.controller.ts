@@ -6,6 +6,7 @@ import {
   RepositorioDeTenants,
 } from '../../application/portas';
 import { ExecutorDeTenant } from '../../infra/contexto/executor-de-tenant';
+import { Publica } from './acesso-publico';
 
 const NAO_ENCONTRADO = 'Webhook sem destino.';
 
@@ -15,6 +16,7 @@ const NAO_ENCONTRADO = 'Webhook sem destino.';
  * sempre roda em runAsTenant. Recurso não encontrado no tenant responde 404 sem alterar nada.
  */
 @ApiExcludeController()
+@Publica()
 @Controller('webhooks')
 export class WebhooksController {
   constructor(
