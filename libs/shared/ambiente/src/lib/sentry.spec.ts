@@ -37,7 +37,12 @@ describe('Sentry no front', () => {
         dsn: DSN,
         environment: 'staging',
         release: 'staff-web@1.4.0',
-        sendDefaultPii: false,
+        dataCollection: expect.objectContaining({
+          userInfo: false,
+          cookies: false,
+          httpHeaders: false,
+          httpBodies: [],
+        }),
       }),
     );
   });
