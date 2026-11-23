@@ -9,11 +9,7 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import type { Env } from '../../config/env';
 import { ENV } from '../../config/env.module';
 import { AtualizarIdentidadeDoTenant, CriarAcademia } from './application/casos-de-uso';
-import {
-  ConviteDoAdministrador,
-  PROVEDORES_DE_WEBHOOK,
-  RepositorioDeTenants,
-} from './application/portas';
+import { PROVEDORES_DE_WEBHOOK, RepositorioDeTenants } from './application/portas';
 import { Relogio } from './domain/relogio';
 import {
   CONFIGURACAO_DA_PLATAFORMA,
@@ -23,7 +19,6 @@ import {
 } from './infra/configuracao';
 import { ContextoDoTenant } from './infra/contexto/contexto-do-tenant';
 import { ExecutorDeTenant } from './infra/contexto/executor-de-tenant';
-import { ConviteProvisorio } from './infra/convite/convite-provisorio';
 import { PrismaService } from './infra/prisma/prisma.service';
 import { RelogioDaRequisicao } from './infra/relogio/relogio';
 import { RepositorioDeTenantsPrisma } from './infra/tenants/repositorio-de-tenants.prisma';
@@ -47,7 +42,10 @@ export const ROTAS_SEM_TENANT = [
   'interno/{*caminho}',
 ];
 
-/** Transversal do back: tenant, contexto e transação por requisição, runAsTenant e Relogio. */
+/**
+ * Transversal do back: tenant, contexto e transação por requisição, runAsTenant e Relogio. O
+ * ConviteDoAdministrador vem do módulo de autenticação (T12), também global.
+ */
 @Global()
 @Module({
   controllers: [TenantController, WebhooksController, InternoController],
@@ -61,7 +59,6 @@ export const ROTAS_SEM_TENANT = [
     ContextoDoTenant,
     ExecutorDeTenant,
     { provide: RepositorioDeTenants, useClass: RepositorioDeTenantsPrisma },
-    { provide: ConviteDoAdministrador, useClass: ConviteProvisorio },
     { provide: Relogio, useClass: RelogioDaRequisicao },
     ProvedorDeWebhookFake,
     {
@@ -80,6 +77,8 @@ export const ROTAS_SEM_TENANT = [
     },
   ],
   exports: [
+    CONFIGURACAO_DA_PLATAFORMA,
+    ChaveDeOperacaoGuard,
     ContextoDoTenant,
     ExecutorDeTenant,
     Relogio,

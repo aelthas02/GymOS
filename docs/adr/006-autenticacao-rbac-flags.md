@@ -20,6 +20,22 @@ e-mail.
 - **Feature flags por tenant**, derivadas do plano contratado; rota de módulo desligado responde 404.
 - O login do aluno aceita CPF (com ou sem pontuação) ou e-mail no mesmo campo.
 
+## Implementação (T12)
+
+- JWT HS256 (`AUTH_JWT_SECRET`) com `aud` = `staff` ou `aluno` e `tid` = tenant; token de outra
+  academia é recusado.
+- Cookies `gymos_rt_staff` e `gymos_rt_aluno`, host-only, com `Path` `/api/auth/staff` e
+  `/api/auth/aluno` (o prefixo global `/api` entra no caminho). Refresh de 7 dias no painel e de 30
+  dias no app.
+- CSRF no refresh e no logout: exige o cabeçalho `x-gymos-csrf: 1` e recusa pedido de outro site
+  (`Sec-Fetch-Site`) ou com `Origin` de outro host.
+- Senhas com o argon2id do próprio Node (`crypto.argon2`, parâmetros mínimos da OWASP).
+- Limite de tentativas em janela deslizante no Redis: 5 erros por conta e 20 por IP em 15 minutos,
+  por tenant.
+- A permissão é conferida no banco a cada requisição: mudar o tipo de acesso vale na hora.
+- Planos: `base` (sem módulos extras) e `completo` (os quatro); a sobrescrita manual por tenant vai
+  pelo endpoint interno `PUT /interno/academias/:slug/modulos/:modulo`.
+
 ## Alternativas consideradas
 
 - **Sessão no servidor**: mais simples de revogar, mas exige armazenamento de sessão consultado em toda

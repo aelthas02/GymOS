@@ -164,6 +164,19 @@ requisição → contexto (AsyncLocalStorage) → tenant pelo Host (404 se desco
 Integrações externas (emissor fiscal, pagamentos, catraca, Meta, IA, armazenamento) ficam atrás de
 portas com adapter fake determinístico (ADRs 008 a 012).
 
+### Autenticação, permissões e módulos extras
+
+`modules/autenticacao` (T12, ADR-006):
+
+- **Acesso declarado em toda rota `/api`**: `@Publica()`, `@Autenticado()` ou
+  `@RequirePermission('alunos:excluir')`. O teste `acesso-declarado.spec.ts` recusa rota sem
+  declaração. `@RequireModule('loja')` responde 404 com o módulo desligado.
+- O `AcessoGuard` é global e roda antes do interceptor de transação: lê o banco na própria transação
+  do tenant. A sessão validada chega ao handler por `@SessaoAtual()`.
+- Catálogo de permissões e tipos padrão em `domain/permissoes.ts` e `domain/tipos-de-acesso.ts`;
+  planos e módulos extras em `domain/modulos-do-plano.ts`.
+- E-mail só pela porta `EnvioDeEmail` (`EMAIL_TRANSPORTE=fake` guarda em memória).
+
 ### Configuração
 
 A API valida as variáveis de ambiente com Zod em `apps/api/src/config/env.ts`. `main.ts` chama

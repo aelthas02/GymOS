@@ -21,9 +21,16 @@ export const envSchema = z.object({
   STAFF_WEB_URL: required.default('http://{tenant}.localhost:4200'),
   // Vazia desliga o endpoint interno de operação; definida, exige 32 caracteres ou mais.
   OPERACAO_API_KEY: optional(z.string().min(32)),
+  // Segredo HS256 do token de acesso (T12); 32 caracteres ou mais, diferente por ambiente.
+  AUTH_JWT_SECRET: z.string().min(32),
+  // Endereço do app do aluno de cada academia, usado nos links de e-mail; {tenant} vira o slug.
+  STUDENT_APP_URL: required.default('http://{tenant}.localhost:4300'),
   REDIS_URL: z.url({ protocol: /^rediss?$/ }),
   SMTP_HOST: required,
   SMTP_PORT: port,
+  // smtp envia pelo SMTP_HOST; fake só guarda em memória (máquina sem Mailpit).
+  EMAIL_TRANSPORTE: z.enum(['smtp', 'fake']).default('smtp'),
+  EMAIL_REMETENTE: required.default('GymOS <nao-responda@gymos.app>'),
   S3_ENDPOINT: z.url({ protocol: /^https?$/ }),
   S3_REGION: required,
   S3_BUCKET: required,
