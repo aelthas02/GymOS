@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { accentContrast, accentText } from './contrast';
-import { tokens } from './tokens';
+import { accentContrast, accentText, normalizeHex } from './contrast';
+import { cssVar, suggestedAccents, tokens } from './tokens';
 
 // O Vitest troca imports de .css por módulos vazios, até com ?raw; por isso a leitura direta.
 const tokensCss = readFileSync(join(import.meta.dirname, 'tokens.css'), 'utf8');
@@ -17,6 +17,27 @@ function customProperties(css: string): Map<string, string> {
 // O Prettier escreve os hex do CSS em minúsculas; o TS segue o formato #RRGGBB.
 const semCaixa = (valores: Record<string, string>): Record<string, string> =>
   Object.fromEntries(Object.entries(valores).map(([nome, valor]) => [nome, valor.toLowerCase()]));
+
+describe('cssVar', () => {
+  it('devolve var(--nome) do token', () => {
+    expect(cssVar('accent')).toBe('var(--accent)');
+    expect(cssVar('accent-contrast')).toBe('var(--accent-contrast)');
+  });
+});
+
+describe('suggestedAccents', () => {
+  it('são hex #RRGGBB válidos e únicos', () => {
+    for (const cor of suggestedAccents) {
+      expect(cor).toMatch(/^#[0-9A-F]{6}$/);
+      expect(normalizeHex(cor)).toBe(cor);
+    }
+    expect(new Set(suggestedAccents).size).toBe(suggestedAccents.length);
+  });
+
+  it('inclui o acento padrão', () => {
+    expect(suggestedAccents).toContain(tokens.accent);
+  });
+});
 
 describe('espelho TS dos tokens', () => {
   const css = customProperties(tokensCss);
