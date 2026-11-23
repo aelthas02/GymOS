@@ -11,6 +11,16 @@ export const tokens = {
   page: '#F3F5F2',
   surface: '#FFFFFF',
   tutorial: '#F57C00',
+  'on-ink': '#F2F5F0',
+  'border-dashed': '#B9C4BE',
+  'nav-fg': '#DCE4EC',
+  'nav-muted': '#9FB0C2',
+  'nav-card-bg': '#12222F',
+  'nav-card-fg': '#C9D5E1',
+  'state-error-border': '#F3C4B9',
+  'state-error-fg': '#5C2417',
+  'state-warn-border': '#EBD08A',
+  'state-warn-fg': '#4D3500',
 
   // Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014).
   accent: '#22C98A',
