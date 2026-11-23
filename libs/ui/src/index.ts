@@ -10,3 +10,8 @@ export * from './lib/icon-button/icon-button';
 export * from './lib/icon/icon';
 export * from './lib/icon/icons';
 export * from './lib/kpi/kpi';
+export * from './lib/checkbox/checkbox';
+export * from './lib/chips/chips';
+export * from './lib/field/field';
+export * from './lib/select/select';
+export * from './lib/toggle/toggle';

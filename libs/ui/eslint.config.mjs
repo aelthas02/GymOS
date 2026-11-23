@@ -27,4 +27,9 @@ export default [
       ],
     },
   },
+  {
+    // Nos testes, `!` em querySelector é a asserção de que o elemento existe.
+    files: ['**/*.spec.ts'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
 ];

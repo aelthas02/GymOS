@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Toggle } from './toggle';
 
@@ -7,7 +7,7 @@ import { Toggle } from './toggle';
   template: `<ui-toggle [(checked)]="ativo" [disabled]="desabilitado" label="Receber avisos" />`,
 })
 class Host {
-  ativo = false;
+  ativo = signal(false);
   desabilitado = false;
 }
 
@@ -35,8 +35,7 @@ describe('Toggle', () => {
     const { fixture, host, sw } = setup();
     expect(sw.getAttribute('aria-checked')).toBe('false');
 
-    host.ativo = true;
-    fixture.changeDetectorRef.markForCheck();
+    host.ativo.set(true);
     fixture.detectChanges();
 
     expect(sw.getAttribute('aria-checked')).toBe('true');
@@ -48,11 +47,11 @@ describe('Toggle', () => {
     sw.dispatchEvent(tecla(' '));
     fixture.detectChanges();
 
-    expect(host.ativo).toBe(true);
+    expect(host.ativo()).toBe(true);
     expect(sw.getAttribute('aria-checked')).toBe('true');
 
     sw.dispatchEvent(tecla(' '));
-    expect(host.ativo).toBe(false);
+    expect(host.ativo()).toBe(false);
   });
 
   it('Espaço não rola a página nem dispara um segundo clique ao soltar', () => {
@@ -72,7 +71,7 @@ describe('Toggle', () => {
 
     sw.click();
 
-    expect(host.ativo).toBe(true);
+    expect(host.ativo()).toBe(true);
   });
 
   it('desabilitado ignora clique e Espaço', () => {
@@ -81,7 +80,7 @@ describe('Toggle', () => {
     sw.click();
     sw.dispatchEvent(tecla(' '));
 
-    expect(host.ativo).toBe(false);
+    expect(host.ativo()).toBe(false);
     expect(sw.disabled).toBe(true);
   });
 
@@ -90,6 +89,6 @@ describe('Toggle', () => {
 
     sw.dispatchEvent(tecla('a'));
 
-    expect(host.ativo).toBe(false);
+    expect(host.ativo()).toBe(false);
   });
 });

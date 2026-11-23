@@ -1,16 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Field, FieldControl } from './field';
 
 @Component({
   imports: [Field, FieldControl],
-  template: `<ui-field [label]="'E-mail'" [hint]="hint" [error]="error">
+  template: `<ui-field [label]="'E-mail'" [hint]="hint" [error]="error()">
     <input uiFieldControl type="email" />
   </ui-field>`,
 })
 class Host {
   hint: string | undefined = 'Usamos para enviar o recibo.';
-  error: string | undefined;
+  error = signal<string | undefined>(undefined);
 }
 
 function setup(patch: Partial<Host> = {}) {
@@ -43,8 +43,7 @@ describe('Field', () => {
   it('o erro entra em aria-describedby, marca aria-invalid e é anunciado', () => {
     const { fixture, host, el, input, ids } = setup();
 
-    host.error = 'Informe um e-mail válido';
-    fixture.componentRef.changeDetectorRef.detectChanges();
+    host.error.set('Informe um e-mail válido');
     fixture.detectChanges();
 
     const erro = el.querySelector('.ui-field__error')!;
