@@ -7,6 +7,13 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   API_PORT: port.default(3000),
   DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
+  TENANT_BASE_DOMAIN: required.default('localhost'),
+  STAFF_WEB_URL: required.default('http://{tenant}.localhost:4200'),
+  // Vazia desliga o endpoint interno de operação; definida, exige 32 caracteres ou mais.
+  OPERACAO_API_KEY: z.preprocess(
+    (valor) => (valor === '' ? undefined : valor),
+    z.string().min(32).optional(),
+  ),
   REDIS_URL: z.url({ protocol: /^rediss?$/ }),
   SMTP_HOST: required,
   SMTP_PORT: port,

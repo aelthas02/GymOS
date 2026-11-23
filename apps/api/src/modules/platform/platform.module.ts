@@ -1,0 +1,90 @@
+import {
+  Global,
+  type MiddlewareConsumer,
+  Module,
+  type NestModule,
+  ValidationPipe,
+} from '@nestjs/common';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { loadEnv } from '../../config/env';
+import { AtualizarIdentidadeDoTenant, CriarAcademia } from './application/casos-de-uso';
+import {
+  ConviteDoAdministrador,
+  PROVEDORES_DE_WEBHOOK,
+  RepositorioDeTenants,
+} from './application/portas';
+import { Relogio } from './domain/relogio';
+import {
+  CONFIGURACAO_DA_PLATAFORMA,
+  type ConfiguracaoDaPlataforma,
+  configuracaoDoAmbiente,
+  permiteRecursosDeDesenvolvimento,
+} from './infra/configuracao';
+import { ContextoDoTenant } from './infra/contexto/contexto-do-tenant';
+import { ExecutorDeTenant } from './infra/contexto/executor-de-tenant';
+import { ConviteProvisorio } from './infra/convite/convite-provisorio';
+import { PrismaService } from './infra/prisma/prisma.service';
+import { RelogioDaRequisicao } from './infra/relogio/relogio';
+import { RepositorioDeTenantsPrisma } from './infra/tenants/repositorio-de-tenants.prisma';
+import { ProvedorDeWebhookFake } from './infra/webhooks/provedor-fake';
+import { ContextoDaRequisicaoMiddleware } from './interface/http/contexto.middleware';
+import { ChaveDeOperacaoGuard, InternoController } from './interface/http/interno.controller';
+import { ResolucaoDeTenantMiddleware } from './interface/http/resolucao-de-tenant.middleware';
+import { TenantController } from './interface/http/tenant.controller';
+import { TransacaoPorRequisicaoInterceptor } from './interface/http/transacao.interceptor';
+import { WebhooksController } from './interface/http/webhooks.controller';
+
+/**
+ * Rotas que não passam pela resolução do tenant por Host: saúde e métricas da plataforma, webhooks
+ * (tenant no caminho ou no id externo) e operação interna.
+ */
+export const ROTAS_SEM_TENANT = [
+  'health',
+  'health/{*caminho}',
+  'metrics',
+  'webhooks/{*caminho}',
+  'interno/{*caminho}',
+];
+
+/** Transversal do back: tenant, contexto e transação por requisição, runAsTenant e Relogio. */
+@Global()
+@Module({
+  controllers: [TenantController, WebhooksController, InternoController],
+  providers: [
+    {
+      provide: CONFIGURACAO_DA_PLATAFORMA,
+      useFactory: (): ConfiguracaoDaPlataforma => configuracaoDoAmbiente(loadEnv(process.env)),
+    },
+    PrismaService,
+    ContextoDoTenant,
+    ExecutorDeTenant,
+    { provide: RepositorioDeTenants, useClass: RepositorioDeTenantsPrisma },
+    { provide: ConviteDoAdministrador, useClass: ConviteProvisorio },
+    { provide: Relogio, useClass: RelogioDaRequisicao },
+    ProvedorDeWebhookFake,
+    {
+      provide: PROVEDORES_DE_WEBHOOK,
+      useFactory: (config: ConfiguracaoDaPlataforma, fake: ProvedorDeWebhookFake) =>
+        permiteRecursosDeDesenvolvimento(config) ? [fake] : [],
+      inject: [CONFIGURACAO_DA_PLATAFORMA, ProvedorDeWebhookFake],
+    },
+    AtualizarIdentidadeDoTenant,
+    CriarAcademia,
+    ChaveDeOperacaoGuard,
+    { provide: APP_INTERCEPTOR, useClass: TransacaoPorRequisicaoInterceptor },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    },
+  ],
+  exports: [ContextoDoTenant, ExecutorDeTenant, Relogio, CriarAcademia, RepositorioDeTenants],
+})
+export class PlatformModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(ContextoDaRequisicaoMiddleware).forRoutes('{*caminho}');
+    consumer
+      .apply(ResolucaoDeTenantMiddleware)
+      .exclude(...ROTAS_SEM_TENANT)
+      .forRoutes('{*caminho}');
+  }
+}
