@@ -2,7 +2,7 @@ import { ErrorHandler, type Provider } from '@angular/core';
 import * as Sentry from '@sentry/angular';
 import type { AppEnvironment } from './app-environment';
 
-// Definido no build pelo pipeline: `ng build --define GYMOS_RELEASE="'staff-web@1.4.0'"`.
+// Definido no build pelo pipeline (sintaxe no README do pacote); sem ele, o evento vai sem release.
 declare const GYMOS_RELEASE: string | undefined;
 
 function buildRelease(): string | undefined {
