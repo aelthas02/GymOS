@@ -1,78 +1,119 @@
-// Modelos do domínio autenticacao.
+// Modelos do domínio autenticacao (T12, ADR-006): equipe, credencial do aluno, tipos de acesso,
+// convites, refresh rotativo, redefinição de senha e sobrescrita de módulos extras.
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Tipo de acesso da tela Permissões. Os padrões têm `chave`; os criados pela academia, não.
+/// `permissoes` guarda as permissões `modulo:acao` do catálogo em código.
 model TipoDeAcesso {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String     @map("tenant_id") @db.Uuid
+  criadoEm   DateTime   @default(now()) @map("criado_em") @db.Timestamptz(3)
+  chave      String?
+  nome       String
+  permissoes String[]   @default([])
+  usuarios   Usuario[]
+  convites   Convite[]
 
+  @@unique([tenantId, id])
+  @@unique([tenantId, chave])
+  @@unique([tenantId, nome])
   @@index([tenantId])
   @@map("tipo_de_acesso")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Pessoa da equipe com login no painel. O e-mail é guardado em minúsculas.
 model Usuario {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String       @map("tenant_id") @db.Uuid
+  criadoEm       DateTime     @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nome           String
+  email          String
+  senhaHash      String?      @map("senha_hash")
+  tipoDeAcessoId String       @map("tipo_de_acesso_id") @db.Uuid
+  ativo          Boolean      @default(true)
+  tipoDeAcesso   TipoDeAcesso @relation(fields: [tenantId, tipoDeAcessoId], references: [tenantId, id])
 
+  @@unique([tenantId, email])
   @@index([tenantId])
   @@map("usuario")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Credencial do app do aluno. A ligação com o Aluno e a busca por CPF ficam no T15a.
 model CredencialAluno {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String    @map("tenant_id") @db.Uuid
+  criadoEm           DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId            String    @map("aluno_id") @db.Uuid
+  email              String?
+  senhaHash          String?   @map("senha_hash")
+  codigoHash         String?   @map("codigo_hash")
+  codigoExpiraEm     DateTime? @map("codigo_expira_em") @db.Timestamptz(3)
 
+  @@unique([tenantId, alunoId])
+  @@unique([tenantId, email])
   @@index([tenantId])
   @@map("credencial_aluno")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Convite da equipe por e-mail: o link leva o token, aqui só o hash.
 model Convite {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String       @map("tenant_id") @db.Uuid
+  criadoEm       DateTime     @default(now()) @map("criado_em") @db.Timestamptz(3)
+  email          String
+  nome           String?
+  tipoDeAcessoId String       @map("tipo_de_acesso_id") @db.Uuid
+  tokenHash      String       @unique @map("token_hash")
+  expiraEm       DateTime     @map("expira_em") @db.Timestamptz(3)
+  usadoEm        DateTime?    @map("usado_em") @db.Timestamptz(3)
+  tipoDeAcesso   TipoDeAcesso @relation(fields: [tenantId, tipoDeAcessoId], references: [tenantId, id])
 
   @@index([tenantId])
   @@map("convite")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Refresh rotativo: cada uso gera o próximo da mesma família; reutilizar um usado revoga a família.
 model TokenDeRefresh {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  criadoEm   DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  familiaId  String    @map("familia_id") @db.Uuid
+  publico    String
+  sujeitoId  String    @map("sujeito_id") @db.Uuid
+  tokenHash  String    @unique @map("token_hash")
+  expiraEm   DateTime  @map("expira_em") @db.Timestamptz(3)
+  usadoEm    DateTime? @map("usado_em") @db.Timestamptz(3)
+  revogadoEm DateTime? @map("revogado_em") @db.Timestamptz(3)
 
   @@index([tenantId])
+  @@index([familiaId])
+  @@index([tenantId, publico, sujeitoId])
   @@map("token_de_refresh")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Pedido de "esqueci minha senha" da equipe ou do aluno.
 model RedefinicaoDeSenha {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String    @map("tenant_id") @db.Uuid
+  criadoEm  DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  publico   String
+  sujeitoId String    @map("sujeito_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiraEm  DateTime  @map("expira_em") @db.Timestamptz(3)
+  usadoEm   DateTime? @map("usado_em") @db.Timestamptz(3)
 
   @@index([tenantId])
   @@map("redefinicao_de_senha")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Sobrescrita manual de um módulo extra do tenant, por cima do que o plano contratado dá.
 model ModuloDoTenant {
   id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String   @map("tenant_id") @db.Uuid
   criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  modulo   String
+  ativo    Boolean
 
+  @@unique([tenantId, modulo])
   @@index([tenantId])
   @@map("modulo_do_tenant")
 }
