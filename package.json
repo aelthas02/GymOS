@@ -16,7 +16,8 @@
     "test": "nx run-many -t test",
     "build": "nx run-many -t build",
     "format": "nx format:write",
-    "format:check": "nx format:check"
+    "format:check": "nx format:check",
+    "gymos": "nx run api:build && node dist/apps/api/gymos.js"
   },
   "dependencies": {
     "@angular/common": "~22.2.7",
