@@ -15,3 +15,5 @@ export * from './lib/chips/chips';
 export * from './lib/field/field';
 export * from './lib/select/select';
 export * from './lib/toggle/toggle';
+export * from './lib/table/table';
+export * from './lib/tabs/tabs';
