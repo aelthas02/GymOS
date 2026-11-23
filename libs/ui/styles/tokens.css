@@ -11,6 +11,16 @@
   --page: #f3f5f2;
   --surface: #ffffff;
   --tutorial: #f57c00;
+  --on-ink: #f2f5f0;
+  --border-dashed: #b9c4be;
+  --nav-fg: #dce4ec;
+  --nav-muted: #9fb0c2;
+  --nav-card-bg: #12222f;
+  --nav-card-fg: #c9d5e1;
+  --state-error-border: #f3c4b9;
+  --state-error-fg: #5c2417;
+  --state-warn-border: #ebd08a;
+  --state-warn-fg: #4d3500;
 
   /* Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014). */
   --accent: #22c98a;

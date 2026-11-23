@@ -41,3 +41,44 @@ Storybook incluem `libs/ui/styles` no `includePaths`).
 Cor inválida lança `InvalidHexColorError` e o tema fica como estava. Os signals `accent`,
 `accentContrast`, `accentText` e `palette` expõem o tema atual. Quem carrega a cor da API (T14 e T32)
 chama o serviço; sem chamada, vale o tema padrão de `tokens.css`.
+
+## Componentes (`libs/ui/src/lib`)
+
+Todos standalone, `OnPush`, com `input()`/`output()`/`model()` e seletor `ui-*`. Cada um tem teste ao
+lado (`*.spec.ts`) e história em `src/stories/`. Import por `@gymos/ui`.
+
+| Grupo      | Componentes                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- |
+| Ações      | `Button` (primary, accent, outline, danger; sm, md, lg; `loading`), `IconButton`    |
+| Dados      | `Badge` (`ok`, `late`, `soon`, `off`), `Avatar`, `Card` (`inverse`), `Kpi`, `Table` |
+| Navegação  | `Tabs` (rota), `SidebarNav`, `AppShell`, `PageHeader`, `BottomTabBar`               |
+| Formulário | `Field` + `FieldControl`, `Select`, `Toggle`, `Checkbox`, `Chips`                   |
+| Camadas    | `Modal` (janela ou `variant="drawer"`), `ToastService` + `ToastOutlet`              |
+| Estados    | `EmptyState`, `ErrorState`, `NoPermissionState`, `Skeleton`                         |
+| Ícones     | `Icon` e o conjunto `icons` (24×24, traço de 2 px); acrescente em `icon/icons.ts`   |
+
+Decisões que valem para o uso:
+
+- **Rota ativa vem do router**, não de estado: `Tabs`, `SidebarNav` e `BottomTabBar` usam
+  `injectIsActive()` (`router/active-link.ts`). Não há `selected` para o pai manter.
+- **`Table` não ordena nem pagina**: emite `sortChange` (`{ column, direction }`) e `pageChange`; o
+  servidor responde. Acima de 100 linhas usa o viewport virtual do CDK (`rowHeight`, 61 px por padrão,
+  precisa ser a altura real da linha). A célula é um slot: `<ng-template uiTableCell="nome" let-row>`.
+- **`SidebarNav` recebe a lista pronta**: quem monta as seções resolve flags e permissões e marca
+  `visible: false` (ou tira o item). Seção sem item visível some, título incluso.
+- **`AppShell`** escolhe o modo por `BreakpointObserver`: menu completo no desktop, recolhido em ícones no
+  tablet e gaveta (`Modal`) no mobile. O conteúdo da tela vai dentro do `<main>`.
+- **Foco**: `Modal` prende o foco, fecha com Esc e devolve o foco a quem o abriu; `dismissable=false`
+  desliga Esc, fundo e o X para fluxos que exigem resposta. `Toast`: até 3 por vez, o resto espera na
+  fila; erro é `role="alert"`, os demais `status`. Coloque um `<ui-toast-outlet />` por app.
+- **Checkbox** usa `accent-color: var(--accent-text)` (o acento da academia escurecido para 4,5:1),
+  não o verde fixo `#0F8F63` do protótipo.
+- Novos tokens de T05: `--on-ink`, `--border-dashed`, `--nav-*` e `--state-error-*`/`--state-warn-*`
+  (cores que o protótipo repete e que não estavam em `design-tokens.json`).
+
+### Testes e acessibilidade
+
+`src/testing/stories-a11y.spec.ts` monta **cada história** do Storybook no Vitest e roda o axe-core.
+O jsdom não calcula layout nem cor, então a regra `color-contrast` fica de fora (e as regras de página
+inteira, como `region`); o contraste vem dos tokens e é coberto por `contrast.spec.ts`. Ao criar uma
+história nova, o teste a encontra sozinho.
