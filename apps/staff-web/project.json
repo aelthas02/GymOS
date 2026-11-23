@@ -36,12 +36,45 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/staff-web/src/environments/environment.ts",
+              "with": "apps/staff-web/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "staging": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/staff-web/src/environments/environment.ts",
+              "with": "apps/staff-web/src/environments/environment.staging.ts"
+            }
+          ]
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/staff-web/src/environments/environment.ts",
+              "with": "apps/staff-web/src/environments/environment.dev.ts"
+            }
+          ]
         }
       }
     },
@@ -55,6 +88,9 @@
       "configurations": {
         "production": {
           "buildTarget": "staff-web:build:production"
+        },
+        "staging": {
+          "buildTarget": "staff-web:build:staging"
         },
         "development": {
           "buildTarget": "staff-web:build:development"
