@@ -6,9 +6,8 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { RouterLink } from '@angular/router';
+import { injectIsActive } from '../router/active-link';
 
 export interface TabItem {
   readonly label: string;
@@ -83,28 +82,12 @@ export class Tabs {
   /** `true`: a aba só fica ativa com a rota igual; `false`: também em rotas filhas. */
   readonly exact = input(true);
 
-  private readonly router = inject(Router);
+  private readonly ehAtivo = injectIsActive();
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly url = toSignal(
-    this.router.events.pipe(
-      filter((evento) => evento instanceof NavigationEnd),
-      map(() => this.router.url),
-    ),
-    { initialValue: this.router.url },
-  );
-
   /** Índice da aba que corresponde à rota atual, ou -1. */
-  protected readonly ativa = computed(() => {
-    this.url();
-    return this.items().findIndex((item) =>
-      this.router.isActive(item.link, {
-        paths: this.exact() ? 'exact' : 'subset',
-        queryParams: 'ignored',
-        fragment: 'ignored',
-        matrixParams: 'ignored',
-      }),
-    );
-  });
+  protected readonly ativa = computed(() =>
+    this.items().findIndex((item) => this.ehAtivo(item.link, this.exact())),
+  );
 
   /** Só uma aba entra na ordem do Tab: a ativa, ou a primeira quando nenhuma é. */
   protected readonly indiceDoTab = computed(() => Math.max(this.ativa(), 0));

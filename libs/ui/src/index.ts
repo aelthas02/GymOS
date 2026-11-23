@@ -24,3 +24,7 @@ export * from './lib/states/empty-state';
 export * from './lib/states/error-state';
 export * from './lib/states/no-permission-state';
 export * from './lib/states/skeleton';
+export * from './lib/shell/app-shell';
+export * from './lib/shell/bottom-tab-bar';
+export * from './lib/shell/page-header';
+export * from './lib/shell/sidebar-nav';

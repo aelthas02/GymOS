@@ -8,7 +8,7 @@ const trilha: Crumb[] = [{ label: 'Alunos', link: '/alunos' }, { label: 'Rafael 
 @Component({
   imports: [PageHeader],
   template: `<ui-page-header
-    title="Alunos"
+    heading="Alunos"
     subtitle="Cadastro, planos e situação de pagamento."
     [breadcrumb]="trilha"
     [help]="ajuda"
