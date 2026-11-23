@@ -24,4 +24,11 @@ e responde 404 quando não encontra. O manifesto do PWA é servido por tenant.
 ## Consequências
 
 - DNS curinga e certificado curinga em staging e prod (T02).
-- A forma de simular subdomínios em dev (por exemplo, `*.localhost`) é definida no T11.
+- Resolução (T11): o slug é o rótulo antes de `TENANT_BASE_DOMAIN` no Host (`ritmo.localhost:3000` →
+  `ritmo`). Fora de `NODE_ENV=production`, o cabeçalho `x-tenant` também escolhe o tenant. Host sem
+  slug ou com slug desconhecido responde 404 antes de abrir transação.
+- Dev usa `*.localhost`, que os navegadores resolvem para 127.0.0.1 sem mexer no arquivo hosts.
+- Ficam fora da resolução por Host: `/health`, `/metrics`, `/webhooks/*` (tenant no caminho ou no id
+  externo) e `/interno/*` (operação, com chave).
+- Slugs reservados (`www`, `api`, `app`, `admin`, `painel`, `static`, `docs`, `mail`, `status`) não
+  viram academia.

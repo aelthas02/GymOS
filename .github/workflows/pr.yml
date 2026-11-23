@@ -41,5 +41,9 @@ jobs:
       - name: Testes
         run: pnpm nx affected -t test
 
+      # Falha se libs/api-contracts divergir da API (ADR-005).
+      - name: Contrato OpenAPI
+        run: pnpm nx affected -t openapi-check
+
       - name: Build
         run: pnpm nx affected -t build

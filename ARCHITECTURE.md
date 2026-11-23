@@ -129,7 +129,26 @@ As dependências apontam para dentro: `interface` e `infra` → `application` �
 
 - `domain/` não importa de `application/`, `infra/` nem `interface/`, nem `@nestjs/*`, `@prisma/*` ou
   `prisma`;
-- `application/` não importa de `infra/` nem `interface/`.
+- `application/` não importa de `infra/` nem `interface/`;
+- `domain/` e `application/` não leem o relógio do sistema (`Date.now()`, `new Date()` sem argumento):
+  usam a porta `Relogio`; consultas SQL dos módulos não usam `now()` nem `CURRENT_*`;
+- fora de `modules/platform`, nenhum módulo importa o cliente Prisma global (`PrismaService`).
+
+### Plataforma e multi-tenancy
+
+`modules/platform` concentra o que é transversal (ADR-003 e ADR-004):
+
+```
+requisição → contexto (AsyncLocalStorage) → tenant pelo Host (404 se desconhecido)
+           → transação com set_config('app.tenant_id', id, true) → handler → commit
+```
+
+- Repositórios recebem `ContextoDoTenant` e usam `contexto.cliente()`, o cliente da transação.
+- Workers, jobs e webhooks usam `ExecutorDeTenant.runAsTenant(tenantId, fn)` ou `paraCadaTenant(fn)`.
+- Toda tabela de domínio nasce por `pnpm nx g @gymos/api:tabela <dominio> <nome>`: `tenant_id`, índice,
+  RLS forçado, política por `app.tenant_id` e o teste de convenção.
+- Tempo pela porta `Relogio` (`agora()`, `hojeEm(fuso)`); em teste, `RelogioFixo`.
+- Endpoints com `@nestjs/swagger`; `pnpm nx run api:openapi` regenera `libs/api-contracts` (ADR-005).
 
 Integrações externas (emissor fiscal, pagamentos, catraca, Meta, IA, armazenamento) ficam atrás de
 portas com adapter fake determinístico (ADRs 008 a 012).
