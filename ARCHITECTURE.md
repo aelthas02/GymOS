@@ -120,6 +120,9 @@ apps/<app>/src/app/
 - Derivados com `computed`, sem função chamada no template, `track` em todo `@for`.
 - Cliente HTTP gerado de `libs/api-contracts`; nenhum tipo de API escrito à mão (ADR-005).
 - O lint proíbe componente fora de OnPush (`prefer-on-push-component-change-detection`).
+- Cor só por token de `libs/ui/styles` (`var(--nome)` ou `cssVar()`); a regra
+  `gymos/no-hardcoded-color` recusa cor fixa no front. O acento da academia passa pelo
+  `ThemeService` (ADR-014). Detalhes no [README da `libs/ui`](libs/ui/README.md).
 
 ## Back-end (NestJS, hexagonal)
 

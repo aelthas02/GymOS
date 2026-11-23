@@ -1,0 +1,28 @@
+/* Base global dos dois apps: fonte, cores de página e movimento reduzido. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-weight: var(--font-weight-regular);
+  color: var(--ink);
+  background: var(--page);
+}
+
+/* Quem pede menos movimento não vê transições nem animações. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

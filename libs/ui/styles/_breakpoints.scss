@@ -1,0 +1,42 @@
+// Breakpoints do GymOS, iguais a breakpoints.ts (o teste breakpoints.spec.ts confere).
+// Uso num componente .scss: @use 'breakpoints' as bp; .x { @include bp.desktop { … } }
+$tablet: 768px;
+$desktop: 1280px;
+
+@mixin mobile {
+  @media (max-width: #{$tablet - 0.02px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $tablet) and (max-width: #{$desktop - 0.02px}) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: $tablet) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $desktop) {
+    @content;
+  }
+}
+
+// Altura da tela inteira que acompanha a barra do navegador no celular.
+@mixin full-height {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+// Afasta o conteúdo do entalhe e da barra de gestos; $extra soma ao recuo de cada lado.
+@mixin safe-area($extra: 0px) {
+  padding: calc(env(safe-area-inset-top, 0px) + #{$extra})
+    calc(env(safe-area-inset-right, 0px) + #{$extra})
+    calc(env(safe-area-inset-bottom, 0px) + #{$extra})
+    calc(env(safe-area-inset-left, 0px) + #{$extra});
+}
