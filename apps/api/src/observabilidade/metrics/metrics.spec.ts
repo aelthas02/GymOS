@@ -81,3 +81,50 @@ describe('métricas Prometheus', () => {
     expect(await scrape()).toContain('process_cpu_seconds_total');
   });
 });
+
+describe('métricas das filas', () => {
+  let app: TestApp;
+
+  beforeEach(async () => {
+    app = await createTestApp();
+  });
+
+  afterEach(() => app.close());
+
+  it('uma fila cuja leitura falha não derruba /metrics nem as outras filas', async () => {
+    const queues = app.nest.get(QueueMetrics);
+    queues.register('quebrada', () => Promise.reject(new Error('redis fora')));
+    queues.register('emails', () => Promise.resolve({ waiting: 2 }));
+
+    const response = await app.get('/metrics');
+    const metrics = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(metrics).toContain('queue_jobs{queue="emails",state="waiting"} 2');
+    expect(metrics).not.toContain('queue="quebrada"');
+  });
+
+  it('a função devolvida por register remove a fila das coletas seguintes', async () => {
+    const unregister = app.nest
+      .get(QueueMetrics)
+      .register('emails', () => Promise.resolve({ waiting: 5 }));
+    const antes = await (await app.get('/metrics')).text();
+
+    unregister();
+    const depois = await (await app.get('/metrics')).text();
+
+    expect(antes).toContain('queue_jobs{queue="emails",state="waiting"} 5');
+    expect(depois).not.toContain('queue="emails"');
+  });
+
+  it('a contagem reflete o valor mais recente a cada coleta', async () => {
+    let waiting = 1;
+    app.nest.get(QueueMetrics).register('emails', () => Promise.resolve({ waiting }));
+
+    await app.get('/metrics');
+    waiting = 7;
+    const metrics = await (await app.get('/metrics')).text();
+
+    expect(metrics).toContain('queue_jobs{queue="emails",state="waiting"} 7');
+  });
+});

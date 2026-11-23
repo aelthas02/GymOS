@@ -53,4 +53,32 @@ describe('correlationId das requisições', () => {
 
     expect(first.headers.get('x-correlation-id')).not.toBe(second.headers.get('x-correlation-id'));
   });
+
+  it.each([
+    ['texto com espaço', 'pedido 123'],
+    ['mais de 128 caracteres', 'a'.repeat(129)],
+    ['símbolos fora do formato aceito', 'x;<script>'],
+  ])('troca por um UUID novo o x-correlation-id inválido: %s', async (_caso, invalido) => {
+    const response = await app.get('/api/eco', { 'x-correlation-id': invalido });
+
+    const correlationId = response.headers.get('x-correlation-id');
+    expect(correlationId).toMatch(UUID_V4);
+    expect(correlationId).not.toBe(invalido);
+  });
+
+  it('aceita o x-correlation-id com exatamente 128 caracteres', async () => {
+    const limite = 'a'.repeat(128);
+
+    const response = await app.get('/api/eco', { 'x-correlation-id': limite });
+
+    expect(response.headers.get('x-correlation-id')).toBe(limite);
+  });
+
+  it('devolve o x-correlation-id também nas respostas de /health/* e /metrics', async () => {
+    const live = await app.get('/health/live', { 'x-correlation-id': 'sonda-1' });
+    const metrics = await app.get('/metrics', { 'x-correlation-id': 'sonda-2' });
+
+    expect(live.headers.get('x-correlation-id')).toBe('sonda-1');
+    expect(metrics.headers.get('x-correlation-id')).toBe('sonda-2');
+  });
 });
