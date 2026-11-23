@@ -26,6 +26,8 @@
 # A inicialização, a validação de env e o build da API continuam com a Plataforma
 /apps/api/src/main.ts               @gymos/agente-01-plataforma @gymos/agente-04-backend-core
 /apps/api/src/config/               @gymos/agente-01-plataforma @gymos/agente-04-backend-core
+/apps/api/src/instrument.ts         @gymos/agente-01-plataforma @gymos/agente-04-backend-core
+/apps/api/src/observabilidade/      @gymos/agente-01-plataforma @gymos/agente-04-backend-core
 /apps/api/project.json              @gymos/agente-01-plataforma
 /apps/api/webpack.config.js         @gymos/agente-01-plataforma
 
