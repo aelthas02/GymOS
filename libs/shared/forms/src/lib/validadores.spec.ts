@@ -126,8 +126,8 @@ describe('mensagemDeErro', () => {
   });
 
   it('todas as mensagens são curtas e terminam com ponto', () => {
-    const textos = Object.values(MENSAGENS_DE_ERRO).filter(
-      (mensagem): mensagem is string => typeof mensagem === 'string',
+    const textos = Object.values(MENSAGENS_DE_ERRO).flatMap((mensagem) =>
+      typeof mensagem === 'string' ? [mensagem] : [],
     );
 
     expect(textos.every((texto) => texto.endsWith('.') && texto.length <= 60)).toBe(true);
