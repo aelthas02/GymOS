@@ -96,6 +96,21 @@
         "command": "prisma migrate deploy",
         "cwd": "{projectRoot}"
       }
+    },
+    "openapi": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/api/gerar-openapi.js"
+      }
+    },
+    "openapi-check": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/api/gerar-openapi.js --verificar"
+      }
     }
-  }
+  },
+  "implicitDependencies": ["api-contracts"]
 }

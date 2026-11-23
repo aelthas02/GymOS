@@ -45,6 +45,24 @@ export function serializarContrato(documento: OpenAPIObject): string {
   return `${JSON.stringify(ordenarChaves(documento), null, 2)}\n`;
 }
 
+interface OpenapiTypescript {
+  default: (fonte: unknown) => Promise<unknown>;
+  astToString: (ast: unknown) => string;
+  COMMENT_HEADER: string;
+}
+
+// new Function evita que o webpack tente empacotar o import dinâmico (o pacote é só ESM).
+const importar = new Function('s', 'return import(s)') as (
+  especificador: string,
+) => Promise<OpenapiTypescript>;
+
+/** Tipos `paths` e `components` do openapi-typescript para o cliente de libs/api-contracts. */
+export async function gerarTipos(contrato: string): Promise<string> {
+  const openapiTs = await importar('openapi-typescript');
+  const ast = await openapiTs.default(JSON.parse(contrato));
+  return `${openapiTs.COMMENT_HEADER}${openapiTs.astToString(ast)}`;
+}
+
 /** Falha se o arquivo commitado não existir ou diferir do gerado (job de divergência do CI). */
 export function verificarContrato(arquivo: string, gerado: string): void {
   const commitado = existsSync(arquivo) ? readFileSync(arquivo, 'utf-8') : null;

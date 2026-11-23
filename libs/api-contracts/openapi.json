@@ -1,0 +1,107 @@
+{
+  "components": {
+    "schemas": {
+      "IdentidadeDoTenantDto": {
+        "properties": {
+          "corDestaque": {
+            "example": "#22C98A",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "type": "string"
+          },
+          "logotipoUrl": {
+            "example": null,
+            "format": "uri",
+            "maxLength": 2048,
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "example": "Academia Ritmo",
+            "maxLength": 80,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "corDestaque",
+          "logotipoUrl"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "contact": {},
+    "description": "Contrato único da API do GymOS, gerado pelo @nestjs/swagger (ADR-005).",
+    "title": "GymOS API",
+    "version": "1"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/public/tenant": {
+      "get": {
+        "operationId": "obterTenantPublico",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentidadeDoTenantDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Academia não encontrada."
+          }
+        },
+        "summary": "Identidade da academia do subdomínio, antes do login (Entrar, manifesto do PWA).",
+        "tags": [
+          "tenant"
+        ]
+      }
+    },
+    "/api/tenant/identidade": {
+      "put": {
+        "operationId": "atualizarIdentidadeDoTenant",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentidadeDoTenantDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentidadeDoTenantDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos."
+          },
+          "404": {
+            "description": "Academia não encontrada."
+          }
+        },
+        "summary": "Nome, cor de destaque e logotipo (Primeiros passos e Configurações).",
+        "tags": [
+          "tenant"
+        ]
+      }
+    }
+  },
+  "servers": [],
+  "tags": []
+}

@@ -6,3 +6,6 @@
 pnpm-lock.yaml
 # Referência visual copiada do protótipo: não pode ser reformatada
 /docs/design/
+# Contrato gerado pela API (pnpm nx run api:openapi); o job de divergência compara byte a byte
+/libs/api-contracts/openapi.json
+/libs/api-contracts/src/generated/
