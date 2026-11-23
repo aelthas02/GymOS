@@ -5,7 +5,7 @@ describe('iniciais', () => {
     ['Rafael Souza', 'RS'],
     ['Maria da Silva Santos', 'MS'],
     ['juliana', 'J'],
-    ['  Érica   de Ávila ', 'ÉA'],
+    ['  Érica   de Ávila ', 'ÉÁ'],
     ['', ''],
     ['   ', ''],
   ])('%j → %j', (nome, esperado) => {
