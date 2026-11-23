@@ -82,7 +82,7 @@ tags. O teste `tools/architecture/src/shared-packages.spec.ts` confere a conven�
 | `validation` | validadores (CPF, CNPJ, telefone, e-mail, datas)          | T08    | `type:util`   |
 | `pipes`      | pipes de exibição (`brl`, `cpf`, `dateBr`…)               | T08    | `type:util`   |
 | `templates`  | variáveis de mensagem                                     | T08    | `type:util`   |
-| `forms`      | máscaras e diretivas de formulário                        | T09    | `type:util`   |
+| `forms`      | `ValidatorFn` e mensagens (T08); máscaras e diretivas     | T09    | `type:util`   |
 | `testing`    | harness de teclado para testes                            | T10    | `type:util`   |
 | `ambiente`   | banner DEV/STAGING, correlationId e Sentry do front       | T02    | `type:util`   |
 | `events`     | tipos dos eventos de domínio                              | T13a   | `type:util`   |
@@ -90,6 +90,14 @@ tags. O teste `tools/architecture/src/shared-packages.spec.ts` confere a conven�
 
 O tipo da tabela é o esperado; o ticket confirma ao criar o pacote, e o dono do pacote está no
 `CODEOWNERS`.
+
+`money`, `validation`, `templates` e os formatadores de `pipes` também rodam no back, por isso o lint
+proíbe `@angular/*` neles. O back importa os formatadores (`formatarBrl`, `formatarDataBr`…) pelo
+alias `@gymos/shared-pipes/formatadores`, que não carrega os pipes Angular. Esses pacotes exigem 100%
+de cobertura de linhas e branches no `vitest` de cada um.
+
+Nos arquivos de `domain/`, o lint proíbe `* 0.`, `/ 100` e `/ 10000`: dinheiro é centavo inteiro e
+alíquota é ponto-base inteiro, com as funções de `money` (`aplicarAliquota`, `ratear`, `ratearPorPeso`).
 
 ## Front-end (Angular)
 
