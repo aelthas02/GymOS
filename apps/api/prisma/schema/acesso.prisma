@@ -1,0 +1,126 @@
+// Modelos do domínio acesso (T23a): passagens na catraca e na Recepção, QR de check-in, regras de acesso
+// e alertas de frequência. Tabelas criadas por `nx g @gymos/api:tabela`; campos na migração
+// `campos_do_acesso`.
+
+/// Passagem (entrada ou saída) de um aluno. `idDeOrigem` é gerado por quem registra (o agente da
+/// catraca offline, a Recepção) e deduplica reenvios. `resultado`: liberado, tolerancia ou negado
+/// (com `motivo`, uma chave do pacote shared-acesso). `dia` é o dia do calendário de São Paulo em que
+/// `registradoEm` cai, para contar entradas por dia. `alunoId` nulo: rosto ou digital não reconhecido.
+/// `dispositivoId` é do T23b (sem FK aqui). `registradoPor` é o usuário do painel nos registros manuais.
+model Acesso {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  idDeOrigem    String   @map("id_de_origem") @db.Uuid
+  unidadeId     String   @map("unidade_id") @db.Uuid
+  alunoId       String?  @map("aluno_id") @db.Uuid
+  metodo        String
+  direcao       String
+  resultado     String
+  motivo        String?
+  modalidade    String?
+  dispositivoId String?  @map("dispositivo_id") @db.Uuid
+  registradoEm  DateTime @map("registrado_em") @db.Timestamptz(3)
+  dia           DateTime @db.Date
+  registradoPor String?  @map("registrado_por") @db.Uuid
+  observacao    String?
+
+  @@unique([tenantId, idDeOrigem])
+  @@index([tenantId])
+  @@index([tenantId, alunoId, registradoEm(sort: Desc)])
+  @@index([tenantId, dia])
+  @@index([tenantId, registradoEm])
+  @@map("acesso")
+}
+
+/// Nonce de QR já usado. A unicidade `(tenant, nonce)` é o uso único do token: o INSERT que
+/// conflita é o QR repetido.
+model QrUsado {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String   @map("tenant_id") @db.Uuid
+  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nonce    String
+  alunoId  String   @map("aluno_id") @db.Uuid
+  usadoEm  DateTime @map("usado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, nonce])
+  @@index([tenantId])
+  @@index([tenantId, usadoEm])
+  @@map("qr_usado")
+}
+
+/// Par de chaves Ed25519 do QR da academia. `chavePublica` é SPKI DER em base64 (vai para o agente);
+/// `chavePrivada` é PKCS#8 DER em base64, cifrada com a chave do tenant (T13c). O `id` é o `kid` do
+/// token. Chave desativada continua conferindo QR ainda válido enquanto `revogadaEm` for nulo.
+model ChaveDeQr {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  criadoEm     DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  chavePublica String    @map("chave_publica")
+  chavePrivada String    @map("chave_privada")
+  ativa        Boolean   @default(true)
+  revogadaEm   DateTime? @map("revogada_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([tenantId, ativa])
+  @@map("chave_de_qr")
+}
+
+/// Regras de acesso da academia (tela Acesso e catraca): uma linha por tenant, criada com os padrões
+/// na primeira leitura. `bloqueioPorAtrasoDias` nulo não bloqueia por atraso.
+model ConfiguracaoDeAcesso {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String   @map("tenant_id") @db.Uuid
+  criadoEm              DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  bloqueioPorAtrasoDias Int?     @default(7) @map("bloqueio_por_atraso_dias")
+  abertura              String   @default("05:00")
+  fechamento            String   @default("23:00")
+  limitePorDia          Int?     @default(1) @map("limite_por_dia")
+  antiPassback          Boolean  @default(true) @map("anti_passback")
+
+  @@unique([tenantId])
+  @@index([tenantId])
+  @@map("configuracao_de_acesso")
+}
+
+/// Bloco "Alertas de frequência" de Configurações. `destinatarios`: professor, recepcao e gerencia.
+/// `horaDaVerificacao` é `HH:MM` de São Paulo (a verificação é diária); `ultimaVerificacaoDia` é o dia da
+/// última verificação feita e serve de trava para só uma execução por dia.
+model ConfiguracaoDeAlertas {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String    @map("tenant_id") @db.Uuid
+  criadoEm                DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  diasSemTreinar          Int       @default(7) @map("dias_sem_treinar")
+  urgenteAposDias         Int       @default(15) @map("urgente_apos_dias")
+  quedaPercentual         Int       @default(40) @map("queda_percentual")
+  ignorarFeriasETrancados Boolean   @default(true) @map("ignorar_ferias_e_trancados")
+  horaDaVerificacao       String    @default("08:00") @map("hora_da_verificacao")
+  destinatarios           String[]  @default(["professor", "recepcao", "gerencia"])
+  mensagemAoAluno         Boolean   @default(false) @map("mensagem_ao_aluno")
+  ultimaVerificacaoDia    DateTime? @map("ultima_verificacao_dia") @db.Date
+
+  @@unique([tenantId])
+  @@index([tenantId])
+  @@map("configuracao_de_alertas")
+}
+
+/// Aluno que começou a se afastar. `tipo`: sem_treinar ou queda. `nivel`: comum ou urgente. Enquanto
+/// `resolvidoEm` for nulo o alerta está aberto; o job diário abre, escala e resolve. No máximo um
+/// aberto por aluno e tipo.
+model AlertaDeFrequencia {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String    @map("tenant_id") @db.Uuid
+  criadoEm        DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId         String    @map("aluno_id") @db.Uuid
+  tipo            String
+  nivel           String
+  diasSemTreinar  Int?      @map("dias_sem_treinar")
+  quedaPercentual Int?      @map("queda_percentual")
+  atualizadoEm    DateTime  @map("atualizado_em") @db.Timestamptz(3)
+  resolvidoEm     DateTime? @map("resolvido_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([tenantId, resolvidoEm])
+  @@index([tenantId, alunoId, tipo, resolvidoEm])
+  @@map("alerta_de_frequencia")
+}

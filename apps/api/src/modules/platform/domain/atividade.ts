@@ -50,6 +50,18 @@ export const ACOES_DA_AUDITORIA = {
   },
   'excluiu-funcionario': { texto: 'Excluiu funcionário', modulo: 'equipe', sensivel: true },
   'enviou-comunicado': { texto: 'Enviou comunicado', modulo: 'alunos', sensivel: false },
+  'liberou-acesso-manual': { texto: 'Liberou acesso manual', modulo: 'acesso', sensivel: true },
+  'registrou-check-in': { texto: 'Registrou check-in', modulo: 'acesso', sensivel: false },
+  'alterou-regras-de-acesso': {
+    texto: 'Alterou regras de acesso',
+    modulo: 'configuracoes',
+    sensivel: true,
+  },
+  'alterou-alertas-de-frequencia': {
+    texto: 'Alterou alertas de frequência',
+    modulo: 'configuracoes',
+    sensivel: false,
+  },
   /** O 403 do guard (gancho aoNegarPermissao do T12); o módulo é o da permissão negada. */
   'tentativa-negada': { texto: 'Tentativa negada', modulo: 'permissoes', sensivel: true },
 } as const satisfies Record<string, AcaoDaAuditoria>;

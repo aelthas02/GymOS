@@ -24,6 +24,92 @@
         ],
         "type": "object"
       },
+      "AcessoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "direcao": {
+            "enum": [
+              "entrada",
+              "saida"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "idDeOrigem": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "metodo": {
+            "enum": [
+              "facial",
+              "biometria",
+              "qr_code",
+              "manual"
+            ],
+            "type": "string"
+          },
+          "modalidade": {
+            "nullable": true,
+            "type": "string"
+          },
+          "motivo": {
+            "enum": [
+              "mensalidade_em_atraso",
+              "contrato_encerrado",
+              "plano_trancado",
+              "sem_contrato",
+              "fora_do_horario",
+              "modalidade_fora_do_plano",
+              "limite_diario",
+              "anti_passback",
+              "limite_semanal",
+              "qr_ja_usado",
+              "qr_invalido",
+              "qr_expirado",
+              "aluno_nao_encontrado"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "motivoTexto": {
+            "example": "Mensalidade em atraso",
+            "nullable": true,
+            "type": "string"
+          },
+          "registradoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "resultado": {
+            "enum": [
+              "liberado",
+              "tolerancia",
+              "negado"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "idDeOrigem",
+          "alunoId",
+          "metodo",
+          "direcao",
+          "resultado",
+          "motivo",
+          "motivoTexto",
+          "modalidade",
+          "registradoEm"
+        ],
+        "type": "object"
+      },
       "AderirDto": {
         "properties": {
           "inicio": {
@@ -108,6 +194,59 @@
           "restricoes",
           "leadId",
           "criadoEm"
+        ],
+        "type": "object"
+      },
+      "AlunoEmRiscoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "desde": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "diasSemTreinar": {
+            "nullable": true,
+            "type": "number"
+          },
+          "nivel": {
+            "enum": [
+              "comum",
+              "urgente"
+            ],
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "professorId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "quedaPercentual": {
+            "nullable": true,
+            "type": "number"
+          },
+          "tipo": {
+            "enum": [
+              "sem_treinar",
+              "queda"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId",
+          "nome",
+          "professorId",
+          "nivel",
+          "tipo",
+          "diasSemTreinar",
+          "quedaPercentual",
+          "desde"
         ],
         "type": "object"
       },
@@ -394,6 +533,116 @@
         ],
         "type": "object"
       },
+      "ChavesPublicasDoQrDto": {
+        "properties": {
+          "chaves": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "kid → chave pública Ed25519 (SPKI DER em base64), para o agente conferir o QR offline.",
+            "type": "object"
+          }
+        },
+        "required": [
+          "chaves"
+        ],
+        "type": "object"
+      },
+      "CheckInDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "direcao": {
+            "default": "entrada",
+            "enum": [
+              "entrada",
+              "saida"
+            ],
+            "type": "string"
+          },
+          "idDeOrigem": {
+            "description": "Id gerado na origem; reenviar não grava de novo.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "modalidade": {
+            "description": "Modalidade do ponto de acesso.",
+            "example": "Lutas",
+            "nullable": true,
+            "type": "object"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId"
+        ],
+        "type": "object"
+      },
+      "CheckInPorQrDto": {
+        "properties": {
+          "direcao": {
+            "default": "entrada",
+            "enum": [
+              "entrada",
+              "saida"
+            ],
+            "type": "string"
+          },
+          "dispositivoId": {
+            "description": "Dispositivo de leitura (T23b).",
+            "format": "uuid",
+            "type": "string"
+          },
+          "idDeOrigem": {
+            "description": "Id gerado na origem; reenviar não grava de novo.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "modalidade": {
+            "example": "Lutas",
+            "nullable": true,
+            "type": "object"
+          },
+          "token": {
+            "description": "Token do QR mostrado no app do aluno.",
+            "maxLength": 700,
+            "type": "string"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "type": "object"
+      },
+      "ChecksInDeHojeDto": {
+        "properties": {
+          "dia": {
+            "example": "2026-11-19",
+            "type": "string"
+          },
+          "liberados": {
+            "type": "number"
+          },
+          "negados": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "dia",
+          "liberados",
+          "negados"
+        ],
+        "type": "object"
+      },
       "CobrancaDto": {
         "properties": {
           "forma": {
@@ -522,6 +771,44 @@
         ],
         "type": "object"
       },
+      "ConfiguracaoDeAcessoDto": {
+        "properties": {
+          "abertura": {
+            "example": "05:00",
+            "type": "string"
+          },
+          "antiPassback": {
+            "type": "boolean"
+          },
+          "bloqueioPorAtrasoDias": {
+            "description": "Bloquear após N dias de atraso (ADR-018); nulo não bloqueia.",
+            "example": 7,
+            "maximum": 90,
+            "minimum": 1,
+            "nullable": true,
+            "type": "number"
+          },
+          "fechamento": {
+            "example": "23:00",
+            "type": "string"
+          },
+          "limitePorDia": {
+            "example": 1,
+            "maximum": 24,
+            "minimum": 1,
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "bloqueioPorAtrasoDias",
+          "abertura",
+          "fechamento",
+          "limitePorDia",
+          "antiPassback"
+        ],
+        "type": "object"
+      },
       "ConfiguracaoDeContratoDto": {
         "properties": {
           "reativacaoDias": {
@@ -549,6 +836,60 @@
           "toleranciaDias",
           "reativacaoDias",
           "trancamentoMaximoDias"
+        ],
+        "type": "object"
+      },
+      "ConfiguracaoDosAlertasDto": {
+        "properties": {
+          "destinatarios": {
+            "items": {
+              "enum": [
+                "professor",
+                "recepcao",
+                "gerencia"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "diasSemTreinar": {
+            "example": 7,
+            "maximum": 365,
+            "minimum": 1,
+            "type": "number"
+          },
+          "horaDaVerificacao": {
+            "example": "08:00",
+            "type": "string"
+          },
+          "ignorarFeriasETrancados": {
+            "type": "boolean"
+          },
+          "mensagemAoAluno": {
+            "description": "Mensagem automática ao aluno; só para quem aceitou marketing.",
+            "type": "boolean"
+          },
+          "quedaPercentual": {
+            "example": 40,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "number"
+          },
+          "urgenteAposDias": {
+            "example": 15,
+            "maximum": 365,
+            "minimum": 1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "diasSemTreinar",
+          "urgenteAposDias",
+          "quedaPercentual",
+          "ignorarFeriasETrancados",
+          "horaDaVerificacao",
+          "destinatarios",
+          "mensagemAoAluno"
         ],
         "type": "object"
       },
@@ -1211,6 +1552,28 @@
         },
         "type": "object"
       },
+      "FaixaDeHorarioDto": {
+        "properties": {
+          "entradas": {
+            "type": "number"
+          },
+          "hora": {
+            "maximum": 23,
+            "minimum": 0,
+            "type": "number"
+          },
+          "mediaPorDia": {
+            "description": "Média de entradas por dia, uma casa decimal.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "hora",
+          "entradas",
+          "mediaPorDia"
+        ],
+        "type": "object"
+      },
       "FormaDePagamentoDoAlunoDto": {
         "properties": {
           "atualizadoEm": {
@@ -1259,6 +1622,82 @@
         },
         "required": [
           "forma"
+        ],
+        "type": "object"
+      },
+      "FrequenciaDoAlunoDto": {
+        "properties": {
+          "alerta": {
+            "enum": [
+              "comum",
+              "urgente"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "diasSemTreinar": {
+            "nullable": true,
+            "type": "number"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "planoNome": {
+            "nullable": true,
+            "type": "string"
+          },
+          "treinos": {
+            "type": "number"
+          },
+          "ultimoTreino": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId",
+          "nome",
+          "planoNome",
+          "treinos",
+          "ultimoTreino",
+          "diasSemTreinar",
+          "alerta"
+        ],
+        "type": "object"
+      },
+      "FrequenciaPorHorarioDto": {
+        "properties": {
+          "ate": {
+            "type": "string"
+          },
+          "de": {
+            "type": "string"
+          },
+          "dias": {
+            "example": 30,
+            "type": "number"
+          },
+          "faixas": {
+            "items": {
+              "$ref": "#/components/schemas/FaixaDeHorarioDto"
+            },
+            "type": "array"
+          },
+          "horarioMaisCheio": {
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "de",
+          "ate",
+          "dias",
+          "faixas",
+          "horarioMaisCheio"
         ],
         "type": "object"
       },
@@ -1477,6 +1916,33 @@
           "estadoDoContrato",
           "diasDeAtraso",
           "venceEmDias"
+        ],
+        "type": "object"
+      },
+      "LiberacaoManualDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "modalidade": {
+            "example": "Lutas",
+            "nullable": true,
+            "type": "object"
+          },
+          "motivo": {
+            "example": "Esqueceu o celular; pagamento em dia na Recepção.",
+            "maxLength": 200,
+            "type": "string"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId",
+          "motivo"
         ],
         "type": "object"
       },
@@ -1751,6 +2217,49 @@
         ],
         "type": "object"
       },
+      "PaginaDeAlunosEmRiscoDto": {
+        "properties": {
+          "comuns": {
+            "type": "number"
+          },
+          "destinatarios": {
+            "items": {
+              "enum": [
+                "professor",
+                "recepcao",
+                "gerencia"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AlunoEmRiscoDto"
+            },
+            "type": "array"
+          },
+          "proximoCursor": {
+            "nullable": true,
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          },
+          "urgentes": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "itens",
+          "total",
+          "urgentes",
+          "comuns",
+          "proximoCursor",
+          "destinatarios"
+        ],
+        "type": "object"
+      },
       "PaginaDeAvisosDto": {
         "properties": {
           "itens": {
@@ -1773,6 +2282,33 @@
           "itens",
           "proximoCursor",
           "naoLidos"
+        ],
+        "type": "object"
+      },
+      "PaginaDeFrequenciaPorAlunoDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/FrequenciaDoAlunoDto"
+            },
+            "type": "array"
+          },
+          "mes": {
+            "type": "string"
+          },
+          "proximoCursor": {
+            "nullable": true,
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "mes",
+          "itens",
+          "total",
+          "proximoCursor"
         ],
         "type": "object"
       },
@@ -2161,6 +2697,45 @@
         ],
         "type": "object"
       },
+      "PresencaDoAlunoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "presencas": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "alunoId",
+          "presencas"
+        ],
+        "type": "object"
+      },
+      "PresencasDoMesDto": {
+        "properties": {
+          "alunos": {
+            "items": {
+              "$ref": "#/components/schemas/PresencaDoAlunoDto"
+            },
+            "type": "array"
+          },
+          "mes": {
+            "type": "string"
+          },
+          "total": {
+            "description": "Soma das presenças (aluno-dia): base do rateio de receita (T21).",
+            "type": "number"
+          }
+        },
+        "required": [
+          "mes",
+          "total",
+          "alunos"
+        ],
+        "type": "object"
+      },
       "PreviaDoPlanoDto": {
         "properties": {
           "explicacao": {
@@ -2185,6 +2760,28 @@
           "parcelaCentavos",
           "ultimaCentavos",
           "explicacao"
+        ],
+        "type": "object"
+      },
+      "PreviaDosAlertasDto": {
+        "properties": {
+          "comuns": {
+            "description": "Em nível comum.",
+            "type": "number"
+          },
+          "total": {
+            "description": "Alunos que seriam alertados hoje com a regra atual.",
+            "type": "number"
+          },
+          "urgentes": {
+            "description": "Em nível urgente.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "total",
+          "urgentes",
+          "comuns"
         ],
         "type": "object"
       },
@@ -2248,6 +2845,28 @@
         ],
         "type": "object"
       },
+      "QrDeCheckinDto": {
+        "properties": {
+          "expiraEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "token": {
+            "description": "Token assinado; mostre-o como QR Code.",
+            "type": "string"
+          },
+          "validadeSegundos": {
+            "example": 60,
+            "type": "number"
+          }
+        },
+        "required": [
+          "token",
+          "expiraEm",
+          "validadeSegundos"
+        ],
+        "type": "object"
+      },
       "RedefinirSenhaDto": {
         "properties": {
           "senha": {
@@ -2262,6 +2881,94 @@
         "required": [
           "token",
           "senha"
+        ],
+        "type": "object"
+      },
+      "RegistroOfflineDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "direcao": {
+            "enum": [
+              "entrada",
+              "saida"
+            ],
+            "type": "string"
+          },
+          "dispositivoId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "idDeOrigem": {
+            "description": "Gerado no agente; deduplica reenvios.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "metodo": {
+            "enum": [
+              "facial",
+              "biometria",
+              "qr_code",
+              "manual"
+            ],
+            "type": "string"
+          },
+          "modalidade": {
+            "example": "Lutas",
+            "nullable": true,
+            "type": "object"
+          },
+          "motivo": {
+            "description": "Obrigatório quando negado.",
+            "enum": [
+              "mensalidade_em_atraso",
+              "contrato_encerrado",
+              "plano_trancado",
+              "sem_contrato",
+              "fora_do_horario",
+              "modalidade_fora_do_plano",
+              "limite_diario",
+              "anti_passback",
+              "limite_semanal",
+              "qr_ja_usado",
+              "qr_invalido",
+              "qr_expirado",
+              "aluno_nao_encontrado"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "qrNonce": {
+            "description": "Nonce do QR usado offline.",
+            "maxLength": 22,
+            "nullable": true,
+            "type": "object"
+          },
+          "registradoEm": {
+            "description": "Horário de origem (ISO 8601).",
+            "format": "date-time",
+            "type": "string"
+          },
+          "resultado": {
+            "enum": [
+              "liberado",
+              "tolerancia",
+              "negado"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "idDeOrigem",
+          "alunoId",
+          "metodo",
+          "direcao",
+          "resultado",
+          "registradoEm"
         ],
         "type": "object"
       },
@@ -2291,6 +2998,42 @@
           "comContrato",
           "semContrato",
           "linhas"
+        ],
+        "type": "object"
+      },
+      "ResultadoDaSincronizacaoDto": {
+        "properties": {
+          "gravados": {
+            "type": "number"
+          },
+          "qrRepetidos": {
+            "description": "Acessos cujo QR já constava como usado em outro acesso.",
+            "type": "number"
+          },
+          "repetidos": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "gravados",
+          "repetidos",
+          "qrRepetidos"
+        ],
+        "type": "object"
+      },
+      "ResultadoDoAcessoDto": {
+        "properties": {
+          "acesso": {
+            "$ref": "#/components/schemas/AcessoDto"
+          },
+          "repetido": {
+            "description": "O id de origem já estava gravado: nada mudou.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "acesso",
+          "repetido"
         ],
         "type": "object"
       },
@@ -2381,6 +3124,25 @@
         "required": [
           "accessToken",
           "expiraEm"
+        ],
+        "type": "object"
+      },
+      "SincronizarAcessosDto": {
+        "properties": {
+          "registros": {
+            "items": {
+              "$ref": "#/components/schemas/RegistroOfflineDto"
+            },
+            "maxItems": 500,
+            "type": "array"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "registros"
         ],
         "type": "object"
       },
@@ -2485,6 +3247,469 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/api/acesso/chaves-publicas": {
+      "get": {
+        "operationId": "listarChavesPublicasDoQr",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChavesPublicasDoQrDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Chaves públicas do QR para o agente conferir a assinatura offline.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/check-in": {
+      "post": {
+        "operationId": "registrarCheckInDaRecepcao",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoAcessoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Dados inválidos."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Check-in ou check-out registrado pela Recepção; as regras de acesso valem como na catraca.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/check-in/qr": {
+      "post": {
+        "operationId": "registrarCheckInPorQr",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInPorQrDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoAcessoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Confere o QR do app (assinatura, validade de 60 s e uso único) e registra o acesso; QR recusado vira acesso negado.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/frequencia/alunos-em-risco": {
+      "get": {
+        "operationId": "listarAlunosEmRisco",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "nivel",
+            "required": false,
+            "schema": {
+              "enum": [
+                "comum",
+                "urgente"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Só os alunos deste professor (funcionário).",
+            "in": "query",
+            "name": "professorId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDeAlunosEmRiscoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Alunos com alerta de frequência aberto, urgentes primeiro.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/frequencia/checkins-de-hoje": {
+      "get": {
+        "operationId": "obterCheckinsDeHoje",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChecksInDeHojeDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Check-ins de hoje (entradas liberadas) e acessos negados.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/frequencia/por-aluno": {
+      "get": {
+        "operationId": "listarFrequenciaPorAluno",
+        "parameters": [
+          {
+            "description": "Mês no formato AAAA-MM.",
+            "in": "query",
+            "name": "mes",
+            "required": true,
+            "schema": {
+              "example": "2026-11",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Cursor opaco devolvido pela página anterior.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDeFrequenciaPorAlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Mês ou cursor inválido."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Treinos de cada aluno no mês, de quem mais treina a quem está em risco.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/frequencia/por-horario": {
+      "get": {
+        "operationId": "obterFrequenciaPorHorario",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrequenciaPorHorarioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Entradas por hora: média por dia nos últimos 30 dias.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/frequencia/presencas-do-mes": {
+      "get": {
+        "operationId": "obterPresencasDoMes",
+        "parameters": [
+          {
+            "description": "Mês no formato AAAA-MM.",
+            "in": "query",
+            "name": "mes",
+            "required": true,
+            "schema": {
+              "example": "2026-11",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresencasDoMesDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Presenças (aluno-dia com entrada liberada) por aluno no mês, para o rateio de receita.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/liberacao-manual": {
+      "post": {
+        "operationId": "liberarAcessoManualmente",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LiberacaoManualDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoAcessoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:criar."
+          },
+          "404": {
+            "description": "Aluno não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Libera a entrada do aluno apesar da regra que negaria. Exige o motivo e é auditada como sensível.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/sincronizacao": {
+      "post": {
+        "operationId": "sincronizarAcessosOffline",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SincronizarAcessosDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDaSincronizacaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Recebe os acessos que o agente da catraca guardou offline: fora de ordem e repetidos são gravados uma vez cada, na ordem do horário de origem.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
     "/api/alunos": {
       "get": {
         "operationId": "listarAlunos",
@@ -3140,6 +4365,36 @@
         "summary": "Estado do contrato hoje (ADR-018), dias de atraso, \"encerra em\" e situação de vencimento.",
         "tags": [
           "alunos"
+        ]
+      }
+    },
+    "/api/app/acesso/qr": {
+      "post": {
+        "operationId": "emitirMeuQrDeCheckin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QrDeCheckinDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Emite o QR de check-in: assinado, vale 60 s e só pode ser usado uma vez.",
+        "tags": [
+          "app"
         ]
       }
     },
@@ -4776,6 +6031,193 @@
         "summary": "Mensalidades em atraso e pagamentos em duplicidade a estornar (provedor do T18).",
         "tags": [
           "cobranca"
+        ]
+      }
+    },
+    "/api/configuracoes/acesso": {
+      "get": {
+        "operationId": "obterRegrasDeAcesso",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfiguracaoDeAcessoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Regras de acesso: bloqueio por atraso, horário, limite por dia e anti-passback.",
+        "tags": [
+          "configuracoes"
+        ]
+      },
+      "put": {
+        "operationId": "salvarRegrasDeAcesso",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfiguracaoDeAcessoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfiguracaoDeAcessoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Valores fora dos limites."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Salva as regras de acesso.",
+        "tags": [
+          "configuracoes"
+        ]
+      }
+    },
+    "/api/configuracoes/alertas": {
+      "get": {
+        "operationId": "obterAlertasDeFrequencia",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfiguracaoDosAlertasDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.alertas:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Configuração dos alertas de frequência.",
+        "tags": [
+          "configuracoes"
+        ]
+      },
+      "put": {
+        "operationId": "salvarAlertasDeFrequencia",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfiguracaoDosAlertasDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfiguracaoDosAlertasDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Valores fora dos limites."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.alertas:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Salva a configuração dos alertas de frequência.",
+        "tags": [
+          "configuracoes"
+        ]
+      }
+    },
+    "/api/configuracoes/alertas/previa": {
+      "get": {
+        "operationId": "obterPreviaDosAlertas",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviaDosAlertasDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.alertas:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Com a regra salva, quantos alunos seriam alertados hoje (urgentes e comuns).",
+        "tags": [
+          "configuracoes"
         ]
       }
     },
