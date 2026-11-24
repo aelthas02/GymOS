@@ -177,6 +177,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/app/cobranca/pagamentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pagamentos do aluno da sessão. */
+        get: operations["listarMeusPagamentos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/cobranca/parcelas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Parcelas do aluno da sessão. */
+        get: operations["listarMinhasParcelas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/cobranca/parcelas/{id}/segunda-via": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Segunda via (PIX, boleto, cartão ou link) de uma parcela do próprio aluno. */
+        post: operations["emitirMinhaSegundaVia"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/app/contrato": {
         parameters: {
             query?: never;
@@ -443,6 +494,177 @@ export interface paths {
         put?: never;
         /** Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família). */
         post: operations["renovarSessaoDoPainel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/alunos/{alunoId}/forma-de-pagamento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Forma de pagamento preferida. */
+        get: operations["obterFormaDePagamento"];
+        /** Troca a forma de pagamento; cartão só com o token do provedor. */
+        put: operations["trocarFormaDePagamento"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/alunos/{alunoId}/pagamentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pagamentos, mais recentes primeiro. */
+        get: operations["listarPagamentosDoAluno"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/alunos/{alunoId}/parcelas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Parcelas do aluno por vencimento, com saldo e dias de atraso. */
+        get: operations["listarParcelasDoAluno"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/lote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia o link da parcela vencida mais antiga de cada aluno (mensagem transacional). */
+        post: operations["enviarCobrancaEmLote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/pagamentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Baixa no balcão (dinheiro, PIX ou maquininha). Menor que o saldo fica como pago parcial; parcela já quitada vira pagamento em duplicidade. */
+        post: operations["registrarPagamentoNoBalcao"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/pagamentos/{id}/estorno": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Estorno total ou parcial; reabre a parcela e publica PagamentoEstornado. */
+        post: operations["estornarPagamento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/parcelas/{id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia ao aluno o link de pagamento da parcela (reaproveita a cobrança pendente). */
+        post: operations["enviarLinkDePagamento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/parcelas/{id}/nova-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Adia o vencimento (hoje ou depois), zera o atraso e grava a auditoria. */
+        post: operations["combinarNovaData"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/parcelas/{id}/segunda-via": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancela as cobranças pendentes da parcela e emite outra pelo saldo. */
+        post: operations["emitirSegundaVia"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/cobranca/pendencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mensalidades em atraso e pagamentos em duplicidade a estornar (provedor do T18). */
+        get: operations["listarPendenciasDaCobranca"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -844,6 +1066,33 @@ export interface components {
              */
             unidadeId?: string;
         };
+        CobrancaDto: {
+            /** @enum {string} */
+            forma: "pix" | "cartao" | "boleto" | "link";
+            /** Format: uuid */
+            id: string;
+            linhaDigitavel?: string;
+            /** Format: uuid */
+            parcelaId: string | null;
+            /** @description PIX copia e cola. */
+            pixCopiaECola?: string;
+            /** @description Conteúdo do QR Code do PIX. */
+            pixQrCode?: string;
+            /** @enum {string} */
+            situacao: "pendente" | "paga" | "cancelada";
+            /** @description Página de pagamento (link, boleto ou cartão). */
+            url?: string;
+            /** @example 11900 */
+            valorCentavos: number;
+            /**
+             * Format: date
+             * @example 2026-11-19
+             */
+            vencimento: string;
+        };
+        CobrancaEmLoteDto: {
+            alunoIds: string[];
+        };
         CodigoDeAcessoDto: {
             /**
              * @description Vale 7 dias e uma vez.
@@ -1078,6 +1327,13 @@ export interface components {
             email: string;
             senha: string;
         };
+        EnviarCobrancaDto: {
+            /**
+             * @default link
+             * @enum {string}
+             */
+            forma: "pix" | "cartao" | "boleto" | "link";
+        };
         EsqueciSenhaDoAppDto: {
             /** @description CPF (com ou sem pontuação) ou e-mail. */
             identificador: string;
@@ -1086,9 +1342,34 @@ export interface components {
             /** @example carla@ritmo.com.br */
             email: string;
         };
+        EstornoDto: {
+            /** @example Pagamento em duplicidade */
+            motivo: string;
+            /**
+             * @description Sem valor, estorna tudo o que resta.
+             * @example 5000
+             */
+            valorCentavos?: number;
+        };
         ExcluirAlunoDto: {
             /** @example Cadastro duplicado */
             motivo?: string;
+        };
+        FormaDePagamentoDoAlunoDto: {
+            /** Format: date-time */
+            atualizadoEm: string;
+            /** @example 4242 */
+            finalDoCartao: string | null;
+            /** @enum {string} */
+            forma: "pix" | "cartao" | "boleto";
+        };
+        FormaDePagamentoDto: {
+            /** @example 4242 */
+            finalDoCartao?: string;
+            /** @enum {string} */
+            forma: "pix" | "cartao" | "boleto";
+            /** @description Token do cartão gerado pelo SDK do provedor (só cartão). */
+            tokenDoCartao?: string;
         };
         FuncionarioCriadoDto: {
             /** @description Falso quando o e-mail já era de um funcionário (nada foi enviado). */
@@ -1178,6 +1459,68 @@ export interface components {
         };
         /** @enum {string} */
         ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
+        NovaDataDto: {
+            motivo?: string;
+            /**
+             * Format: date
+             * @example 2026-11-25
+             */
+            vencimento: string;
+        };
+        PagamentoDto: {
+            /** @enum {string} */
+            canal: "balcao" | "provedor";
+            /** Format: uuid */
+            cobrancaId: string | null;
+            /** Format: date-time */
+            confirmadoEm: string;
+            /** @description Pagamento de parcela já quitada, a estornar. */
+            emDuplicidade: boolean;
+            /** @example 0 */
+            estornadoCentavos: number;
+            /** @example pix */
+            forma: string;
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            origem: "mensalidade" | "plano" | "aula_avulsa" | "personal" | "nutricao" | "loja";
+            /** Format: uuid */
+            parcelaId: string | null;
+            /** @enum {string} */
+            setor: "academia" | "aulas" | "personal" | "nutricao" | "loja";
+            /** @enum {string} */
+            situacao: "confirmado" | "estornado_parcial" | "estornado";
+            /**
+             * @description Taxa da transação (centavos).
+             * @example 118
+             */
+            taxaCentavos: number;
+            /** @example 11900 */
+            valorCentavos: number;
+        };
+        PagamentoNoBalcaoDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** @enum {string} */
+            forma: "dinheiro" | "pix" | "cartao_credito" | "cartao_debito";
+            /**
+             * @description Obrigatória no pagamento avulso.
+             * @enum {string}
+             */
+            origem?: "mensalidade" | "plano" | "aula_avulsa" | "personal" | "nutricao" | "loja";
+            /**
+             * Format: uuid
+             * @description Sem parcela, é pagamento avulso.
+             */
+            parcelaId?: string;
+            /**
+             * @description Taxa da maquininha (centavos).
+             * @example 0
+             */
+            taxaCentavos?: number;
+            /** @example 11900 */
+            valorCentavos: number;
+        };
         PaginaDeAlunosDto: {
             /** @description Por situação, com plano e busca aplicados. */
             contadores: components["schemas"]["ContadoresDeAlunosDto"];
@@ -1197,6 +1540,73 @@ export interface components {
             itens: components["schemas"]["AtividadeDto"][];
             /** @description Nulo na última página. */
             proximoCursor: string | null;
+        };
+        ParcelaDto: {
+            /** Format: uuid */
+            contratoId: string;
+            /**
+             * @description diasDeAtraso (ADR-018); 0 se não está a receber.
+             * @example 6
+             */
+            diasDeAtraso: number;
+            /** Format: uuid */
+            id: string;
+            /** @example 3 */
+            numero: number;
+            /**
+             * @description Já pago, menos os estornos (centavos).
+             * @example 0
+             */
+            pagoCentavos: number;
+            /** @description Pagou parte: a parcela continua a receber pelo saldo. */
+            pagoParcial: boolean;
+            /**
+             * @description Saldo a receber (centavos).
+             * @example 10533
+             */
+            saldoCentavos: number;
+            /** @enum {string} */
+            situacao: "em_aberto" | "paga" | "atrasada" | "cancelada" | "suspensa";
+            /** @example 9 */
+            totalDeParcelas: number;
+            /**
+             * @description Valor da parcela em centavos.
+             * @example 10533
+             */
+            valorCentavos: number;
+            /**
+             * Format: date
+             * @example 2026-11-13
+             */
+            vencimento: string;
+            /**
+             * Format: date
+             * @example 2026-11-13
+             */
+            vencimentoOriginal: string;
+        };
+        PendenciaDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** @example Rafael Souza */
+            alunoNome: string;
+            /** @example 6 */
+            diasDeAtraso?: number;
+            /** Format: uuid */
+            pagamentoId?: string;
+            /** Format: uuid */
+            parcelaId: string | null;
+            /** @enum {string} */
+            tipo: "mensalidade_em_atraso" | "pagamento_em_duplicidade";
+            /** @example Mensalidade em atraso */
+            titulo: string;
+            /**
+             * @description Saldo em atraso ou valor em duplicidade.
+             * @example 11900
+             */
+            valorCentavos: number;
+            /** Format: date */
+            vencimento?: string;
         };
         PerfilDto: {
             email: string | null;
@@ -1322,6 +1732,31 @@ export interface components {
             linhas: components["schemas"]["LinhaDoRelatorioDto"][];
             /** @example 3 */
             semContrato: number;
+        };
+        ResultadoDoLoteDto: {
+            /** @example 12 */
+            enviadas: number;
+            /** @description Alunos sem parcela vencida. */
+            semPendencia: string[];
+        };
+        SegundaViaDoAppDto: {
+            /**
+             * @example pix
+             * @enum {string}
+             */
+            forma: "pix" | "cartao" | "boleto" | "link";
+        };
+        SegundaViaDto: {
+            /**
+             * @description Envia ao aluno pela Mensageria.
+             * @default true
+             */
+            enviar: boolean;
+            /**
+             * @example pix
+             * @enum {string}
+             */
+            forma: "pix" | "cartao" | "boleto" | "link";
         };
         SessaoDto: {
             /** @description JWT de acesso, válido por 10 minutos (Authorization: Bearer). */
@@ -1939,6 +2374,104 @@ export interface operations {
             };
         };
     };
+    listarMeusPagamentos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagamentoDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarMinhasParcelas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParcelaDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    emitirMinhaSegundaVia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SegundaViaDoAppDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CobrancaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela quitada ou sem cartão cadastrado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     obterMeuContrato: {
         parameters: {
             query?: never;
@@ -2451,6 +2984,490 @@ export interface operations {
                 content?: never;
             };
             /** @description Sem o cabeçalho x-gymos-csrf ou de outra origem. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterFormaDePagamento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormaDePagamentoDoAlunoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno sem forma de pagamento. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    trocarFormaDePagamento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormaDePagamentoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormaDePagamentoDoAlunoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarPagamentosDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagamentoDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarParcelasDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParcelaDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    enviarCobrancaEmLote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CobrancaEmLoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoLoteDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registrarPagamentoNoBalcao: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PagamentoNoBalcaoDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagamentoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Valor acima do saldo ou avulso sem origem. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    estornarPagamento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EstornoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagamentoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:excluir. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Pagamento não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Valor acima do disponível ou já estornado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    enviarLinkDePagamento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnviarCobrancaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CobrancaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela quitada ou sem cartão cadastrado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    combinarNovaData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovaDataDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParcelaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela quitada ou data inválida. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    emitirSegundaVia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SegundaViaDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CobrancaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Parcela quitada ou sem cartão cadastrado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarPendenciasDaCobranca: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendenciaDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
             403: {
                 headers: {
                     [name: string]: unknown;

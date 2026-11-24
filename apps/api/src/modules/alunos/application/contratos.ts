@@ -91,6 +91,7 @@ export class Contratos {
         planoId,
         inicio: comeco,
         valorEmCentavos: plano.valorTotalCentavos,
+        parcelas: plano.parcelas,
       },
     });
     return contrato;
@@ -218,6 +219,20 @@ export class Contratos {
   }
 
   /**
+   * VencimentoCombinado e PagamentoEstornado (T19): as parcelas mudaram sem pagamento nem atraso novo;
+   * relê a situação delas e reavalia.
+   */
+  async aoMudarParcelas(alunoId: string): Promise<void> {
+    const contrato = await this.contratos.vigenteDoAluno(alunoId);
+    const parcelas = contrato && (await this.parcelas.situacao(contrato.id));
+    if (!contrato || !parcelas) {
+      return;
+    }
+    const atualizado = await this.contratos.atualizar(contrato.id, parcelas);
+    await this.reavaliar(atualizado, this.hoje(), await this.configuracao.obter());
+  }
+
+  /**
    * Rotina diária: renova os contratos de plano com renovação automática que chegaram ao fim e grava
    * as transições pelo tempo (Tolerância → Encerrado, fim do trancamento, fim da vigência).
    */
@@ -299,7 +314,7 @@ export class Contratos {
     if (!plano) {
       throw new NaoEncontradoError('Plano');
     }
-    const { fim } = renovar(contrato, hoje, plano.duracaoMeses, config);
+    const { novoInicio, fim } = renovar(contrato, hoje, plano.duracaoMeses, config);
     const renovado = await this.contratos.atualizar(contrato.id, {
       fim,
       estado: 'ativo',
@@ -312,8 +327,10 @@ export class Contratos {
       payload: {
         contratoId: contrato.id,
         alunoId: contrato.alunoId,
+        novoInicio,
         novoFim: fim,
         valorEmCentavos: plano.valorTotalCentavos,
+        parcelas: plano.parcelas,
       },
     });
     return renovado;

@@ -303,6 +303,84 @@
         ],
         "type": "object"
       },
+      "CobrancaDto": {
+        "properties": {
+          "forma": {
+            "enum": [
+              "pix",
+              "cartao",
+              "boleto",
+              "link"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "linhaDigitavel": {
+            "type": "string"
+          },
+          "parcelaId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "pixCopiaECola": {
+            "description": "PIX copia e cola.",
+            "type": "string"
+          },
+          "pixQrCode": {
+            "description": "Conteúdo do QR Code do PIX.",
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "pendente",
+              "paga",
+              "cancelada"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "description": "Página de pagamento (link, boleto ou cartão).",
+            "type": "string"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          },
+          "vencimento": {
+            "example": "2026-11-19",
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "parcelaId",
+          "forma",
+          "valorCentavos",
+          "vencimento",
+          "situacao"
+        ],
+        "type": "object"
+      },
+      "CobrancaEmLoteDto": {
+        "properties": {
+          "alunoIds": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "alunoIds"
+        ],
+        "type": "object"
+      },
       "CodigoDeAcessoDto": {
         "properties": {
           "codigo": {
@@ -901,6 +979,21 @@
         ],
         "type": "object"
       },
+      "EnviarCobrancaDto": {
+        "properties": {
+          "forma": {
+            "default": "link",
+            "enum": [
+              "pix",
+              "cartao",
+              "boleto",
+              "link"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "EsqueciSenhaDoAppDto": {
         "properties": {
           "identificador": {
@@ -925,6 +1018,24 @@
         ],
         "type": "object"
       },
+      "EstornoDto": {
+        "properties": {
+          "motivo": {
+            "example": "Pagamento em duplicidade",
+            "maxLength": 200,
+            "type": "string"
+          },
+          "valorCentavos": {
+            "description": "Sem valor, estorna tudo o que resta.",
+            "example": 5000,
+            "type": "number"
+          }
+        },
+        "required": [
+          "motivo"
+        ],
+        "type": "object"
+      },
       "ExcluirAlunoDto": {
         "properties": {
           "motivo": {
@@ -933,6 +1044,57 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "FormaDePagamentoDoAlunoDto": {
+        "properties": {
+          "atualizadoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "finalDoCartao": {
+            "example": "4242",
+            "nullable": true,
+            "type": "string"
+          },
+          "forma": {
+            "enum": [
+              "pix",
+              "cartao",
+              "boleto"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "forma",
+          "finalDoCartao",
+          "atualizadoEm"
+        ],
+        "type": "object"
+      },
+      "FormaDePagamentoDto": {
+        "properties": {
+          "finalDoCartao": {
+            "example": "4242",
+            "type": "string"
+          },
+          "forma": {
+            "enum": [
+              "pix",
+              "cartao",
+              "boleto"
+            ],
+            "type": "string"
+          },
+          "tokenDoCartao": {
+            "description": "Token do cartão gerado pelo SDK do provedor (só cartão).",
+            "type": "string"
+          }
+        },
+        "required": [
+          "forma"
+        ],
         "type": "object"
       },
       "FuncionarioCriadoDto": {
@@ -1207,6 +1369,167 @@
         ],
         "type": "string"
       },
+      "NovaDataDto": {
+        "properties": {
+          "motivo": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "vencimento": {
+            "example": "2026-11-25",
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "vencimento"
+        ],
+        "type": "object"
+      },
+      "PagamentoDto": {
+        "properties": {
+          "canal": {
+            "enum": [
+              "balcao",
+              "provedor"
+            ],
+            "type": "string"
+          },
+          "cobrancaId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "confirmadoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "emDuplicidade": {
+            "description": "Pagamento de parcela já quitada, a estornar.",
+            "type": "boolean"
+          },
+          "estornadoCentavos": {
+            "example": 0,
+            "type": "number"
+          },
+          "forma": {
+            "example": "pix",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "origem": {
+            "enum": [
+              "mensalidade",
+              "plano",
+              "aula_avulsa",
+              "personal",
+              "nutricao",
+              "loja"
+            ],
+            "type": "string"
+          },
+          "parcelaId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "setor": {
+            "enum": [
+              "academia",
+              "aulas",
+              "personal",
+              "nutricao",
+              "loja"
+            ],
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "confirmado",
+              "estornado_parcial",
+              "estornado"
+            ],
+            "type": "string"
+          },
+          "taxaCentavos": {
+            "description": "Taxa da transação (centavos).",
+            "example": 118,
+            "type": "number"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "parcelaId",
+          "cobrancaId",
+          "valorCentavos",
+          "taxaCentavos",
+          "estornadoCentavos",
+          "forma",
+          "canal",
+          "origem",
+          "setor",
+          "situacao",
+          "emDuplicidade",
+          "confirmadoEm"
+        ],
+        "type": "object"
+      },
+      "PagamentoNoBalcaoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "forma": {
+            "enum": [
+              "dinheiro",
+              "pix",
+              "cartao_credito",
+              "cartao_debito"
+            ],
+            "type": "string"
+          },
+          "origem": {
+            "description": "Obrigatória no pagamento avulso.",
+            "enum": [
+              "mensalidade",
+              "plano",
+              "aula_avulsa",
+              "personal",
+              "nutricao",
+              "loja"
+            ],
+            "type": "string"
+          },
+          "parcelaId": {
+            "description": "Sem parcela, é pagamento avulso.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "taxaCentavos": {
+            "description": "Taxa da maquininha (centavos).",
+            "example": 0,
+            "type": "number"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "required": [
+          "alunoId",
+          "valorCentavos",
+          "forma"
+        ],
+        "type": "object"
+      },
       "PaginaDeAlunosDto": {
         "properties": {
           "contadores": {
@@ -1288,6 +1611,139 @@
         "required": [
           "itens",
           "proximoCursor"
+        ],
+        "type": "object"
+      },
+      "ParcelaDto": {
+        "properties": {
+          "contratoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "diasDeAtraso": {
+            "description": "diasDeAtraso (ADR-018); 0 se não está a receber.",
+            "example": 6,
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "numero": {
+            "example": 3,
+            "type": "number"
+          },
+          "pagoCentavos": {
+            "description": "Já pago, menos os estornos (centavos).",
+            "example": 0,
+            "type": "number"
+          },
+          "pagoParcial": {
+            "description": "Pagou parte: a parcela continua a receber pelo saldo.",
+            "type": "boolean"
+          },
+          "saldoCentavos": {
+            "description": "Saldo a receber (centavos).",
+            "example": 10533,
+            "type": "number"
+          },
+          "situacao": {
+            "enum": [
+              "em_aberto",
+              "paga",
+              "atrasada",
+              "cancelada",
+              "suspensa"
+            ],
+            "type": "string"
+          },
+          "totalDeParcelas": {
+            "example": 9,
+            "type": "number"
+          },
+          "valorCentavos": {
+            "description": "Valor da parcela em centavos.",
+            "example": 10533,
+            "type": "number"
+          },
+          "vencimento": {
+            "example": "2026-11-13",
+            "format": "date",
+            "type": "string"
+          },
+          "vencimentoOriginal": {
+            "example": "2026-11-13",
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "contratoId",
+          "numero",
+          "totalDeParcelas",
+          "valorCentavos",
+          "pagoCentavos",
+          "saldoCentavos",
+          "vencimento",
+          "vencimentoOriginal",
+          "situacao",
+          "pagoParcial",
+          "diasDeAtraso"
+        ],
+        "type": "object"
+      },
+      "PendenciaDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "alunoNome": {
+            "example": "Rafael Souza",
+            "type": "string"
+          },
+          "diasDeAtraso": {
+            "example": 6,
+            "type": "number"
+          },
+          "pagamentoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "parcelaId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "mensalidade_em_atraso",
+              "pagamento_em_duplicidade"
+            ],
+            "type": "string"
+          },
+          "titulo": {
+            "example": "Mensalidade em atraso",
+            "type": "string"
+          },
+          "valorCentavos": {
+            "description": "Saldo em atraso ou valor em duplicidade.",
+            "example": 11900,
+            "type": "number"
+          },
+          "vencimento": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tipo",
+          "titulo",
+          "alunoId",
+          "alunoNome",
+          "parcelaId",
+          "valorCentavos"
         ],
         "type": "object"
       },
@@ -1593,6 +2049,67 @@
           "comContrato",
           "semContrato",
           "linhas"
+        ],
+        "type": "object"
+      },
+      "ResultadoDoLoteDto": {
+        "properties": {
+          "enviadas": {
+            "example": 12,
+            "type": "number"
+          },
+          "semPendencia": {
+            "description": "Alunos sem parcela vencida.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "enviadas",
+          "semPendencia"
+        ],
+        "type": "object"
+      },
+      "SegundaViaDoAppDto": {
+        "properties": {
+          "forma": {
+            "enum": [
+              "pix",
+              "cartao",
+              "boleto",
+              "link"
+            ],
+            "example": "pix",
+            "type": "string"
+          }
+        },
+        "required": [
+          "forma"
+        ],
+        "type": "object"
+      },
+      "SegundaViaDto": {
+        "properties": {
+          "enviar": {
+            "default": true,
+            "description": "Envia ao aluno pela Mensageria.",
+            "type": "boolean"
+          },
+          "forma": {
+            "enum": [
+              "pix",
+              "cartao",
+              "boleto",
+              "link"
+            ],
+            "example": "pix",
+            "type": "string"
+          }
+        },
+        "required": [
+          "forma"
         ],
         "type": "object"
       },
@@ -2372,6 +2889,127 @@
         ]
       }
     },
+    "/api/app/cobranca/pagamentos": {
+      "get": {
+        "operationId": "listarMeusPagamentos",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PagamentoDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pagamentos do aluno da sessão.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/cobranca/parcelas": {
+      "get": {
+        "operationId": "listarMinhasParcelas",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ParcelaDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Parcelas do aluno da sessão.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/cobranca/parcelas/{id}/segunda-via": {
+      "post": {
+        "operationId": "emitirMinhaSegundaVia",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegundaViaDoAppDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CobrancaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "404": {
+            "description": "Parcela não encontrada."
+          },
+          "409": {
+            "description": "Parcela quitada ou sem cartão cadastrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Segunda via (PIX, boleto, cartão ou link) de uma parcela do próprio aluno.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
     "/api/app/contrato": {
       "get": {
         "operationId": "obterMeuContrato",
@@ -2984,6 +3622,551 @@
         "summary": "Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família).",
         "tags": [
           "autenticacao"
+        ]
+      }
+    },
+    "/api/cobranca/alunos/{alunoId}/forma-de-pagamento": {
+      "get": {
+        "operationId": "obterFormaDePagamento",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormaDePagamentoDoAlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          },
+          "404": {
+            "description": "Aluno sem forma de pagamento."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Forma de pagamento preferida.",
+        "tags": [
+          "cobranca"
+        ]
+      },
+      "put": {
+        "operationId": "trocarFormaDePagamento",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormaDePagamentoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormaDePagamentoDoAlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Troca a forma de pagamento; cartão só com o token do provedor.",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/alunos/{alunoId}/pagamentos": {
+      "get": {
+        "operationId": "listarPagamentosDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PagamentoDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pagamentos, mais recentes primeiro.",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/alunos/{alunoId}/parcelas": {
+      "get": {
+        "operationId": "listarParcelasDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ParcelaDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Parcelas do aluno por vencimento, com saldo e dias de atraso.",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/lote": {
+      "post": {
+        "operationId": "enviarCobrancaEmLote",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CobrancaEmLoteDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoLoteDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Envia o link da parcela vencida mais antiga de cada aluno (mensagem transacional).",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/pagamentos": {
+      "post": {
+        "operationId": "registrarPagamentoNoBalcao",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PagamentoNoBalcaoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagamentoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "404": {
+            "description": "Parcela não encontrada."
+          },
+          "409": {
+            "description": "Valor acima do saldo ou avulso sem origem."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Baixa no balcão (dinheiro, PIX ou maquininha). Menor que o saldo fica como pago parcial; parcela já quitada vira pagamento em duplicidade.",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/pagamentos/{id}/estorno": {
+      "post": {
+        "operationId": "estornarPagamento",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstornoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagamentoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:excluir."
+          },
+          "404": {
+            "description": "Pagamento não encontrado."
+          },
+          "409": {
+            "description": "Valor acima do disponível ou já estornado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estorno total ou parcial; reabre a parcela e publica PagamentoEstornado.",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/parcelas/{id}/link": {
+      "post": {
+        "operationId": "enviarLinkDePagamento",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnviarCobrancaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CobrancaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "404": {
+            "description": "Parcela não encontrada."
+          },
+          "409": {
+            "description": "Parcela quitada ou sem cartão cadastrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Envia ao aluno o link de pagamento da parcela (reaproveita a cobrança pendente).",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/parcelas/{id}/nova-data": {
+      "post": {
+        "operationId": "combinarNovaData",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaDataDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParcelaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          },
+          "404": {
+            "description": "Parcela não encontrada."
+          },
+          "409": {
+            "description": "Parcela quitada ou data inválida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Adia o vencimento (hoje ou depois), zera o atraso e grava a auditoria.",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/parcelas/{id}/segunda-via": {
+      "post": {
+        "operationId": "emitirSegundaVia",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegundaViaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CobrancaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "404": {
+            "description": "Parcela não encontrada."
+          },
+          "409": {
+            "description": "Parcela quitada ou sem cartão cadastrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cancela as cobranças pendentes da parcela e emite outra pelo saldo.",
+        "tags": [
+          "cobranca"
+        ]
+      }
+    },
+    "/api/cobranca/pendencias": {
+      "get": {
+        "operationId": "listarPendenciasDaCobranca",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendenciaDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mensalidades em atraso e pagamentos em duplicidade a estornar (provedor do T18).",
+        "tags": [
+          "cobranca"
         ]
       }
     },

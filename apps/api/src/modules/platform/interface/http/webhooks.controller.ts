@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, Inject, NotFoundException, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  HttpCode,
+  Inject,
+  NotFoundException,
+  Param,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import {
   PROVEDORES_DE_WEBHOOK,
@@ -31,8 +41,9 @@ export class WebhooksController {
     @Param('provedor') nome: string,
     @Param('tenantSlug') slug: string,
     @Body() corpo: unknown,
+    @Headers() cabecalhos: Record<string, string | undefined>,
   ): Promise<{ recebido: true }> {
-    const provedor = this.provedor(nome);
+    const provedor = this.provedor(nome, corpo, cabecalhos);
     const tenant = await this.tenants.porSlug(slug);
     if (!tenant) {
       throw new NotFoundException(NAO_ENCONTRADO);
@@ -45,8 +56,9 @@ export class WebhooksController {
   async porReferenciaExterna(
     @Param('provedor') nome: string,
     @Body() corpo: unknown,
+    @Headers() cabecalhos: Record<string, string | undefined>,
   ): Promise<{ recebido: true }> {
-    const provedor = this.provedor(nome);
+    const provedor = this.provedor(nome, corpo, cabecalhos);
     const idExterno = provedor.idExterno(corpo);
     const tenantId = idExterno
       ? await this.tenants.tenantDaReferenciaExterna(provedor.nome, idExterno)
@@ -57,10 +69,17 @@ export class WebhooksController {
     return this.processar(provedor, tenantId, corpo);
   }
 
-  private provedor(nome: string): ProvedorDeWebhook {
+  private provedor(
+    nome: string,
+    corpo: unknown,
+    cabecalhos: Record<string, string | undefined>,
+  ): ProvedorDeWebhook {
     const provedor = this.provedores.find((candidato) => candidato.nome === nome);
     if (!provedor) {
       throw new NotFoundException(NAO_ENCONTRADO);
+    }
+    if (provedor.assinaturaValida && !provedor.assinaturaValida(corpo, cabecalhos)) {
+      throw new UnauthorizedException('Assinatura inválida.');
     }
     return provedor;
   }

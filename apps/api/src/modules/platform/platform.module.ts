@@ -32,7 +32,7 @@ import { WebhooksController } from './interface/http/webhooks.controller';
 
 /**
  * Rotas que não passam pela resolução do tenant por Host: saúde e métricas da plataforma, webhooks
- * (tenant no caminho ou no id externo) e operação interna.
+ * (tenant no caminho ou no id externo), operação interna e a página de pagamento simulada.
  */
 export const ROTAS_SEM_TENANT = [
   'health',
@@ -40,6 +40,8 @@ export const ROTAS_SEM_TENANT = [
   'metrics',
   'webhooks/{*caminho}',
   'interno/{*caminho}',
+  // Página de pagamento simulada do provedor fake (T19): o tenant vem do id externo da cobrança.
+  'pagamento-simulado/{*caminho}',
 ];
 
 /**
@@ -85,6 +87,8 @@ export const ROTAS_SEM_TENANT = [
     Relogio,
     CriarAcademia,
     RepositorioDeTenants,
+    // Domínios com provedor de webhook próprio (pagamentos, T19) entram na lista ao iniciar.
+    PROVEDORES_DE_WEBHOOK,
     // Só para a sonda de prontidão do Postgres (observabilidade), que usa o pool da API.
     PrismaService,
   ],

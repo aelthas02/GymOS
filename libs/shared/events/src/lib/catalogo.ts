@@ -17,11 +17,27 @@ export interface CatalogoDeEventos {
   AlunoCadastrado: { versao: 1; payload: { alunoId: Id; unidadeId: Id; nome: string } };
   ContratoCriado: {
     versao: 1;
-    payload: { contratoId: Id; alunoId: Id; planoId: Id; inicio: Dia; valorEmCentavos: number };
+    payload: {
+      contratoId: Id;
+      alunoId: Id;
+      planoId: Id;
+      inicio: Dia;
+      valorEmCentavos: number;
+      /** Em quantas parcelas o valor é cobrado (T19 gera o cronograma). */
+      parcelas: number;
+    };
   };
   ContratoRenovado: {
     versao: 1;
-    payload: { contratoId: Id; alunoId: Id; novoFim: Dia; valorEmCentavos: number };
+    payload: {
+      contratoId: Id;
+      alunoId: Id;
+      /** Primeiro dia do novo período. */
+      novoInicio: Dia;
+      novoFim: Dia;
+      valorEmCentavos: number;
+      parcelas: number;
+    };
   };
   ContratoEncerrado: {
     versao: 1;
@@ -39,6 +55,9 @@ export interface CatalogoDeEventos {
       cobrancaId: Id;
       alunoId: Id;
       contratoId: Id | null;
+      parcelaId: Id | null;
+      /** pix, cartao, boleto ou link. */
+      forma: string;
       valorEmCentavos: number;
       vencimento: Dia;
     };
@@ -47,25 +66,54 @@ export interface CatalogoDeEventos {
     versao: 1;
     payload: {
       pagamentoId: Id;
-      cobrancaId: Id;
+      /** Nulo no pagamento do balcão, que não passa pelo provedor. */
+      cobrancaId: Id | null;
+      parcelaId: Id | null;
+      contratoId: Id | null;
       alunoId: Id;
       valorEmCentavos: number;
+      taxaEmCentavos: number;
       meio: string;
+      /** mensalidade, plano, aula_avulsa, personal, nutricao ou loja. */
+      origem: string;
+      /** Setor que recebe a receita, atribuído pela origem (o rateio é do T21). */
+      setor: string;
       confirmadoEm: Instante;
     };
   };
   PagamentoAtrasado: {
     versao: 1;
-    payload: { cobrancaId: Id; alunoId: Id; vencimento: Dia; valorEmCentavos: number };
+    payload: {
+      parcelaId: Id;
+      contratoId: Id;
+      alunoId: Id;
+      vencimento: Dia;
+      /** Saldo em aberto da parcela. */
+      valorEmCentavos: number;
+    };
   };
   PagamentoEstornado: {
     versao: 1;
     payload: {
       pagamentoId: Id;
-      cobrancaId: Id;
+      cobrancaId: Id | null;
+      parcelaId: Id | null;
       alunoId: Id;
       valorEmCentavos: number;
+      /** Estorno de todo o valor que restava do pagamento. */
+      total: boolean;
       estornadoEm: Instante;
+    };
+  };
+  /** Combinar nova data (T19): o vencimento da parcela mudou e o atraso foi zerado. */
+  VencimentoCombinado: {
+    versao: 1;
+    payload: {
+      parcelaId: Id;
+      contratoId: Id;
+      alunoId: Id;
+      vencimentoAnterior: Dia;
+      novoVencimento: Dia;
     };
   };
   AcessoRegistrado: {
@@ -118,6 +166,7 @@ export const VERSAO_ATUAL: { readonly [T in TipoDeEvento]: VersaoDoEvento<T> } =
   PagamentoConfirmado: 1,
   PagamentoAtrasado: 1,
   PagamentoEstornado: 1,
+  VencimentoCombinado: 1,
   AcessoRegistrado: 1,
   MensagemRecebida: 1,
 };

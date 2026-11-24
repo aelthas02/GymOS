@@ -51,6 +51,12 @@ export const envSchema = z.object({
   // smtp envia pelo SMTP_HOST; fake só guarda em memória (máquina sem Mailpit).
   EMAIL_TRANSPORTE: z.enum(['smtp', 'fake']).default('smtp'),
   EMAIL_REMETENTE: required.default('GymOS <nao-responda@gymos.app>'),
+  // Provedor de pagamento (T19, ADR-009). Só o fake até o provedor real ser escolhido.
+  PAGAMENTOS_PROVEDOR: z.enum(['fake']).default('fake'),
+  // Segredo da assinatura HMAC dos webhooks do provedor; 16 caracteres ou mais.
+  PAGAMENTOS_WEBHOOK_SEGREDO: z.string().min(16).default('gymos-dev-segredo-dos-webhooks'),
+  // Endereço público da API, usado nas páginas de pagamento simuladas do fake.
+  PAGAMENTOS_URL_PUBLICA: required.default('http://localhost:3000'),
   S3_ENDPOINT: z.url({ protocol: /^https?$/ }),
   S3_REGION: required,
   S3_BUCKET: required,

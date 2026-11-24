@@ -36,6 +36,11 @@ export abstract class ProvedorDeWebhook {
   /** Id externo do recurso no corpo do evento, para a rota sem tenant. */
   abstract idExterno(corpo: unknown): string | null;
   abstract processar(corpo: unknown): Promise<ResultadoDoWebhook>;
+  /**
+   * Assinatura do provedor (cabeçalhos em minúsculas). Quem implementa recusa o webhook não assinado
+   * com 401, antes de qualquer leitura do tenant.
+   */
+  assinaturaValida?(corpo: unknown, cabecalhos: Record<string, string | undefined>): boolean;
 }
 
 export const PROVEDORES_DE_WEBHOOK = Symbol('ProvedoresDeWebhook');

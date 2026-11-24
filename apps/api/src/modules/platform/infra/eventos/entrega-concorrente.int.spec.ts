@@ -133,6 +133,8 @@ describe('entrega concorrente e reentrega de eventos', () => {
           cobrancaId: randomUUID(),
           alunoId: randomUUID(),
           contratoId: null,
+          parcelaId: null,
+          forma: 'pix',
           valorEmCentavos: 100,
           vencimento: '2026-12-05',
         },

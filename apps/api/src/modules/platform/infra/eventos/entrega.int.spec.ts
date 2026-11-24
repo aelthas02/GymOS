@@ -147,6 +147,8 @@ describe('entrega dos eventos aos consumidores', () => {
         cobrancaId: randomUUID(),
         alunoId: randomUUID(),
         contratoId: null,
+        parcelaId: null,
+        forma: 'pix',
         valorEmCentavos: 14_990,
         vencimento: '2026-12-05',
       },
@@ -185,6 +187,7 @@ describe('entrega dos eventos aos consumidores', () => {
         planoId: randomUUID(),
         inicio: '2026-11-23',
         valorEmCentavos: 14_990,
+        parcelas: 1,
       },
     });
     const jobId = idDoJobDeEvento('teste.dlq', evento.id);
