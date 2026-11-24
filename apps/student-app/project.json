@@ -35,8 +35,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "600kb",
+              "maximumError": "750kb"
             },
             {
               "type": "anyComponentStyle",
@@ -56,8 +56,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "600kb",
+              "maximumError": "750kb"
             },
             {
               "type": "anyComponentStyle",
@@ -81,6 +81,22 @@
             {
               "replace": "apps/student-app/src/environments/environment.ts",
               "with": "apps/student-app/src/environments/environment.dev.ts"
+            }
+          ]
+        },
+        "verificacao-budget": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "1kb",
+              "maximumError": "2kb"
+            }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/student-app/src/environments/environment.ts",
+              "with": "apps/student-app/src/environments/environment.prod.ts"
             }
           ]
         }
@@ -119,7 +135,10 @@
         "coverageReporters": ["text-summary", "lcov"],
         "coverageInclude": ["apps/student-app/src/**/*.ts"],
         "coverageExclude": ["apps/student-app/src/main.ts", "apps/student-app/src/environments/**"],
-        "coverageThresholds": { "lines": 85, "branches": 80 }
+        "coverageThresholds": {
+          "lines": 85,
+          "branches": 80
+        }
       }
     },
     "serve-static": {
