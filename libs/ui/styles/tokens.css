@@ -20,6 +20,12 @@
   --state-error-border: #f3c4b9;
   --state-error-fg: #5c2417;
   --state-warn-border: #ebd08a;
+  --chart-bar: #c9d5e1;
+  --chart-negative: #d9482b;
+  --chart-2: #3aa6f0;
+  --chart-3: #e0a82e;
+  --chart-4: #a78bfa;
+  --chart-5: #ff8a3d;
   --state-warn-fg: #4d3500;
 
   /* Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014). */

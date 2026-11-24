@@ -20,6 +20,12 @@ export const tokens = {
   'state-error-border': '#F3C4B9',
   'state-error-fg': '#5C2417',
   'state-warn-border': '#EBD08A',
+  'chart-bar': '#C9D5E1',
+  'chart-negative': '#D9482B',
+  'chart-2': '#3AA6F0',
+  'chart-3': '#E0A82E',
+  'chart-4': '#A78BFA',
+  'chart-5': '#FF8A3D',
   'state-warn-fg': '#4D3500',
 
   // Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014).
