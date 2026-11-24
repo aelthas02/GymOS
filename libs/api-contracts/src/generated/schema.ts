@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/api/auditoria/atividades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Log de atividades paginado por cursor, com os filtros de Log.html. */
+        get: operations["listarAtividades"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auditoria/atividades/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** CSV do log com os mesmos filtros (Quando, Quem, Ação, Módulo, Sensível, Detalhe). */
+        get: operations["exportarAtividades"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/aluno/esqueci-senha": {
         parameters: {
             query?: never;
@@ -286,6 +320,34 @@ export interface components {
             senha: string;
             token: string;
         };
+        AtividadeDto: {
+            /** @example alterou-valor */
+            acao: string;
+            /** @example Alterou valor */
+            acaoTexto: string;
+            /** @example Plano Mensal: R$ 109,00 para R$ 119,00 */
+            detalhe: string;
+            /** @example Sensível */
+            etiqueta: string | null;
+            /** Format: uuid */
+            id: string;
+            /** @example planos */
+            modulo: string;
+            /** @example Planos */
+            moduloTexto: string;
+            /** @example Gerente */
+            papel: string;
+            /** Format: date-time */
+            quando: string;
+            /** @example Carla Menezes */
+            quem: string;
+            /**
+             * Format: uuid
+             * @description Nulo: o sistema.
+             */
+            quemId: string | null;
+            sensivel: boolean;
+        };
         ConvidarDto: {
             /** @example diego@ritmo.com.br */
             email: string;
@@ -334,6 +396,11 @@ export interface components {
         };
         /** @enum {string} */
         ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
+        PaginaDoLogDto: {
+            itens: components["schemas"]["AtividadeDto"][];
+            /** @description Nulo na última página. */
+            proximoCursor: string | null;
+        };
         PerfilDto: {
             email: string | null;
             /**
@@ -393,6 +460,112 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    listarAtividades: {
+        parameters: {
+            query?: {
+                /** @description Usuário que agiu. */
+                usuarioId?: string;
+                /** @description Chave do módulo (catálogo de módulos). */
+                modulo?: string;
+                /** @description Início do período, inclusive. */
+                de?: string;
+                /** @description Fim do período, exclusivo. */
+                ate?: string;
+                /** @description `todos`: cronológico; `destaque` ("Todos, com sensíveis em destaque"): sensíveis primeiro; `sensiveis`: só os sensíveis. */
+                tipo?: "todos" | "destaque" | "sensiveis";
+                limite?: number;
+                /** @description `proximoCursor` da página anterior. */
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDoLogDto"];
+                };
+            };
+            /** @description Filtro ou cursor inválido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão permissoes:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    exportarAtividades: {
+        parameters: {
+            query?: {
+                /** @description Usuário que agiu. */
+                usuarioId?: string;
+                /** @description Chave do módulo (catálogo de módulos). */
+                modulo?: string;
+                /** @description Início do período, inclusive. */
+                de?: string;
+                /** @description Fim do período, exclusivo. */
+                ate?: string;
+                /** @description `todos`: cronológico; `destaque` ("Todos, com sensíveis em destaque"): sensíveis primeiro; `sensiveis`: só os sensíveis. */
+                tipo?: "todos" | "destaque" | "sensiveis";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Arquivo CSV (UTF-8 com BOM, separador `;`). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description Filtro inválido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão permissoes:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     esqueciSenhaDoApp: {
         parameters: {
             query?: never;

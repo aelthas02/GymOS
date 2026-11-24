@@ -13,7 +13,6 @@ import {
 } from './application/entrada';
 import { AutorizarPermissao, ModulosDoTenant, ObterPerfil } from './application/perfil';
 import {
-  AoNegarPermissao,
   CifraDeSenha,
   EmissorDeTokens,
   EnderecosDosApps,
@@ -35,11 +34,7 @@ import {
   SolicitarRedefinicaoDeSenha,
 } from './application/senhas';
 import { Sessoes } from './application/sessoes';
-import {
-  AoNegarPermissaoNoLog,
-  ConviteDoAdministradorPorEmail,
-  EnderecosDaConfiguracao,
-} from './infra/adapters';
+import { ConviteDoAdministradorPorEmail, EnderecosDaConfiguracao } from './infra/adapters';
 import {
   CONFIGURACAO_DA_AUTENTICACAO,
   type ConfiguracaoDaAutenticacao,
@@ -101,7 +96,6 @@ import {
     { provide: GeradorDeSegredos, useClass: GeradorDeSegredosCripto },
     { provide: EmissorDeTokens, useClass: EmissorDeTokensJwt },
     { provide: LimiteDeTentativas, useClass: LimiteDeTentativasRedis },
-    { provide: AoNegarPermissao, useClass: AoNegarPermissaoNoLog },
     { provide: EnderecosDosApps, useClass: EnderecosDaConfiguracao },
     {
       provide: EnvioDeEmail,

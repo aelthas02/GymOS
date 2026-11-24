@@ -14,6 +14,7 @@ import {
   CONFIGURACAO_DA_CIFRA,
   type ConfiguracaoDaCifra,
 } from '../infra/protecao-de-dados/configuracao';
+import { AuditoriaModule } from '../auditoria.module';
 import { PlatformModule } from '../platform.module';
 import { ProtecaoDeDadosModule } from '../protecao-de-dados.module';
 import type { BancoDeTeste } from './banco-de-teste';
@@ -36,7 +37,7 @@ export async function criarAppDeTeste(
   opcoes: OpcoesDoAppDeTeste = {},
 ): Promise<INestApplication> {
   const modulo = await Test.createTestingModule({
-    imports: [PlatformModule, AutenticacaoModule, ProtecaoDeDadosModule],
+    imports: [PlatformModule, AutenticacaoModule, ProtecaoDeDadosModule, AuditoriaModule],
     controllers: opcoes.controllers ?? [],
   })
     .overrideProvider(CONFIGURACAO_DA_PLATAFORMA)

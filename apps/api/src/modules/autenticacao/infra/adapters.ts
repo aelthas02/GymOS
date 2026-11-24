@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConviteDoAdministrador } from '../../platform/application/portas';
 import type { Tenant } from '../../platform/domain/tenant';
 import {
@@ -7,24 +7,9 @@ import {
 } from '../../platform/infra/configuracao';
 import { ExecutorDeTenant } from '../../platform/infra/contexto/executor-de-tenant';
 import { ConvidarParaEquipe } from '../application/convites';
-import {
-  AoNegarPermissao,
-  EnderecosDosApps,
-  type PermissaoNegada,
-  RepositorioDeTiposDeAcesso,
-} from '../application/portas';
+import { EnderecosDosApps, RepositorioDeTiposDeAcesso } from '../application/portas';
 import { TIPOS_PADRAO } from '../domain/tipos-de-acesso';
 import { CONFIGURACAO_DA_AUTENTICACAO, type ConfiguracaoDaAutenticacao } from './configuracao';
-
-/** Até o T13b gravar na auditoria, o 403 vira um log de aviso. */
-@Injectable()
-export class AoNegarPermissaoNoLog extends AoNegarPermissao {
-  private readonly logger = new Logger('Permissoes');
-
-  async registrar(negada: PermissaoNegada): Promise<void> {
-    this.logger.warn({ ...negada }, `Permissão ${negada.permissao} negada em ${negada.rota}.`);
-  }
-}
 
 @Injectable()
 export class EnderecosDaConfiguracao extends EnderecosDosApps {

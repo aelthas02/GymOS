@@ -189,8 +189,9 @@ describe('auditoria: log de atividades (T13b)', () => {
       detalhe: 'T2 sensível: R$ 109,00 para R$ 119,00',
     });
 
-    const emDestaque = await listar({ tipo: 'destaque', de: '2026-03-01T00:00:00Z' });
-    const cronologico = await listar({ tipo: 'todos', de: '2026-03-01T00:00:00Z' });
+    const marco = { de: '2026-03-01T00:00:00Z', ate: '2026-03-02T00:00:00Z' };
+    const emDestaque = await listar({ tipo: 'destaque', ...marco });
+    const cronologico = await listar({ tipo: 'todos', ...marco });
 
     expect(emDestaque.itens.map((i) => i.detalhe)).toEqual([
       'T2 sensível: R$ 109,00 para R$ 119,00',
@@ -372,6 +373,21 @@ describe('auditoria: log de atividades (T13b)', () => {
       await consultar({ usuarioId: 'não-é-uuid' }).expect(400);
     });
 
+    it('falha ao gravar a tentativa negada não troca o 403 por 500', async () => {
+      const gravar = vi
+        .spyOn(app.get(Auditoria), 'registrarAtividade')
+        .mockRejectedValueOnce(new Error('banco fora'));
+      const recepcao = await tokenDe(a, 'joao@a.com');
+
+      await http()
+        .delete(`/api/teste-auditoria/alunos/${randomUUID()}`)
+        .set('Host', hostDe(a))
+        .auth(recepcao, { type: 'bearer' })
+        .expect(403);
+
+      expect(gravar).toHaveBeenCalledOnce();
+    });
+
     it('recusa ação desconhecida e detalhe vazio ao registrar', async () => {
       await expect(
         registrar(a, '2026-08-01T10:00:00Z', { acao: 'inventada' as never }),
@@ -398,7 +414,9 @@ describe('auditoria: log de atividades (T13b)', () => {
 
       expect(resposta.headers['content-type']).toMatch(/text\/csv/);
       expect(resposta.headers['content-disposition']).toMatch(/attachment; filename="log-de-/);
-      const linhas = (resposta.text as string).replace(/^FEFF/, '').split('\r\n');
+      const linhas = (resposta.text as string)
+        .replace(String.fromCharCode(0xfeff), '')
+        .split('\r\n');
       expect(linhas[0]).toBe('Quando;Quem;Ação;Módulo;Sensível;Detalhe');
       expect(linhas[1]).toBe(
         '01/09/2026 09:41;Administrador;Alterou valor;Planos;Sim;' +
