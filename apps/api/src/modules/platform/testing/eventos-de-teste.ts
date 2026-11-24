@@ -11,7 +11,14 @@ import {
   type ConfiguracaoDasFilas,
 } from '../infra/filas/configuracao-das-filas';
 import { PlatformModule } from '../platform.module';
-import { CHAVE_DE_OPERACAO_DE_TESTE } from './app-de-teste';
+import { LocalizadorDeAlunoPorCpf } from '../../autenticacao/application/portas';
+import { AutenticacaoModule } from '../../autenticacao/autenticacao.module';
+import {
+  CONFIGURACAO_DA_AUTENTICACAO,
+  type ConfiguracaoDaAutenticacao,
+} from '../../autenticacao/infra/configuracao';
+import { LocalizadorDeAlunoEmMemoria } from '../../autenticacao/infra/localizador-de-aluno';
+import { CHAVE_DE_OPERACAO_DE_TESTE, SEGREDO_DO_JWT_DE_TESTE } from './app-de-teste';
 import type { BancoDeTeste } from './banco-de-teste';
 import { comTenant } from './fabricas';
 import type { RedisDeTeste } from './redis-de-teste';
@@ -26,7 +33,22 @@ export async function criarModuloDeEventos(
   redis: RedisDeTeste,
   configuracao: Partial<ConfiguracaoDasFilas> = {},
 ): Promise<INestApplicationContext> {
-  const modulo = await Test.createTestingModule({ imports: [PlatformModule, EventosModule] })
+  // A autenticação (T12) fornece o ConviteDoAdministrador que a plataforma exige.
+  const modulo = await Test.createTestingModule({
+    imports: [PlatformModule, AutenticacaoModule, EventosModule],
+  })
+    .overrideProvider(CONFIGURACAO_DA_AUTENTICACAO)
+    .useValue({
+      segredoDoJwt: SEGREDO_DO_JWT_DE_TESTE,
+      urlDoRedis: redis.url,
+      prefixoDoRedis: `${redis.prefixo}:autenticacao`,
+      urlDoApp: 'http://{tenant}.localhost:4300',
+      transporteDeEmail: 'fake',
+      smtp: { host: 'localhost', porta: 1025 },
+      remetente: 'GymOS <teste@gymos.app>',
+    } satisfies ConfiguracaoDaAutenticacao)
+    .overrideProvider(LocalizadorDeAlunoPorCpf)
+    .useClass(LocalizadorDeAlunoEmMemoria)
     .overrideProvider(CONFIGURACAO_DA_PLATAFORMA)
     .useValue({
       ambiente: 'test',

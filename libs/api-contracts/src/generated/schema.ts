@@ -4,6 +4,244 @@
  */
 
 export interface paths {
+    "/api/auth/aluno/esqueci-senha": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia o link de redefinição ao e-mail da conta, se houver (a resposta é sempre 204). */
+        post: operations["esqueciSenhaDoApp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/aluno/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login do aluno (CPF ou e-mail e senha). */
+        post: operations["entrarNoApp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/aluno/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Encerra a sessão e apaga o cookie. */
+        post: operations["sairDoApp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/aluno/primeiro-acesso": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cria a senha com o código entregue pela recepção e já entra no app. */
+        post: operations["primeiroAcessoNoApp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/aluno/redefinir-senha": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Nova senha pelo link. */
+        post: operations["redefinirSenhaDoApp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/aluno/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família). */
+        post: operations["renovarSessaoDoApp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/staff/convites/aceitar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cria a senha pelo link do convite e já entra no painel. */
+        post: operations["aceitarConvite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/staff/esqueci-senha": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia o link de redefinição se o e-mail tiver conta (a resposta é sempre 204). */
+        post: operations["esqueciSenhaDoPainel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/staff/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login da equipe (e-mail e senha). */
+        post: operations["entrarNoPainel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/staff/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Encerra a sessão e apaga o cookie. */
+        post: operations["sairDoPainel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/staff/redefinir-senha": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Nova senha pelo link. */
+        post: operations["redefinirSenhaDoPainel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/staff/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família). */
+        post: operations["renovarSessaoDoPainel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/equipe/convites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Convida por e-mail; o link cria a senha e vale por 7 dias. */
+        post: operations["convidarParaEquipe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quem está logado, permissões e módulos extras ativos (appPermission, menu lateral). */
+        get: operations["obterPerfil"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/tenant": {
         parameters: {
             query?: never;
@@ -42,6 +280,47 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AceitarConviteDto: {
+            /** @example Diego Martins */
+            nome: string;
+            senha: string;
+            token: string;
+        };
+        ConvidarDto: {
+            /** @example diego@ritmo.com.br */
+            email: string;
+            /** @example Diego Martins */
+            nome: string | null;
+            /** Format: uuid */
+            tipoDeAcessoId: string;
+        };
+        ConviteCriadoDto: {
+            /** Format: date-time */
+            expiraEm: string;
+            /** Format: uuid */
+            id: string;
+        };
+        EntrarNoAppDto: {
+            /**
+             * @description CPF (com ou sem pontuação) ou e-mail.
+             * @example 123.456.789-09
+             */
+            identificador: string;
+            senha: string;
+        };
+        EntrarNoPainelDto: {
+            /** @example carla@ritmo.com.br */
+            email: string;
+            senha: string;
+        };
+        EsqueciSenhaDoAppDto: {
+            /** @description CPF (com ou sem pontuação) ou e-mail. */
+            identificador: string;
+        };
+        EsqueciSenhaDoPainelDto: {
+            /** @example carla@ritmo.com.br */
+            email: string;
+        };
         IdentidadeDoTenantDto: {
             /** @example #22C98A */
             corDestaque: string;
@@ -53,6 +332,58 @@ export interface components {
             /** @example Academia Ritmo */
             nome: string;
         };
+        /** @enum {string} */
+        ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
+        PerfilDto: {
+            email: string | null;
+            /**
+             * Format: uuid
+             * @description Usuário da equipe ou aluno.
+             */
+            id: string;
+            modulos: components["schemas"]["ModuloExtra"][];
+            nome: string | null;
+            /**
+             * @description Permissões `modulo:acao` (ações: ver, criar, editar, excluir).
+             * @example [
+             *       "alunos:ver",
+             *       "alunos:criar"
+             *     ]
+             */
+            permissoes: string[];
+            /** @enum {string} */
+            tipo: "staff" | "aluno";
+            tipoDeAcesso: components["schemas"]["TipoDeAcessoResumoDto"] | null;
+        };
+        PrimeiroAcessoDto: {
+            /**
+             * @description Código entregue pela recepção.
+             * @example K7M2QX9P
+             */
+            codigo: string;
+            /**
+             * @description CPF (com ou sem pontuação) ou e-mail.
+             * @example 123.456.789-09
+             */
+            identificador: string;
+            senha: string;
+        };
+        RedefinirSenhaDto: {
+            senha: string;
+            token: string;
+        };
+        SessaoDto: {
+            /** @description JWT de acesso, válido por 10 minutos (Authorization: Bearer). */
+            accessToken: string;
+            /** Format: date-time */
+            expiraEm: string;
+        };
+        TipoDeAcessoResumoDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example Gerente */
+            nome: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -62,6 +393,438 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    esqueciSenhaDoApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EsqueciSenhaDoAppDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    entrarNoApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntrarNoAppDto"];
+            };
+        };
+        responses: {
+            /** @description Grava o cookie gymos_rt_aluno. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessaoDto"];
+                };
+            };
+            /** @description E-mail, CPF ou senha incorretos. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Muitas tentativas erradas. Tente de novo em alguns minutos. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sairDoApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    primeiroAcessoNoApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrimeiroAcessoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessaoDto"];
+                };
+            };
+            /** @description Identificador ou código inválido ou expirado. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Muitas tentativas erradas. Tente de novo em alguns minutos. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    redefinirSenhaDoApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RedefinirSenhaDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Link expirado ou já usado. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    renovarSessaoDoApp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessaoDto"];
+                };
+            };
+            /** @description Sessão encerrada. Entre de novo. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem o cabeçalho x-gymos-csrf ou de outra origem. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    aceitarConvite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AceitarConviteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessaoDto"];
+                };
+            };
+            /** @description Convite inexistente. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Já existe usuário com este e-mail. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Convite expirado ou já usado. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    esqueciSenhaDoPainel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EsqueciSenhaDoPainelDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    entrarNoPainel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntrarNoPainelDto"];
+            };
+        };
+        responses: {
+            /** @description Grava o cookie gymos_rt_staff. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessaoDto"];
+                };
+            };
+            /** @description E-mail, CPF ou senha incorretos. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Muitas tentativas erradas. Tente de novo em alguns minutos. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sairDoPainel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    redefinirSenhaDoPainel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RedefinirSenhaDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Link expirado ou já usado. */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    renovarSessaoDoPainel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessaoDto"];
+                };
+            };
+            /** @description Sessão encerrada. Entre de novo. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem o cabeçalho x-gymos-csrf ou de outra origem. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    convidarParaEquipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConvidarDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConviteCriadoDto"];
+                };
+            };
+            /** @description Campos inválidos ou tipo de acesso inexistente. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Já existe um usuário com este e-mail. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterPerfil: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     obterTenantPublico: {
         parameters: {
             query?: never;
@@ -111,6 +874,20 @@ export interface operations {
             };
             /** @description Campos inválidos. */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.identidade:editar. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

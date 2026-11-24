@@ -118,7 +118,10 @@ describe('entrega concorrente e reentrega de eventos', () => {
     expect(vezes('teste.primeiro')).toBe(1);
     expect(vezes('teste.segundo')).toBe(1);
     // Os consumidores dos testes anteriores também ouvem este tipo: um efeito por consumidor.
-    const totalDeEntregas = Object.keys(tratados).reduce((soma, nome) => soma + vezes(nome)!, 0);
+    const totalDeEntregas = Object.keys(tratados).reduce(
+      (soma, nome) => soma + (vezes(nome) ?? 0),
+      0,
+    );
     expect(await contarEfeitos(app, tenant.id, evento.id)).toBe(totalDeEntregas);
   });
 

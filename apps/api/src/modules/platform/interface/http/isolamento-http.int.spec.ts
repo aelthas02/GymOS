@@ -12,6 +12,8 @@ import {
   criarUnidade,
   type TenantCriado,
 } from '../../testing/fabricas';
+import { criarUsuario } from '../../../autenticacao/testing/fabricas';
+import { tokenDeAcesso } from '../../../autenticacao/testing/sessao';
 import { CABECALHO_DA_CHAVE_DE_OPERACAO } from './interno.controller';
 
 interface Identidade {
@@ -26,6 +28,9 @@ describe('isolamento pela API HTTP', () => {
   let conexao: Client;
   let a: TenantCriado;
   let b: TenantCriado;
+  // Administrador de cada academia: o PUT exige configuracoes.identidade:editar (T12).
+  const tokens = new Map<string, string>();
+  const administradorDe = (tenant: TenantCriado) => tokens.get(tenant.id) ?? '';
 
   const hostDe = (tenant: TenantCriado) => `${tenant.slug}.localhost:3000`;
   const publicoDe = async (tenant: TenantCriado) =>
@@ -59,6 +64,15 @@ describe('isolamento pela API HTTP', () => {
         recurso: 'exemplo',
         recursoId: randomUUID(),
       });
+      const sujeitoId = await criarUsuario(conexao, tenant.id, {
+        chave: 'administrador',
+        email: `adm@${sufixo}.com`,
+        senha: 'senha-forte-123',
+      });
+      tokens.set(
+        tenant.id,
+        tokenDeAcesso(app, { publico: 'staff', sujeitoId, tenantId: tenant.id }),
+      );
     }
   });
 
@@ -107,10 +121,29 @@ describe('isolamento pela API HTTP', () => {
       await request(app.getHttpServer())
         .put('/api/tenant/identidade')
         .set('Host', hostDe(a))
+        .auth(administradorDe(a), { type: 'bearer' })
         .send(corpoValido)
         .expect(200, corpoValido);
 
       expect(await publicoDe(a)).toEqual(corpoValido);
+      expect(await publicoDe(b)).toEqual(antesDeB);
+    });
+
+    it('sem sessão, ou com a sessão de outra academia, responde 401 e não altera nada', async () => {
+      const antesDeB = await publicoDe(b);
+
+      await request(app.getHttpServer())
+        .put('/api/tenant/identidade')
+        .set('Host', hostDe(b))
+        .send(corpoValido)
+        .expect(401);
+      await request(app.getHttpServer())
+        .put('/api/tenant/identidade')
+        .set('Host', hostDe(b))
+        .auth(administradorDe(a), { type: 'bearer' })
+        .send(corpoValido)
+        .expect(401);
+
       expect(await publicoDe(b)).toEqual(antesDeB);
     });
 
@@ -134,6 +167,7 @@ describe('isolamento pela API HTTP', () => {
       await request(app.getHttpServer())
         .put('/api/tenant/identidade')
         .set('Host', hostDe(b))
+        .auth(administradorDe(b), { type: 'bearer' })
         .send(corpo)
         .expect(400);
 
@@ -165,6 +199,7 @@ describe('isolamento pela API HTTP', () => {
       await request(app.getHttpServer())
         .put('/api/tenant/identidade')
         .set('Host', hostDe(b))
+        .auth(administradorDe(b), { type: 'bearer' })
         .send({ nome: 'Nao deve ficar', corDestaque: '#000000', logotipoUrl: null })
         .expect(500);
 

@@ -14,6 +14,12 @@ const redisDireto = {
     'Use CacheComTenant, Filas ou TempoRealPorTenant da plataforma (ARCHITECTURE.md, eventos e filas).',
 };
 
+const clienteGlobal = {
+  group: ['**/platform/infra/prisma/prisma.service', '**/generated/prisma/client'],
+  importNames: ['PrismaService', 'PrismaClient'],
+  message: 'Use ContextoDoTenant.cliente(): o cliente global ignora o contexto do tenant.',
+};
+
 // Tempo só pela porta Relogio (ADR-013): o domínio e os casos de uso não leem o relógio do sistema.
 const relogio = [
   {
@@ -52,7 +58,12 @@ export default [
   },
   {
     files: ['src/**/*.ts'],
-    ignores: ['src/modules/platform/**', 'src/observabilidade/health/redis.check.ts'],
+    // Exceções: a sonda de prontidão (T02) e o limite de tentativas de login (T12), anterior ao tenant.
+    ignores: [
+      'src/modules/platform/**',
+      'src/observabilidade/health/redis.check.ts',
+      'src/modules/autenticacao/infra/limite-de-tentativas.redis.ts',
+    ],
     rules: { 'no-restricted-imports': ['error', { patterns: [redisDireto] }] },
   },
   {
@@ -110,17 +121,14 @@ export default [
       'no-restricted-imports': [
         'error',
         {
-          patterns: [
-            {
-              group: ['**/platform/infra/prisma/prisma.service', '**/generated/prisma/client'],
-              importNames: ['PrismaService', 'PrismaClient'],
-              message:
-                'Use ContextoDoTenant.cliente(): o cliente global ignora o contexto do tenant.',
-            },
-            redisDireto,
-          ],
+          patterns: [clienteGlobal, redisDireto],
         },
       ],
     },
+  },
+  {
+    // Limite de tentativas de login (T12): anterior ao tenant e não é cache.
+    files: ['src/modules/autenticacao/infra/limite-de-tentativas.redis.ts'],
+    rules: { 'no-restricted-imports': ['error', { patterns: [clienteGlobal] }] },
   },
 ];

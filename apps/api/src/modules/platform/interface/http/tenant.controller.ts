@@ -9,6 +9,8 @@ import {
 import { AtualizarIdentidadeDoTenant } from '../../application/casos-de-uso';
 import type { Tenant } from '../../domain/tenant';
 import { ContextoDoTenant } from '../../infra/contexto/contexto-do-tenant';
+import { RequirePermission } from '../../../autenticacao/interface/http/decoradores';
+import { Publica } from './acesso-publico';
 import { IdentidadeDoTenantDto } from './dto/identidade.dto';
 import { ACADEMIA_NAO_ENCONTRADA } from './resolucao-de-tenant.middleware';
 
@@ -26,6 +28,7 @@ export class TenantController {
   ) {}
 
   @Get('public/tenant')
+  @Publica()
   @ApiOperation({
     operationId: 'obterTenantPublico',
     summary: 'Identidade da academia do subdomínio, antes do login (Entrar, manifesto do PWA).',
@@ -36,6 +39,7 @@ export class TenantController {
   }
 
   @Put('tenant/identidade')
+  @RequirePermission('configuracoes.identidade:editar')
   @ApiOperation({
     operationId: 'atualizarIdentidadeDoTenant',
     summary: 'Nome, cor de destaque e logotipo (Primeiros passos e Configurações).',

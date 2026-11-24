@@ -1,6 +1,130 @@
 {
   "components": {
     "schemas": {
+      "AceitarConviteDto": {
+        "properties": {
+          "nome": {
+            "example": "Diego Martins",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "senha": {
+            "maxLength": 128,
+            "minLength": 8,
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "nome",
+          "senha"
+        ],
+        "type": "object"
+      },
+      "ConvidarDto": {
+        "properties": {
+          "email": {
+            "example": "diego@ritmo.com.br",
+            "type": "string"
+          },
+          "nome": {
+            "example": "Diego Martins",
+            "maxLength": 120,
+            "nullable": true,
+            "type": "string"
+          },
+          "tipoDeAcessoId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "nome",
+          "tipoDeAcessoId"
+        ],
+        "type": "object"
+      },
+      "ConviteCriadoDto": {
+        "properties": {
+          "expiraEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "expiraEm"
+        ],
+        "type": "object"
+      },
+      "EntrarNoAppDto": {
+        "properties": {
+          "identificador": {
+            "description": "CPF (com ou sem pontuação) ou e-mail.",
+            "example": "123.456.789-09",
+            "type": "string"
+          },
+          "senha": {
+            "maxLength": 128,
+            "type": "string"
+          }
+        },
+        "required": [
+          "identificador",
+          "senha"
+        ],
+        "type": "object"
+      },
+      "EntrarNoPainelDto": {
+        "properties": {
+          "email": {
+            "example": "carla@ritmo.com.br",
+            "maxLength": 254,
+            "type": "string"
+          },
+          "senha": {
+            "maxLength": 128,
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "senha"
+        ],
+        "type": "object"
+      },
+      "EsqueciSenhaDoAppDto": {
+        "properties": {
+          "identificador": {
+            "description": "CPF (com ou sem pontuação) ou e-mail.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "identificador"
+        ],
+        "type": "object"
+      },
+      "EsqueciSenhaDoPainelDto": {
+        "properties": {
+          "email": {
+            "example": "carla@ritmo.com.br",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "type": "object"
+      },
       "IdentidadeDoTenantDto": {
         "properties": {
           "corDestaque": {
@@ -27,6 +151,151 @@
           "logotipoUrl"
         ],
         "type": "object"
+      },
+      "ModuloExtra": {
+        "enum": [
+          "aulas",
+          "marketing",
+          "loja",
+          "saude"
+        ],
+        "type": "string"
+      },
+      "PerfilDto": {
+        "properties": {
+          "email": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "Usuário da equipe ou aluno.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "modulos": {
+            "items": {
+              "$ref": "#/components/schemas/ModuloExtra"
+            },
+            "type": "array"
+          },
+          "nome": {
+            "nullable": true,
+            "type": "string"
+          },
+          "permissoes": {
+            "description": "Permissões `modulo:acao` (ações: ver, criar, editar, excluir).",
+            "example": [
+              "alunos:ver",
+              "alunos:criar"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tipo": {
+            "enum": [
+              "staff",
+              "aluno"
+            ],
+            "type": "string"
+          },
+          "tipoDeAcesso": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TipoDeAcessoResumoDto"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          }
+        },
+        "required": [
+          "tipo",
+          "id",
+          "nome",
+          "email",
+          "tipoDeAcesso",
+          "permissoes",
+          "modulos"
+        ],
+        "type": "object"
+      },
+      "PrimeiroAcessoDto": {
+        "properties": {
+          "codigo": {
+            "description": "Código entregue pela recepção.",
+            "example": "K7M2QX9P",
+            "type": "string"
+          },
+          "identificador": {
+            "description": "CPF (com ou sem pontuação) ou e-mail.",
+            "example": "123.456.789-09",
+            "type": "string"
+          },
+          "senha": {
+            "maxLength": 128,
+            "minLength": 8,
+            "type": "string"
+          }
+        },
+        "required": [
+          "identificador",
+          "codigo",
+          "senha"
+        ],
+        "type": "object"
+      },
+      "RedefinirSenhaDto": {
+        "properties": {
+          "senha": {
+            "maxLength": 128,
+            "minLength": 8,
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "senha"
+        ],
+        "type": "object"
+      },
+      "SessaoDto": {
+        "properties": {
+          "accessToken": {
+            "description": "JWT de acesso, válido por 10 minutos (Authorization: Bearer).",
+            "type": "string"
+          },
+          "expiraEm": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "expiraEm"
+        ],
+        "type": "object"
+      },
+      "TipoDeAcessoResumoDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "example": "Gerente",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
+        ],
+        "type": "object"
       }
     }
   },
@@ -38,6 +307,432 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/api/auth/aluno/esqueci-senha": {
+      "post": {
+        "operationId": "esqueciSenhaDoApp",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EsqueciSenhaDoAppDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Envia o link de redefinição ao e-mail da conta, se houver (a resposta é sempre 204).",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/aluno/login": {
+      "post": {
+        "operationId": "entrarNoApp",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntrarNoAppDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoDto"
+                }
+              }
+            },
+            "description": "Grava o cookie gymos_rt_aluno."
+          },
+          "401": {
+            "description": "E-mail, CPF ou senha incorretos."
+          },
+          "429": {
+            "description": "Muitas tentativas erradas. Tente de novo em alguns minutos."
+          }
+        },
+        "summary": "Login do aluno (CPF ou e-mail e senha).",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/aluno/logout": {
+      "post": {
+        "operationId": "sairDoApp",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Encerra a sessão e apaga o cookie.",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/aluno/primeiro-acesso": {
+      "post": {
+        "operationId": "primeiroAcessoNoApp",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrimeiroAcessoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Identificador ou código inválido ou expirado."
+          },
+          "429": {
+            "description": "Muitas tentativas erradas. Tente de novo em alguns minutos."
+          }
+        },
+        "summary": "Cria a senha com o código entregue pela recepção e já entra no app.",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/aluno/redefinir-senha": {
+      "post": {
+        "operationId": "redefinirSenhaDoApp",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedefinirSenhaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "410": {
+            "description": "Link expirado ou já usado."
+          }
+        },
+        "summary": "Nova senha pelo link.",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/aluno/refresh": {
+      "post": {
+        "operationId": "renovarSessaoDoApp",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sessão encerrada. Entre de novo."
+          },
+          "403": {
+            "description": "Sem o cabeçalho x-gymos-csrf ou de outra origem."
+          }
+        },
+        "summary": "Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família).",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/staff/convites/aceitar": {
+      "post": {
+        "operationId": "aceitarConvite",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AceitarConviteDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Convite inexistente."
+          },
+          "409": {
+            "description": "Já existe usuário com este e-mail."
+          },
+          "410": {
+            "description": "Convite expirado ou já usado."
+          }
+        },
+        "summary": "Cria a senha pelo link do convite e já entra no painel.",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/staff/esqueci-senha": {
+      "post": {
+        "operationId": "esqueciSenhaDoPainel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EsqueciSenhaDoPainelDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Envia o link de redefinição se o e-mail tiver conta (a resposta é sempre 204).",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/staff/login": {
+      "post": {
+        "operationId": "entrarNoPainel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntrarNoPainelDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoDto"
+                }
+              }
+            },
+            "description": "Grava o cookie gymos_rt_staff."
+          },
+          "401": {
+            "description": "E-mail, CPF ou senha incorretos."
+          },
+          "429": {
+            "description": "Muitas tentativas erradas. Tente de novo em alguns minutos."
+          }
+        },
+        "summary": "Login da equipe (e-mail e senha).",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/staff/logout": {
+      "post": {
+        "operationId": "sairDoPainel",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Encerra a sessão e apaga o cookie.",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/staff/redefinir-senha": {
+      "post": {
+        "operationId": "redefinirSenhaDoPainel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedefinirSenhaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "410": {
+            "description": "Link expirado ou já usado."
+          }
+        },
+        "summary": "Nova senha pelo link.",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/auth/staff/refresh": {
+      "post": {
+        "operationId": "renovarSessaoDoPainel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sessão encerrada. Entre de novo."
+          },
+          "403": {
+            "description": "Sem o cabeçalho x-gymos-csrf ou de outra origem."
+          }
+        },
+        "summary": "Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família).",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
+    "/api/equipe/convites": {
+      "post": {
+        "operationId": "convidarParaEquipe",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConvidarDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConviteCriadoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos ou tipo de acesso inexistente."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:criar."
+          },
+          "409": {
+            "description": "Já existe um usuário com este e-mail."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Convida por e-mail; o link cria a senha e vale por 7 dias.",
+        "tags": [
+          "equipe"
+        ]
+      }
+    },
+    "/api/me": {
+      "get": {
+        "operationId": "obterPerfil",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerfilDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quem está logado, permissões e módulos extras ativos (appPermission, menu lateral).",
+        "tags": [
+          "autenticacao"
+        ]
+      }
+    },
     "/api/public/tenant": {
       "get": {
         "operationId": "obterTenantPublico",
@@ -91,10 +786,21 @@
           "400": {
             "description": "Campos inválidos."
           },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.identidade:editar."
+          },
           "404": {
             "description": "Academia não encontrada."
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Nome, cor de destaque e logotipo (Primeiros passos e Configurações).",
         "tags": [
           "tenant"
