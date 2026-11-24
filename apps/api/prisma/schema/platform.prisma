@@ -47,35 +47,49 @@ model ReferenciaExterna {
   @@map("referencia_externa")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Chaves do tenant (T13c, ADR-015), envelopadas pela chave mestra. A versão mais alta cifra; as
+/// anteriores só decifram. A chave de índice é a mesma em todas as versões (o hash não muda).
 model ChaveDoTenant {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  criadoEm        DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  versao          Int
+  chaveDeDados    String   @map("chave_de_dados")
+  chaveDeIndice   String   @map("chave_de_indice")
+  idDaChaveMestra String   @map("id_da_chave_mestra")
 
+  @@unique([tenantId, versao])
   @@index([tenantId])
   @@map("chave_do_tenant")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Histórico de aceite e revogação por finalidade (T13c); a decisão mais recente vale.
 model Consentimento {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  criadoEm     DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId      String   @map("aluno_id") @db.Uuid
+  finalidade   String
+  decisao      String
+  origem       String
+  registradoEm DateTime @map("registrado_em") @db.Timestamptz(3)
 
   @@index([tenantId])
+  @@index([tenantId, alunoId, finalidade, registradoEm])
   @@map("consentimento")
 }
 
-/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
-/// e gere a migração seguinte com `prisma migrate diff`.
+/// Leitura de campo sensível (T13c): quem leu, quando, de qual titular e qual campo.
 model AcessoADadoSensivel {
-  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String   @map("tenant_id") @db.Uuid
-  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  criadoEm   DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  quem       String
+  titularId  String   @map("titular_id") @db.Uuid
+  campo      String
+  acessadoEm DateTime @map("acessado_em") @db.Timestamptz(3)
 
   @@index([tenantId])
+  @@index([tenantId, titularId])
   @@map("acesso_a_dado_sensivel")
 }
