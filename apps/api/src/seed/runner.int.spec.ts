@@ -35,6 +35,8 @@ describe('runner de seed', () => {
       'plataforma',
       'autenticacao',
       'alunos',
+      'parcelas',
+      'pagamentos',
       'sonda',
     ]);
     await executarSeed(app, modulos);
@@ -48,12 +50,12 @@ describe('runner de seed', () => {
     expect(dentroDoTenant).toEqual([rows[0]?.id, rows[0]?.id]);
     const total = await comTenant(conexao, rows[0]?.id ?? '', async () => {
       const contagens = await Promise.all(
-        ['unidade', 'usuario', 'plano', 'aluno', 'contrato'].map((tabela) =>
+        ['unidade', 'usuario', 'plano', 'aluno', 'contrato', 'parcela', 'pagamento'].map((tabela) =>
           conexao.query<{ n: string }>(`SELECT count(*) AS n FROM ${tabela}`),
         ),
       );
       return contagens.map((contagem) => contagem.rows[0]?.n);
     });
-    expect(total).toEqual(['1', '4', '6', '8', '8']);
+    expect(total).toEqual(['1', '4', '6', '8', '8', '25', '19']);
   });
 });
