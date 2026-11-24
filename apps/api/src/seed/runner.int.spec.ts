@@ -1,5 +1,6 @@
 import type { INestApplicationContext } from '@nestjs/common';
 import { AlunosModule } from '../modules/alunos/alunos.module';
+import { AvisosModule } from '../modules/avisos/avisos.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
 import { ProtecaoDeDadosModule } from '../modules/platform/protecao-de-dados.module';
 import { criarModuloDeEventos } from '../modules/platform/testing/eventos-de-teste';
@@ -21,6 +22,7 @@ describe('runner de seed', () => {
       ProtecaoDeDadosModule,
       AlunosModule,
       FuncionariosModule,
+      AvisosModule,
     ]);
   });
 
@@ -41,6 +43,7 @@ describe('runner de seed', () => {
       'autenticacao',
       'funcionarios',
       'alunos',
+      'avisos',
       'sonda',
     ]);
     await executarSeed(app, modulos);
@@ -54,12 +57,12 @@ describe('runner de seed', () => {
     expect(dentroDoTenant).toEqual([rows[0]?.id, rows[0]?.id]);
     const total = await comTenant(conexao, rows[0]?.id ?? '', async () => {
       const contagens = await Promise.all(
-        ['unidade', 'usuario', 'plano', 'aluno', 'contrato', 'funcionario'].map((tabela) =>
+        ['unidade', 'usuario', 'plano', 'aluno', 'contrato', 'funcionario', 'aviso'].map((tabela) =>
           conexao.query<{ n: string }>(`SELECT count(*) AS n FROM ${tabela}`),
         ),
       );
       return contagens.map((contagem) => contagem.rows[0]?.n);
     });
-    expect(total).toEqual(['1', '4', '6', '8', '8', '8']);
+    expect(total).toEqual(['1', '4', '6', '8', '8', '8', '5']);
   });
 });

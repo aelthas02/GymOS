@@ -41,6 +41,7 @@ export const ACOES_DA_AUDITORIA = {
     sensivel: true,
   },
   'excluiu-funcionario': { texto: 'Excluiu funcionário', modulo: 'equipe', sensivel: true },
+  'enviou-comunicado': { texto: 'Enviou comunicado', modulo: 'alunos', sensivel: false },
   /** O 403 do guard (gancho aoNegarPermissao do T12); o módulo é o da permissão negada. */
   'tentativa-negada': { texto: 'Tentativa negada', modulo: 'permissoes', sensivel: true },
 } as const satisfies Record<string, AcaoDaAuditoria>;

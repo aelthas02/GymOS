@@ -82,6 +82,8 @@ export interface CatalogoDeEventos {
     versao: 1;
     payload: { mensagemId: Id; conversaId: Id; canal: string; recebidaEm: Instante };
   };
+  /** Avisos gravados com push pedido (T13e): o consumidor envia o Web Push depois do commit. */
+  PushSolicitado: { versao: 1; payload: { avisoIds: Id[] } };
 }
 
 export type TipoDeEvento = keyof CatalogoDeEventos;
@@ -120,6 +122,7 @@ export const VERSAO_ATUAL: { readonly [T in TipoDeEvento]: VersaoDoEvento<T> } =
   PagamentoEstornado: 1,
   AcessoRegistrado: 1,
   MensagemRecebida: 1,
+  PushSolicitado: 1,
 };
 
 export const TIPOS_DE_EVENTO = Object.keys(VERSAO_ATUAL) as readonly TipoDeEvento[];

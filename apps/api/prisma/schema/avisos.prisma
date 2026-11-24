@@ -1,0 +1,81 @@
+// Modelos do domínio avisos (T13e): caixa de avisos, Web Push, preferências e agendamentos. Tabelas
+// criadas por `nx g @gymos/api:tabela`; campos na migração `campos_dos_avisos`.
+
+/// Aviso na caixa de um destinatário (aluno ou funcionário). `destinatarioId` é o id do aluno ou o
+/// id do usuário do painel; não há FK porque o destinatário vive em outro domínio. `tipo` é uma
+/// chave do catálogo em código. `link` é um caminho interno do app.
+model Aviso {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  criadoEm         DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  destinatarioTipo String    @map("destinatario_tipo")
+  destinatarioId   String    @map("destinatario_id") @db.Uuid
+  tipo             String
+  titulo           String
+  texto            String
+  link             String?
+  lidoEm           DateTime? @map("lido_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([tenantId, destinatarioTipo, destinatarioId, criadoEm(sort: Desc), id(sort: Desc)])
+  @@index([tenantId, destinatarioTipo, destinatarioId, lidoEm])
+  @@map("aviso")
+}
+
+/// Inscrição de Web Push de um dispositivo. O `endpoint` identifica o dispositivo: inscrever de novo
+/// com o mesmo endpoint troca o dono. `p256dh` e `auth` são as chaves do navegador (nunca vão ao log).
+model InscricaoDePush {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  criadoEm         DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  destinatarioTipo String   @map("destinatario_tipo")
+  destinatarioId   String   @map("destinatario_id") @db.Uuid
+  endpoint         String
+  p256dh           String
+  auth             String
+  dispositivo      String?
+
+  @@unique([tenantId, endpoint])
+  @@index([tenantId])
+  @@index([tenantId, destinatarioTipo, destinatarioId])
+  @@map("inscricao_de_push")
+}
+
+/// Preferência explícita de push por destinatário e tipo de aviso. Sem linha, o push está ligado.
+/// Desligar só cala o push: o aviso continua na lista.
+model PreferenciaDeAviso {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  criadoEm         DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  destinatarioTipo String   @map("destinatario_tipo")
+  destinatarioId   String   @map("destinatario_id") @db.Uuid
+  tipo             String
+  push             Boolean
+
+  @@unique([tenantId, destinatarioTipo, destinatarioId, tipo])
+  @@index([tenantId])
+  @@map("preferencia_de_aviso")
+}
+
+/// Aviso para enviar depois (`notificarEm`). `chave` agrupa os agendamentos de um mesmo fato (por
+/// exemplo `aula:<reserva>`), para cancelá-los juntos. `estado`: pendente, enviado ou cancelado.
+model AvisoAgendado {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  criadoEm         DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  chave            String?
+  destinatarioTipo String   @map("destinatario_tipo")
+  destinatarioId   String   @map("destinatario_id") @db.Uuid
+  tipo             String
+  titulo           String
+  texto            String
+  link             String?
+  push             Boolean
+  quando           DateTime @db.Timestamptz(3)
+  estado           String   @default("pendente")
+
+  @@index([tenantId])
+  @@index([tenantId, chave, estado])
+  @@index([tenantId, destinatarioTipo, destinatarioId])
+  @@map("aviso_agendado")
+}

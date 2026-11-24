@@ -382,6 +382,13 @@ export class RepositorioDeAlunosPrisma extends RepositorioDeAlunos {
     return linha?.nome ?? null;
   }
 
+  async todosOsIds(): Promise<string[]> {
+    const linhas = await this.contexto
+      .cliente()
+      .aluno.findMany({ select: { id: true }, orderBy: { id: 'asc' } });
+    return linhas.map((linha) => linha.id);
+  }
+
   async idPorCpf(cpf: string): Promise<string | null> {
     const cpfHash = await this.cifra.indiceCego('cpf', cpf);
     const linha = await this.contexto
