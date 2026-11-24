@@ -570,6 +570,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/arquivos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia um arquivo (JPEG, PNG, WebP, PDF ou MP4, com limite por tipo). */
+        post: operations["enviarArquivo"];
+        /** Remove um arquivo do tenant. */
+        delete: operations["removerArquivo"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/arquivos/baixar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download pela URL assinada (adapter fake). */
+        get: operations["baixarArquivoAssinado"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/arquivos/url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** URL de leitura de curta duração para um arquivo do tenant. */
+        get: operations["urlAssinadaDoArquivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auditoria/atividades": {
         parameters: {
             query?: never;
@@ -1206,6 +1258,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/integracoes/dev/mensagens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mensagens de WhatsApp guardadas pelo adapter fake (somente fora de produção). */
+        get: operations["listarMensagensDoFake"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integracoes/meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Estado de cada canal: Instagram, Facebook e WhatsApp. */
+        get: operations["listarConexoesMeta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integracoes/meta/{canal}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Desconecta o canal e apaga o token. */
+        delete: operations["desconectarMeta"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integracoes/meta/{canal}/concluir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** "Concluir conexão": confere com a Meta se a verificação pendente terminou. */
+        post: operations["concluirConexaoMeta"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integracoes/meta/{canal}/conectar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Abre o fluxo oficial (OAuth ou cadastro do WhatsApp Business). O WhatsApp passa a "Verificação pendente". */
+        post: operations["iniciarConexaoMeta"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integracoes/meta/{canal}/retorno": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recebe o código do fluxo oficial e guarda o token (cifrado) da conta. */
+        post: operations["concluirRetornoDaMeta"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me": {
         parameters: {
             query?: never;
@@ -1389,6 +1543,14 @@ export interface components {
             quedaPercentual: number | null;
             /** @enum {string} */
             tipo: "sem_treinar" | "queda";
+        };
+        ArquivoEnviadoDto: {
+            /** @example tenant/6b1f…/treinos/0c9d….png */
+            chave: string;
+            /** @example 20480 */
+            tamanhoEmBytes: number;
+            /** @example image/png */
+            tipo: string;
         };
         AtividadeDto: {
             /** @example alterou-valor */
@@ -1610,6 +1772,21 @@ export interface components {
             texto: string;
             /** @example Manutenção da piscina */
             titulo: string;
+        };
+        ConexaoMetaDto: {
+            /** @enum {string} */
+            canal: "instagram" | "facebook" | "whatsapp";
+            /** Format: date-time */
+            conectadoEm: string | null;
+            /** @example Ritmo Academia */
+            contaNome: string | null;
+            /**
+             * @description "verificacao_pendente" mostra a ação "Concluir conexão".
+             * @enum {string}
+             */
+            estado: "conectado" | "verificacao_pendente" | "desconectado" | "expirado";
+            /** Format: date-time */
+            expiraEm: string | null;
         };
         ConfiguracaoDeAcessoDto: {
             /** @example 05:00 */
@@ -1987,6 +2164,18 @@ export interface components {
         ImportarAlunosDto: {
             linhas: components["schemas"]["LinhaDaPlanilhaDto"][];
         };
+        IniciarConexaoDto: {
+            /**
+             * @description Para onde a Meta devolve o usuário no fim do fluxo (padrão: o painel).
+             * @example https://ritmo.gymos.app/configuracoes
+             */
+            redirecionarPara?: string;
+        };
+        InicioDaConexaoDto: {
+            conexao: components["schemas"]["ConexaoMetaDto"];
+            /** @description Endereço do fluxo oficial da Meta, para o usuário abrir. */
+            urlDoFluxo: string;
+        };
         InscreverPushDto: {
             /** @example Chrome no Android */
             dispositivo?: Record<string, never> | null;
@@ -2051,6 +2240,12 @@ export interface components {
             nome: string;
             /** @enum {string} */
             situacao: "pulada" | "para_corrigir";
+        };
+        MensagemDeDevDto: {
+            idExterno: string;
+            /** @description Telefone com DDI; só existe no adapter fake, nunca é gravado. */
+            telefone: string;
+            texto: string;
         };
         /** @enum {string} */
         ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
@@ -2433,6 +2628,12 @@ export interface components {
             /** @description Alunos sem parcela vencida. */
             semPendencia: string[];
         };
+        RetornoDaMetaDto: {
+            /** @description Código devolvido pela Meta no fim do fluxo. */
+            codigo: string;
+            /** @description `state` devolvido junto do código, sem alteração. */
+            state: string;
+        };
         SegundaViaDoAppDto: {
             /**
              * @example pix
@@ -2493,6 +2694,11 @@ export interface components {
              * @example 30
              */
             dias: number;
+        };
+        UrlAssinadaDto: {
+            /** Format: date-time */
+            expiraEm: string;
+            url: string;
         };
     };
     responses: never;
@@ -3896,6 +4102,133 @@ export interface operations {
             };
             /** @description Sem sessão válida. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    enviarArquivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    arquivo: string;
+                    /**
+                     * @description Pasta lógica dentro do tenant.
+                     * @example treinos
+                     */
+                    pasta: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArquivoEnviadoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    removerArquivo: {
+        parameters: {
+            query: {
+                chave: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Arquivo de outra academia. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    baixarArquivoAssinado: {
+        parameters: {
+            query: {
+                chave: string;
+                expira: string;
+                assinatura: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    urlAssinadaDoArquivo: {
+        parameters: {
+            query: {
+                chave: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UrlAssinadaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Arquivo de outra academia. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5623,6 +5956,234 @@ export interface operations {
                 content?: never;
             };
             /** @description Funcionário não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarMensagensDoFake: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MensagemDeDevDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarConexoesMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConexaoMetaDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    desconectarMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                canal: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConexaoMetaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.redes-sociais:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Canal desconhecido. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    concluirConexaoMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                canal: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConexaoMetaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.redes-sociais:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Canal desconhecido. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    iniciarConexaoMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                canal: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IniciarConexaoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InicioDaConexaoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.redes-sociais:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Canal desconhecido. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    concluirRetornoDaMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                canal: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RetornoDaMetaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConexaoMetaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.redes-sociais:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Canal desconhecido. */
             404: {
                 headers: {
                     [name: string]: unknown;

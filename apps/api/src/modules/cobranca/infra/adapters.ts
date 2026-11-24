@@ -14,17 +14,42 @@ import {
   CONFIGURACAO_DAS_FILAS,
   type ConfiguracaoDasFilas,
 } from '../../platform/infra/filas/configuracao-das-filas';
+import type { ProvedorDeVariavel } from '../../integracoes/application/portas';
 import { Pagamentos } from '../application/pagamentos';
 import { Parcelas } from '../application/parcelas';
 import {
   GatewayDePagamento,
-  Mensageria,
-  type MensagemTransacional,
   RepositorioDeCobrancas,
   RepositorioDeFormasDePagamento,
   RepositorioDePagamentos,
   RepositorioDeParcelas,
 } from '../application/portas';
+import { SITUACOES_A_RECEBER } from '../domain/parcela';
+
+/**
+ * Variável `{link}` da Mensageria (T13d): a página de pagamento da cobrança pendente da parcela a
+ * receber mais antiga do aluno. Só reaproveita; quem cria a cobrança é `Pagamentos.enviarLink`.
+ */
+@Injectable()
+export class VariavelLinkDePagamento implements ProvedorDeVariavel {
+  readonly variavel = 'link' as const;
+
+  constructor(
+    private readonly parcelas: RepositorioDeParcelas,
+    private readonly cobrancas: RepositorioDeCobrancas,
+  ) {}
+
+  async valor(alunoId: string): Promise<string | null> {
+    const aReceber = (await this.parcelas.doAluno(alunoId)).find((parcela) =>
+      SITUACOES_A_RECEBER.includes(parcela.situacao),
+    );
+    if (!aReceber) {
+      return null;
+    }
+    const [cobranca] = await this.cobrancas.pendentesDaParcela(aReceber.id);
+    return cobranca?.dados.url ?? cobranca?.dados.pixCopiaECola ?? null;
+  }
+}
 
 /** Webhook do provedor de pagamento, na rota `/webhooks/<provedor>` da plataforma. */
 @Injectable()
@@ -54,22 +79,6 @@ export class WebhookDePagamentos extends ProvedorDeWebhook {
   async processar(corpo: unknown): Promise<ResultadoDoWebhook> {
     const evento = this.gateway.interpretar(corpo);
     return evento ? this.pagamentos.aoReceberDoProvedor(evento) : 'recurso-nao-encontrado';
-  }
-}
-
-/**
- * Até a Mensageria (T13d) existir, a mensagem de cobrança só vai para o log (sem dados pessoais): o
- * T13d troca este adapter pelo envio real (WhatsApp ou e-mail).
- */
-@Injectable()
-export class MensageriaPendente extends Mensageria {
-  private readonly logger = new Logger(MensageriaPendente.name);
-
-  async enviar(mensagem: MensagemTransacional): Promise<void> {
-    this.logger.log(
-      { alunoId: mensagem.alunoId, contexto: mensagem.contexto },
-      'Mensagem de cobrança aguardando a Mensageria (T13d)',
-    );
   }
 }
 

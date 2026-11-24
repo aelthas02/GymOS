@@ -6,12 +6,13 @@ import { RegistroDeProvedoresDoTitular } from '../platform/application/direitos-
 import { PROVEDORES_DE_WEBHOOK, type ProvedorDeWebhook } from '../platform/application/portas';
 import type { DataCivil } from '../platform/domain/relogio';
 import { RegistroDeConsumidores } from '../platform/infra/eventos/registro-de-consumidores';
+import { RegistroDeVariaveis } from '../integracoes/application/resolvedor';
+import { IntegracoesModule } from '../integracoes/integracoes.module';
 import { Pagamentos } from './application/pagamentos';
 import { Parcelas } from './application/parcelas';
 import {
   AlunosDaCobranca,
   GatewayDePagamento,
-  Mensageria,
   ReferenciasExternas,
   RepositorioDeCobrancas,
   RepositorioDeEstornos,
@@ -21,8 +22,8 @@ import {
 } from './application/portas';
 import {
   DadosDoTitularDaCobranca,
-  MensageriaPendente,
   RotinaDosAtrasos,
+  VariavelLinkDePagamento,
   WebhookDePagamentos,
 } from './infra/adapters';
 import { CONFIGURACAO_DOS_PAGAMENTOS, configuracaoDosPagamentos } from './infra/configuracao';
@@ -46,6 +47,7 @@ import { PagamentoSimuladoController } from './interface/http/pagamento-simulado
  * `ParcelasDoContrato` do domínio alunos e `Pagamentos` para o `{link}` da Mensageria (T13d).
  */
 @Module({
+  imports: [IntegracoesModule],
   controllers: [CobrancaController, CobrancaDoAppController, PagamentoSimuladoController],
   providers: [
     {
@@ -56,7 +58,6 @@ import { PagamentoSimuladoController } from './interface/http/pagamento-simulado
     GatewayDePagamentoFake,
     // Só o fake até o provedor real ser escolhido (PAGAMENTOS_PROVEDOR).
     { provide: GatewayDePagamento, useExisting: GatewayDePagamentoFake },
-    { provide: Mensageria, useClass: MensageriaPendente },
     { provide: RepositorioDeParcelas, useClass: RepositorioDeParcelasPrisma },
     { provide: RepositorioDeCobrancas, useClass: RepositorioDeCobrancasPrisma },
     { provide: RepositorioDePagamentos, useClass: RepositorioDePagamentosPrisma },
@@ -70,6 +71,7 @@ import { PagamentoSimuladoController } from './interface/http/pagamento-simulado
     WebhookDePagamentos,
     DadosDoTitularDaCobranca,
     RotinaDosAtrasos,
+    VariavelLinkDePagamento,
   ],
   exports: [Parcelas, Pagamentos, RotinaDosAtrasos, RepositorioDeParcelas, RepositorioDePagamentos],
 })
@@ -80,11 +82,14 @@ export class CobrancaModule implements OnModuleInit {
     private readonly dadosDoTitular: DadosDoTitularDaCobranca,
     private readonly parcelas: Parcelas,
     private readonly webhook: WebhookDePagamentos,
+    private readonly variaveis: RegistroDeVariaveis,
+    private readonly link: VariavelLinkDePagamento,
     @Inject(PROVEDORES_DE_WEBHOOK) private readonly provedores: ProvedorDeWebhook[],
   ) {}
 
   onModuleInit(): void {
     this.titular.registrar(this.dadosDoTitular);
+    this.variaveis.registrar(this.link);
     if (!this.provedores.some((provedor) => provedor.nome === this.webhook.nome)) {
       this.provedores.push(this.webhook);
     }

@@ -15,7 +15,11 @@ import {
   RepositorioDePlanos,
 } from './application/portas';
 import { CobrancaModule } from '../cobranca/cobranca.module';
+import { IntegracoesModule } from '../integracoes/integracoes.module';
+import { DiretorioDeAlunos } from '../integracoes/application/mensageria';
+import { RegistroDeVariaveis } from '../integracoes/application/resolvedor';
 import { DadosDoTitularDosAlunos, ParcelasDaCobranca, RotinaDosContratos } from './infra/adapters';
+import { ContatosDosAlunos, VariaveisDeMensagemDosAlunos } from './infra/mensageria';
 import {
   RepositorioDeAlunosPrisma,
   RepositorioDeConfiguracaoPrisma,
@@ -34,7 +38,7 @@ import {
  * pela porta ParcelasDoContrato, e registra os dados do titular para a LGPD (T13c).
  */
 @Module({
-  imports: [CobrancaModule],
+  imports: [CobrancaModule, IntegracoesModule],
   controllers: [
     AlunosController,
     ContratoDoAppController,
@@ -55,6 +59,8 @@ import {
     ImportarAlunos,
     DadosDoTitularDosAlunos,
     RotinaDosContratos,
+    ContatosDosAlunos,
+    VariaveisDeMensagemDosAlunos,
   ],
   exports: [Alunos, ImportarAlunos, Contratos, Planos, RepositorioDeAlunos],
 })
@@ -64,10 +70,18 @@ export class AlunosModule implements OnModuleInit {
     private readonly titular: RegistroDeProvedoresDoTitular,
     private readonly dadosDoTitular: DadosDoTitularDosAlunos,
     private readonly contratos: Contratos,
+    private readonly diretorio: DiretorioDeAlunos,
+    private readonly variaveis: RegistroDeVariaveis,
+    private readonly contatos: ContatosDosAlunos,
+    private readonly variaveisDosAlunos: VariaveisDeMensagemDosAlunos,
   ) {}
 
   onModuleInit(): void {
     this.titular.registrar(this.dadosDoTitular);
+    this.diretorio.registrar(this.contatos);
+    for (const provedor of this.variaveisDosAlunos.provedores()) {
+      this.variaveis.registrar(provedor);
+    }
     this.consumidores.registrar({
       nome: 'alunos.reavaliar-contrato-pago',
       evento: 'PagamentoConfirmado',

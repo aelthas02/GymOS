@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import type { ProvedorDeVariavel } from '../../integracoes/application/portas';
 import type { ProvedorDeDadosDoTitular } from '../../platform/application/direitos-do-titular';
 import { ContextoDoTenant } from '../../platform/infra/contexto/contexto-do-tenant';
 import { type FonteDeVinculos } from '../application/portas';
@@ -18,6 +19,30 @@ export class VinculoComAlunos implements FonteDeVinculos {
       return null;
     }
     return alunos === 1 ? 'é professor de 1 aluno' : `é professor de ${alunos} alunos`;
+  }
+}
+
+/** Variável `{professor}` da Mensageria (T13d): nome do professor responsável pelo aluno. */
+@Injectable()
+export class VariavelProfessorDoAluno implements ProvedorDeVariavel {
+  readonly variavel = 'professor' as const;
+
+  constructor(private readonly contexto: ContextoDoTenant) {}
+
+  async valor(alunoId: string): Promise<string | null> {
+    const cliente = this.contexto.cliente();
+    const aluno = await cliente.aluno.findFirst({
+      where: { id: alunoId },
+      select: { professorId: true },
+    });
+    if (!aluno?.professorId) {
+      return null;
+    }
+    const professor = await cliente.funcionario.findFirst({
+      where: { id: aluno.professorId },
+      select: { nome: true },
+    });
+    return professor?.nome ?? null;
   }
 }
 

@@ -136,7 +136,15 @@ export interface CatalogoDeEventos {
   };
   MensagemRecebida: {
     versao: 1;
-    payload: { mensagemId: Id; conversaId: Id; canal: string; recebidaEm: Instante };
+    payload: {
+      mensagemId: Id;
+      /** Hoje é o próprio aluno: a conversa é uma por aluno. */
+      conversaId: Id;
+      alunoId: Id;
+      /** whatsapp ou email. */
+      canal: string;
+      recebidaEm: Instante;
+    };
   };
   /** Avisos gravados com push pedido (T13e): o consumidor envia o Web Push depois do commit. */
   PushSolicitado: { versao: 1; payload: { avisoIds: Id[] } };

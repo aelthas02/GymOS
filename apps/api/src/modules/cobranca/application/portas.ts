@@ -1,4 +1,3 @@
-import type { VariavelDeMensagem } from '@gymos/shared-templates';
 import type { DataCivil } from '../../platform/domain/relogio';
 import type {
   Canal,
@@ -201,18 +200,4 @@ export abstract class GatewayDePagamento {
     cabecalhos: Record<string, string | undefined>,
   ): boolean;
   abstract interpretar(corpo: unknown): EventoDoProvedor | null;
-}
-
-// ---------- Mensageria (T13d) ----------
-
-export interface MensagemTransacional {
-  alunoId: string;
-  finalidade: 'transacional';
-  contexto: 'cobranca';
-  variaveis: Partial<Record<VariavelDeMensagem, string>>;
-}
-
-/** Envio de mensagens ao aluno; a implementação (WhatsApp, e-mail) é da Mensageria (T13d). */
-export abstract class Mensageria {
-  abstract enviar(mensagem: MensagemTransacional): Promise<void>;
 }
