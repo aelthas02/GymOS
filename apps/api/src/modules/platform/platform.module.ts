@@ -80,6 +80,9 @@ export const ROTAS_SEM_TENANT = [
     },
   ],
   exports: [
+    // O EventosModule usa a chave de operação (painel de filas e reprocessamento da DLQ).
+    CONFIGURACAO_DA_PLATAFORMA,
+    ChaveDeOperacaoGuard,
     ContextoDoTenant,
     ExecutorDeTenant,
     Relogio,

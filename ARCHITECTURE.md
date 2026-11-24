@@ -164,6 +164,59 @@ requisição → contexto (AsyncLocalStorage) → tenant pelo Host (404 se desco
 Integrações externas (emissor fiscal, pagamentos, catraca, Meta, IA, armazenamento) ficam atrás de
 portas com adapter fake determinístico (ADRs 008 a 012).
 
+### Eventos, filas, cache e tempo real
+
+O `EventosModule` (`modules/platform/eventos.module.ts`, ADR-007, T13a) é global. As portas ficam em
+`modules/platform/application/eventos.ts`; os tipos dos eventos, em `@gymos/shared-events`.
+
+```
+caso de uso ─ publicar() ─▶ evento_outbox (mesma transação)
+despachante ─ FOR UPDATE SKIP LOCKED ─▶ 1 job por consumidor (BullMQ, fila do consumidor)
+worker ─ runAsTenant ─▶ marca evento_processado + efeito do consumidor (mesma transação) ─▶ ack
+```
+
+**Publicar um evento.** No caso de uso, injete `PublicadorDeEventos` e chame
+`publicar({ tipo: 'PagamentoConfirmado', payload })` dentro da requisição ou de `runAsTenant`. O
+tenant, o id e o instante vêm da plataforma. Se o caso de uso falha, o rollback leva o evento junto.
+
+**Consumir um evento.** No `onModuleInit` do módulo do domínio, registre o consumidor:
+
+```ts
+registro.registrar({
+  nome: 'fiscal.emitir-nota', // estável: com o id do evento, é a chave de idempotência
+  evento: 'PagamentoConfirmado',
+  fila: 'notas',
+  tratar: async (evento) => {
+    /* efeito pelo contexto.cliente(), na transação da entrega */
+  },
+});
+```
+
+- A entrega é pelo menos uma vez e o efeito no banco, exatamente uma: a marca em `evento_processado`
+  e o efeito estão na mesma transação. Efeito fora do banco (e-mail, emissor) precisa de chave de
+  idempotência própria no provedor, ou de um job seguinte.
+- Erro faz nova tentativa com espera exponencial; na quinta falha o job vai para a fila `falhas` com
+  o motivo. Reprocessar: `POST /api/interno/falhas/:id/reprocessar` com a chave de operação.
+- Consumidor registrado depois de o evento ser despachado não o recebe.
+
+**Filas e jobs.** `Filas.enfileirar(fila, nome, { tenantId, ... })` nas filas `eventos`, `cobranca`,
+`notas`, `mensagens`, `importacao` e `notificacoes`; job sem `tenantId` é recusado. O trabalho é
+registrado com `ProcessadorDeFilas.registrarTrabalho(fila, nome, fn)` e roda em `runAsTenant`. Com
+`FILAS_PROCESSAR=true`, o processo sobe os workers e o despachante; em dev e staging, o painel fica em
+`/interno/filas` (chave de operação no cabeçalho `x-chave-de-operacao` ou como senha do navegador).
+
+**Cache.** Só pelo `CacheComTenant`: `obter(['resumo-financeiro', mes], carregar, { ttlSegundos })` e
+`invalidar(chave)`, sempre no tenant do contexto (`chaveDeCache(tenantId, ...partes)` monta
+`tenant:<id>:cache:...`). Para invalidar por evento:
+`cache.invalidarAoReceber('PagamentoConfirmado', 'financeiro.cache-resumo', (e) => [['resumo-financeiro']])`.
+
+**Tempo real.** `TempoRealPorTenant.publicar(topico, mensagem)` e `assinar(topico, aoReceber)`, no canal
+`tenant:<id>:<topico>` do tenant do contexto. Publique a partir de um consumidor de evento, depois do
+commit, para não avisar o que um rollback desfez.
+
+O lint proíbe `ioredis`, `bullmq` e `@bull-board/*` fora de `modules/platform`. Tudo no Redis fica sob
+`REDIS_PREFIXO`; os testes de integração usam um prefixo por arquivo (`usarRedisDeTeste`).
+
 ### Configuração
 
 A API valida as variáveis de ambiente com Zod em `apps/api/src/config/env.ts`. `main.ts` chama

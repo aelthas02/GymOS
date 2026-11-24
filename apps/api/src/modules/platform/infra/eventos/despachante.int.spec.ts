@@ -8,7 +8,7 @@ import {
   pagamentoConfirmado,
 } from '../../testing/eventos-de-teste';
 import { criarTenant, type TenantCriado } from '../../testing/fabricas';
-import { usarRedisDeTeste } from '../../testing/redis-de-teste';
+import { promessaControlada, usarRedisDeTeste } from '../../testing/redis-de-teste';
 import { ExecutorDeTenant } from '../contexto/executor-de-tenant';
 import { FilasBullMQ } from '../filas/filas.bullmq';
 import { DespachanteDoOutbox } from './despachante-do-outbox';
@@ -17,7 +17,7 @@ import { RegistroDeConsumidores } from './registro-de-consumidores';
 /** Libera todos só quando `total` participantes chegaram. */
 function barreira(total: number): () => Promise<void> {
   let chegaram = 0;
-  const todos = Promise.withResolvers<void>();
+  const todos = promessaControlada();
   return () => {
     chegaram += 1;
     if (chegaram === total) {

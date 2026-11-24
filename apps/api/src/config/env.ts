@@ -22,6 +22,16 @@ export const envSchema = z.object({
   // Vazia desliga o endpoint interno de operação; definida, exige 32 caracteres ou mais.
   OPERACAO_API_KEY: optional(z.string().min(32)),
   REDIS_URL: z.url({ protocol: /^rediss?$/ }),
+  // Prefixo de filas, cache e canais no Redis; separa ambientes que dividem o mesmo Redis.
+  REDIS_PREFIXO: z
+    .string()
+    .regex(/^[a-z0-9_-]+$/)
+    .default('gymos'),
+  // Sobe os workers das filas e o despachante do outbox neste processo.
+  FILAS_PROCESSAR: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((valor) => valor === 'true'),
   SMTP_HOST: required,
   SMTP_PORT: port,
   S3_ENDPOINT: z.url({ protocol: /^https?$/ }),

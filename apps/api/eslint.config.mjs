@@ -7,6 +7,13 @@ const frameworks = {
   message: 'O domínio é TypeScript puro: sem Nest nem Prisma (ARCHITECTURE.md, back-end).',
 };
 
+// Redis e filas só pela plataforma (T13a): o cliente direto ignora o tenant das chaves e dos jobs.
+const redisDireto = {
+  group: ['ioredis', 'redis', 'bullmq', '@bull-board/*'],
+  message:
+    'Use CacheComTenant, Filas ou TempoRealPorTenant da plataforma (ARCHITECTURE.md, eventos e filas).',
+};
+
 // Tempo só pela porta Relogio (ADR-013): o domínio e os casos de uso não leem o relógio do sistema.
 const relogio = [
   {
@@ -44,6 +51,11 @@ export default [
     ignores: ['src/generated/**'],
   },
   {
+    files: ['src/**/*.ts'],
+    ignores: ['src/modules/platform/**', 'src/observabilidade/health/redis.check.ts'],
+    rules: { 'no-restricted-imports': ['error', { patterns: [redisDireto] }] },
+  },
+  {
     files: ['src/**/domain/**/*.ts'],
     rules: {
       'no-restricted-imports': [
@@ -55,6 +67,7 @@ export default [
               message: 'O domínio não importa de application, infra nem interface.',
             },
             frameworks,
+            redisDireto,
           ],
         },
       ],
@@ -71,6 +84,7 @@ export default [
               group: [...layer('infra'), ...layer('interface')],
               message: 'Casos de uso dependem de portas do domínio, não de infra nem interface.',
             },
+            redisDireto,
           ],
         },
       ],
@@ -103,6 +117,7 @@ export default [
               message:
                 'Use ContextoDoTenant.cliente(): o cliente global ignora o contexto do tenant.',
             },
+            redisDireto,
           ],
         },
       ],

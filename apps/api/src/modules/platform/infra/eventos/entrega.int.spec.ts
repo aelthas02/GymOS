@@ -11,7 +11,7 @@ import {
   pagamentoConfirmado,
 } from '../../testing/eventos-de-teste';
 import { criarTenant, type TenantCriado } from '../../testing/fabricas';
-import { aguardar, usarRedisDeTeste } from '../../testing/redis-de-teste';
+import { aguardar, promessaControlada, usarRedisDeTeste } from '../../testing/redis-de-teste';
 import { ContextoDoTenant } from '../contexto/contexto-do-tenant';
 import { ExecutorDeTenant } from '../contexto/executor-de-tenant';
 import { FilasBullMQ } from '../filas/filas.bullmq';
@@ -86,7 +86,9 @@ describe('entrega dos eventos aos consumidores', () => {
         await antesDeCair(job);
         return nuncaTermina();
       },
-      { ...filas.opcoesDeConexao(), lockDuration: 1_000 },
+      // Mesmo intervalo de verificação dos travados que o worker de verdade: o BullMQ só verifica
+      // de novo depois do intervalo de quem verificou por último.
+      { ...filas.opcoesDeConexao(), lockDuration: 1_000, stalledInterval: 200 },
     );
     workers.push(worker);
     return worker;
@@ -99,9 +101,15 @@ describe('entrega dos eventos aos consumidores', () => {
   }
 
   async function aguardarEstado(fila: NomeDaFila, jobId: string, estado: string): Promise<Job> {
-    await aguardar(async () => (await filas.fila(fila).getJobState(jobId)) === estado, {
-      descricao: `o job ${jobId} ficar ${estado}`,
-    });
+    try {
+      await aguardar(async () => (await filas.fila(fila).getJobState(jobId)) === estado, {
+        descricao: `o job ${jobId} ficar ${estado}`,
+      });
+    } catch (error) {
+      const atual = await filas.fila(fila).getJob(jobId);
+      const situacao = `${await atual?.getState()} (${atual?.failedReason ?? 'sem motivo'})`;
+      throw new Error(`${(error as Error).message} Está ${situacao}.`, { cause: error });
+    }
     const job = await filas.fila(fila).getJob(jobId);
     if (!job) {
       throw new Error(`job ${jobId} sumiu`);
@@ -114,7 +122,7 @@ describe('entrega dos eventos aos consumidores', () => {
     const evento = await publicarEDespachar(pagamentoConfirmado());
     const jobId = idDoJobDeEvento('teste.cai-depois', evento.id);
 
-    const efeitoFeito = Promise.withResolvers<void>();
+    const efeitoFeito = promessaControlada();
     const caido = workerQueCai('eventos', async (job) => {
       await processador.processar('eventos', job);
       efeitoFeito.resolve();
@@ -145,7 +153,7 @@ describe('entrega dos eventos aos consumidores', () => {
     });
     const jobId = idDoJobDeEvento('teste.cai-antes', evento.id);
 
-    const recebido = Promise.withResolvers<void>();
+    const recebido = promessaControlada();
     const caido = workerQueCai('notas', () => {
       recebido.resolve();
       return Promise.resolve();

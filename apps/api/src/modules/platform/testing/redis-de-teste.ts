@@ -32,6 +32,18 @@ export function usarRedisDeTeste(): RedisDeTeste {
   return { url, prefixo };
 }
 
+/** Promessa resolvida de fora (o lib do TypeScript ainda não tem Promise.withResolvers). */
+export function promessaControlada<T = void>(): {
+  promise: Promise<T>;
+  resolve: (valor: T) => void;
+} {
+  let resolve!: (valor: T) => void;
+  const promise = new Promise<T>((resolver) => {
+    resolve = resolver;
+  });
+  return { promise, resolve };
+}
+
 /** Espera a condição ficar verdadeira, conferindo a cada 50 ms. */
 export async function aguardar(
   condicao: () => boolean | Promise<boolean>,
