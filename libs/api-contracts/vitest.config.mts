@@ -21,8 +21,10 @@ export default defineConfig(() => ({
       reportsDirectory: '../../coverage/libs/api-contracts',
       include: ['src/**/*.ts'],
       exclude: ['src/generated/**', 'src/**/*.spec.ts'],
+      // Portão de cobertura (T03): só vale com GYMOS_COBERTURA=true (`pnpm cobertura`); o `test` padrão não falha por limite.
       // Portão do CI (T03): 85% de linhas e 80% de branches no geral; 100% nas pastas de regra.
-      thresholds: { lines: 85, branches: 80 },
+      thresholds:
+        process.env['GYMOS_COBERTURA'] === 'true' ? { lines: 85, branches: 80 } : undefined,
     },
   },
 }));

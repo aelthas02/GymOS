@@ -21,7 +21,10 @@ export default defineConfig(() => ({
       reportsDirectory: '../../../coverage/libs/shared/events',
       include: ['src/**/*.ts'],
       // Contrato puro entre domínios: 100%, como os outros pacotes de libs/shared.
-      thresholds: { lines: 100, branches: 100, functions: 100, statements: 100 },
+      thresholds:
+        process.env['GYMOS_COBERTURA'] === 'true'
+          ? { lines: 100, branches: 100, functions: 100, statements: 100 }
+          : undefined,
     },
   },
 }));

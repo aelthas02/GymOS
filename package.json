@@ -17,7 +17,8 @@
     "build": "nx run-many -t build",
     "format": "nx format:write",
     "format:check": "nx format:check",
-    "gymos": "nx run api:build && node dist/apps/api/gymos.js"
+    "gymos": "nx run api:build && node dist/apps/api/gymos.js",
+    "cobertura": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tools/architecture/ci/cobertura.ts"
   },
   "dependencies": {
     "@angular/cdk": "~22.2.7",

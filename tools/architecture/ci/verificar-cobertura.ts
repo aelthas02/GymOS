@@ -39,6 +39,7 @@ for (const alvo of ALVOS.filter((a) => !filtro.length || filtro.includes(a.proje
       {
         encoding: 'utf8',
         shell: true,
+        env: { ...process.env, GYMOS_COBERTURA: 'true' },
       },
     );
     const saida = `${r.stdout}${r.stderr}`;

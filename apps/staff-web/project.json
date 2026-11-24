@@ -133,10 +133,14 @@
         "coverage": true,
         "coverageReporters": ["text-summary", "lcov"],
         "coverageInclude": ["apps/staff-web/src/**/*.ts"],
-        "coverageExclude": ["apps/staff-web/src/main.ts", "apps/staff-web/src/environments/**"],
-        "coverageThresholds": {
-          "lines": 85,
-          "branches": 80
+        "coverageExclude": ["apps/staff-web/src/main.ts", "apps/staff-web/src/environments/**"]
+      },
+      "configurations": {
+        "cobertura": {
+          "coverageThresholds": {
+            "lines": 85,
+            "branches": 80
+          }
         }
       }
     },

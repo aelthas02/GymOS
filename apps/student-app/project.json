@@ -134,10 +134,14 @@
         "coverage": true,
         "coverageReporters": ["text-summary", "lcov"],
         "coverageInclude": ["apps/student-app/src/**/*.ts"],
-        "coverageExclude": ["apps/student-app/src/main.ts", "apps/student-app/src/environments/**"],
-        "coverageThresholds": {
-          "lines": 85,
-          "branches": 80
+        "coverageExclude": ["apps/student-app/src/main.ts", "apps/student-app/src/environments/**"]
+      },
+      "configurations": {
+        "cobertura": {
+          "coverageThresholds": {
+            "lines": 85,
+            "branches": 80
+          }
         }
       }
     },

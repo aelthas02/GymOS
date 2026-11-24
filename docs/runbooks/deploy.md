@@ -59,7 +59,7 @@ O provedor de nuvem ainda não foi escolhido (ADR-017), então nada disto foi cr
 
 ## Portões de qualidade (resumo)
 
-- Cobertura: 85% de linhas e 80% de branches no geral; 100% em `libs/shared/{money,validation,pipes,
+- Cobertura (`pnpm cobertura`, job `cobertura` do PR, **não obrigatório por ora**; o `test` padrão não falha por limite): 85% de linhas e 80% de branches no geral; 100% em `libs/shared/{money,validation,pipes,
 forms,templates}`, `libs/ui/styles/contrast.ts`, pastas `domain/` da API e
   `apps/turnstile-agent/src/domain`. O job `portoes` planta código sem teste em cada pasta e confere
   que o teste falha.

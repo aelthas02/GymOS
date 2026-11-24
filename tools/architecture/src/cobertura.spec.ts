@@ -2,6 +2,9 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
+// Os limites só existem com o portão ligado; o `test` padrão não falha por cobertura.
+process.env['GYMOS_COBERTURA'] = 'true';
+
 const raiz = join(import.meta.dirname, '..', '..', '..');
 
 type Limites = { lines?: number; branches?: number; functions?: number; statements?: number };
@@ -67,7 +70,7 @@ describe('limites de cobertura (portão do CI)', () => {
       const projeto = (
         await import(pathToFileURL(join(raiz, arquivo)).href, { with: { type: 'json' } })
       ).default;
-      const limites = projeto.targets.test.options.coverageThresholds;
+      const limites = projeto.targets.test.configurations.cobertura.coverageThresholds;
       expect(limites.lines).toBeGreaterThanOrEqual(85);
       expect(limites.branches).toBeGreaterThanOrEqual(80);
     },
