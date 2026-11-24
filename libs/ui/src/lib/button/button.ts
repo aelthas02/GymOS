@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 export type ButtonVariant = 'primary' | 'accent' | 'outline' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 /**
  * Botão do GymOS: primário (tinta), destaque (acento da academia), contorno e perigo.
@@ -13,6 +13,12 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   styles: `
     :host {
       display: inline-flex;
+    }
+    :host(.ui-button--block) {
+      display: flex;
+    }
+    :host(.ui-button--block) button {
+      flex: 1;
     }
     button {
       display: inline-flex;
@@ -60,6 +66,10 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
     .ui-button--lg {
       min-height: 44px;
     }
+    .ui-button--xl {
+      min-height: 48px;
+      font-size: 15px;
+    }
     .ui-button__spinner {
       width: 14px;
       height: 14px;
@@ -74,6 +84,9 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
       }
     }
   `,
+  host: {
+    '[class.ui-button--block]': 'block()',
+  },
   template: `
     <button
       [type]="type()"
@@ -94,6 +107,8 @@ export class Button {
   readonly type = input<'button' | 'submit' | 'reset'>('button');
   readonly loading = input(false);
   readonly disabled = input(false);
+  /** Ocupa a largura toda do contêiner (botão de envio dos formulários de entrada). */
+  readonly block = input(false);
 
   protected readonly classes = computed(
     () => `ui-button--${this.variant()} ui-button--${this.size()}`,
