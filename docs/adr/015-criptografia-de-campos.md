@@ -25,3 +25,14 @@ por CPF usa um índice cego (hash com chave), não o texto.
 - Exclusão do titular por descarte de chave quando aplicável.
 - A busca aceita CPF completo, nome ou telefone; CPF parcial não é suportado (ver decisões em aberto do
   plano).
+
+## Implementação (T13c)
+
+- Chave de dados e chave de índice por tenant, envelopadas pela chave mestra em `chave_do_tenant`
+  (porta `ProvedorDeChaves`). Em dev e teste a chave mestra vem de `CHAVE_MESTRA_LOCAL`; produção recusa
+  a chave local. O adapter do KMS fica para quando o provedor de hospedagem estiver definido (ADR-017).
+- Texto cifrado `g1.<versão>.<iv>.<tag>.<dados>`, com `<tenant>|<entidade>.<campo>` como dado
+  autenticado. A rotação cria uma nova versão da chave de dados e mantém a de índice.
+- Índice cego: `HMAC-SHA256(chave de índice, "<tipo>:<valor normalizado>")` para CPF, e-mail e telefone.
+- O descarte de chave por titular não foi implementado: a exclusão é feita pelos provedores de cada
+  domínio (`ProvedorDeDadosDoTitular`).
