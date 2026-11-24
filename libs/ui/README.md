@@ -77,27 +77,29 @@ Decisões que valem para o uso:
 - Novos tokens de T05: `--on-ink`, `--border-dashed`, `--nav-*` e `--state-error-*`/`--state-warn-*`
   (cores que o protótipo repete e que não estavam em `design-tokens.json`).
 
-### Gráficos ()
+### Gráficos (`src/lib/graficos`)
 
-SVG próprio, sem biblioteca: e , então o gráfico acompanha a largura do pai.
+SVG próprio, sem biblioteca: `viewBox` e `width: 100%`, então o gráfico acompanha a largura do pai.
 
-- **Dados e formatação por input.** Os de uma série recebem ; recebe
-  , a matriz e .
-  é uma função : as telas injetam aqui os pipes do T08 (moeda, número,
-  percentual). Sem ela vale o número em pt-BR; valor que não é número aparece como —.
-- **Cor só por token.** A primeira série é (segue o tema da academia); as seguintes, a
-  ; barras sem destaque, ; cancelamentos, . pinta o maior valor
-  de acento e escreve o rótulo dele (112 às 18h); aceita para o 54% da legenda.
-- **Acessibilidade.** O leva com o resumo ( da tela mais o pico) e, ao lado,
-  uma tabela com todos os pontos já formatados; os cabeçalhos dela vêm de e
-  . A cor nunca é a única pista: valor e rótulo estão no texto, na legenda e na tabela.
-- **Estado vazio.** Lista vazia (ou total zero no ) mostra um com , nunca um
-  SVG quebrado. Busca de dados e ficam com cada tela.
-- **** parte de zero; com a escala vai do menor ao maior valor (evolução de carga,
-  taxas). é o mesmo gráfico com a área preenchida.
-- **Tamanho.** Medido num lazy chunk do staff-web (produção): o , o maior, com e a tabela,
-  soma 4,9 kB em brotli; os dez juntos, cerca de 9 kB. Nenhum passa de 8 kB.
-- Cores dos gráficos viram token em e , como as demais.
+- **Dados e formatação por input.** Os de uma série recebem `dados: { rotulo, valor }[]`; `Sparkline` recebe
+  `valores`, `Heatmap` a matriz `valores[linha][coluna]` e `StackedBarChart` `{ rotulo, positivo, negativo }`.
+  `[formatar]` é uma função `(valor) => string`: as telas injetam aqui os pipes do T08 (moeda, número,
+  percentual). Sem ela vale o número em pt-BR; valor que não é número aparece como "—".
+- **Cor só por token.** A primeira série é `--accent` (segue o tema da academia); as seguintes, `--chart-2` a
+  `--chart-5`; barras sem destaque, `--chart-bar`; cancelamentos, `--chart-negative`. `BarChart` pinta o maior
+  valor de acento e escreve o rótulo dele ("112" às 18h); `Donut` aceita `[formatarParte]` para o "54%" da
+  legenda. Cor de gráfico nova vira token em `tokens.css` e `tokens.ts`, como as demais.
+- **Acessibilidade.** O `<svg role="img">` leva `aria-label` com o resumo (`resumo` da tela mais o pico) e, ao
+  lado, uma tabela `.ui-sr-only` com todos os pontos já formatados; os cabeçalhos dela vêm de `colunaRotulo` e
+  `colunaValor`. A cor nunca é a única pista: valor e rótulo estão no texto, na legenda e na tabela.
+- **Estado vazio.** Lista vazia (ou total zero no `Donut`) mostra um `ui-empty-state` com `mensagemVazia`,
+  nunca um SVG quebrado. Busca de dados e `@defer` ficam com cada tela.
+- **`LineChart`** parte de zero; com `[baseZero]="false"` a escala vai do menor ao maior valor (evolução de
+  carga, taxas). `AreaChart` é o mesmo gráfico com a área preenchida.
+- **Tamanho.** Medido num lazy chunk do staff-web em produção: o `Heatmap`, o maior, com `EmptyState` e a
+  tabela, soma 4,9 kB em brotli; os dez juntos, cerca de 9 kB. Nenhum passa de 8 kB.
+- **Tipagem estrita.** Os apps compilam com `noUncheckedIndexedAccess`; o Vitest não checa tipos, então rode
+  `npx tsc -p libs/ui/tsconfig.lib.json --noEmit` (ou o build de um app) ao mexer nos gráficos.
 
 ### Testes e acessibilidade
 
