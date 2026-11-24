@@ -28,6 +28,13 @@ export const envSchema = z.object({
   AUTH_JWT_SECRET: z.string().min(32),
   // Endereço do app do aluno de cada academia, usado nos links de e-mail; {tenant} vira o slug.
   STUDENT_APP_URL: required.default('http://{tenant}.localhost:4300'),
+  // Chave mestra local da cifra de campos (T13c, ADR-015): 32 bytes em base64. Só em dev, teste e
+  // staging; produção usa o KMS. Gere com `node -e "console.log(crypto.randomBytes(32).toString('base64'))"`.
+  CHAVE_MESTRA_LOCAL: optional(
+    z.base64().refine((valor) => Buffer.from(valor, 'base64').length === 32, {
+      message: 'deve ter 32 bytes em base64',
+    }),
+  ),
   REDIS_URL: z.url({ protocol: /^rediss?$/ }),
   // Prefixo de filas, cache e canais no Redis; separa ambientes que dividem o mesmo Redis.
   REDIS_PREFIXO: z
