@@ -27,6 +27,22 @@
   --chart-4: #a78bfa;
   --chart-5: #ff8a3d;
   --state-warn-fg: #4d3500;
+  --agenda-done-bg: #d3dde8;
+  --agenda-done-fg: #2f4256;
+  --agenda-done-bar: #7f95ab;
+  --agenda-confirmed-bg: #b6ebd3;
+  --agenda-confirmed-fg: #075c3c;
+  --agenda-confirmed-bar: #19b87a;
+  --agenda-cancelled-bg: #fbcfc6;
+  --agenda-cancelled-fg: #8a2410;
+  --agenda-cancelled-bar: #e0553a;
+  --agenda-noshow-bg: #e4d6f8;
+  --agenda-noshow-fg: #46277f;
+  --agenda-noshow-bar: #8b5cf6;
+  --agenda-waiting-bg: #ffde85;
+  --agenda-waiting-fg: #5e4000;
+  --agenda-waiting-bar: #e0a000;
+  --whatsapp-bg: #e7ded2;
 
   /* Tema padrão; o ThemeService troca os três pela cor da academia (ADR-014). */
   --accent: #22c98a;
