@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type ConfiguracaoDeAcesso, validarConfiguracaoDeAcesso } from '@gymos/shared-acesso';
+import { PublicadorDeEventos } from '../../platform/application/eventos';
+import { Relogio } from '../../platform/domain/relogio';
 import { type ConfiguracaoDeAlertas, validarConfiguracaoDeAlertas } from '../domain/alerta';
 import { type Executor, AutoriaDoAcesso } from './autoria';
 import { RegistroDeAcessoInvalidoError } from './erros';
@@ -11,6 +13,8 @@ export class ConfiguracoesDoAcesso {
   constructor(
     private readonly repositorio: RepositorioDeConfiguracaoDeAcesso,
     private readonly autoria: AutoriaDoAcesso,
+    private readonly publicador: PublicadorDeEventos,
+    private readonly relogio: Relogio,
   ) {}
 
   obter(): Promise<ConfiguracaoDeAcesso> {
@@ -23,6 +27,11 @@ export class ConfiguracoesDoAcesso {
       throw new RegistroDeAcessoInvalidoError(erro);
     }
     await this.repositorio.salvar(nova);
+    // O agente da catraca decide offline por estas regras: o cache de autorização ganha versão nova (T23b).
+    await this.publicador.publicar({
+      tipo: 'RegrasDeAcessoAlteradas',
+      payload: { alteradoEm: this.relogio.agora().toISOString() },
+    });
     await this.autoria.registrar(executor, {
       acao: 'alterou-regras-de-acesso',
       detalhe:

@@ -62,6 +62,18 @@ export const ACOES_DA_AUDITORIA = {
     modulo: 'configuracoes',
     sensivel: false,
   },
+  'gerou-codigo-de-pareamento': {
+    texto: 'Gerou código de pareamento',
+    modulo: 'configuracoes',
+    sensivel: false,
+  },
+  'revogou-agente-da-catraca': {
+    texto: 'Revogou agente da catraca',
+    modulo: 'configuracoes',
+    sensivel: true,
+  },
+  'alterou-dispositivo': { texto: 'Alterou dispositivo', modulo: 'configuracoes', sensivel: false },
+  'cadastrou-biometria': { texto: 'Cadastrou biometria', modulo: 'acesso', sensivel: true },
   /** O 403 do guard (gancho aoNegarPermissao do T12); o módulo é o da permissão negada. */
   'tentativa-negada': { texto: 'Tentativa negada', modulo: 'permissoes', sensivel: true },
 } as const satisfies Record<string, AcaoDaAuditoria>;

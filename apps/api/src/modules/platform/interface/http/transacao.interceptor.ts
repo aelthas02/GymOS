@@ -4,9 +4,11 @@ import {
   Injectable,
   type NestInterceptor,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { from, lastValueFrom, type Observable } from 'rxjs';
 import { ContextoDoTenant } from '../../infra/contexto/contexto-do-tenant';
 import { ExecutorDeTenant } from '../../infra/contexto/executor-de-tenant';
+import { SEM_TRANSACAO } from './sem-transacao';
 
 /**
  * Cada requisição com tenant resolvido roda numa transação com app.tenant_id: erro desfaz tudo, e a
@@ -18,11 +20,19 @@ export class TransacaoPorRequisicaoInterceptor implements NestInterceptor {
   constructor(
     private readonly contexto: ContextoDoTenant,
     private readonly executor: ExecutorDeTenant,
+    private readonly reflector: Reflector,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const tenant = this.contexto.estado()?.tenant;
-    if (!tenant || context.getType() !== 'http') {
+    if (
+      !tenant ||
+      context.getType() !== 'http' ||
+      this.reflector.getAllAndOverride<boolean | undefined>(SEM_TRANSACAO, [
+        context.getHandler(),
+        context.getClass(),
+      ])
+    ) {
       return next.handle();
     }
     return from(

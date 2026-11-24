@@ -20,7 +20,6 @@ import { Frequencia } from '../../application/frequencia';
 import { QrDeCheckin } from '../../application/qr';
 import {
   AlunoEmRiscoDto,
-  ChavesPublicasDoQrDto,
   CheckInDto,
   CheckInPorQrDto,
   ChecksInDeHojeDto,
@@ -36,9 +35,7 @@ import {
   PresencasDoMesDto,
   PreviaDosAlertasDto,
   QrDeCheckinDto,
-  ResultadoDaSincronizacaoDto,
   ResultadoDoAcessoDto,
-  SincronizarAcessosDto,
 } from './dto';
 import { ErrosDoAcessoFilter } from './erros.filter';
 
@@ -71,7 +68,6 @@ const resultadoDto = ({
 export class AcessoController {
   constructor(
     private readonly acessos: Acessos,
-    private readonly qr: QrDeCheckin,
     private readonly frequencia: Frequencia,
     private readonly alertas: AlertasDeFrequencia,
   ) {}
@@ -135,30 +131,6 @@ export class AcessoController {
     return resultadoDto(
       await this.acessos.liberarManualmente({ usuarioId: sessao.sujeitoId }, corpo),
     );
-  }
-
-  @Post('sincronizacao')
-  @HttpCode(200)
-  @RequirePermission('acesso:criar')
-  @ApiOperation({
-    operationId: 'sincronizarAcessosOffline',
-    summary:
-      'Recebe os acessos que o agente da catraca guardou offline: fora de ordem e repetidos são gravados uma vez cada, na ordem do horário de origem.',
-  })
-  @ApiOkResponse({ type: ResultadoDaSincronizacaoDto })
-  sincronizar(@Body() corpo: SincronizarAcessosDto): Promise<ResultadoDaSincronizacaoDto> {
-    return this.acessos.sincronizar(corpo.registros, corpo.unidadeId);
-  }
-
-  @Get('chaves-publicas')
-  @RequirePermission('acesso:ver')
-  @ApiOperation({
-    operationId: 'listarChavesPublicasDoQr',
-    summary: 'Chaves públicas do QR para o agente conferir a assinatura offline.',
-  })
-  @ApiOkResponse({ type: ChavesPublicasDoQrDto })
-  async chavesPublicas(): Promise<ChavesPublicasDoQrDto> {
-    return { chaves: await this.qr.chavesPublicas() };
   }
 
   @Get('frequencia/checkins-de-hoje')

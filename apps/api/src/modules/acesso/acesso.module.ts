@@ -42,7 +42,7 @@ import {
  * `@gymos/shared-acesso`, o mesmo do agente da catraca), QR de check-in do app, liberação manual da
  * Recepção, sincronização dos acessos offline e alertas de frequência. Exporta `Frequencia` (check-ins
  * de hoje e frequência por horário para o Início, presenças do mês para o rateio do T21) e `Acessos`.
- * Dispositivos, pareamento e tempo real são do T23b.
+ * Dispositivos, pareamento e tempo real são do T23b (`DispositivosModule`).
  */
 @Module({
   imports: [AlunosModule],
@@ -72,7 +72,15 @@ import {
     DadosDoTitularDoAcesso,
     RotinaDosAlertas,
   ],
-  exports: [Acessos, Frequencia, AlertasDeFrequencia, ConfiguracoesDoAcesso, QrDeCheckin],
+  exports: [
+    Acessos,
+    Frequencia,
+    AlertasDeFrequencia,
+    ConfiguracoesDoAcesso,
+    QrDeCheckin,
+    AlunosParaAcesso,
+    AutoriaDoAcesso,
+  ],
 })
 export class AcessoModule implements OnModuleInit {
   constructor(
