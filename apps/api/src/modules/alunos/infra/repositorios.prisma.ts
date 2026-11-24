@@ -9,6 +9,7 @@ import type { DataCivil } from '../../platform/domain/relogio';
 import { ContextoDoTenant } from '../../platform/infra/contexto/contexto-do-tenant';
 import {
   type Aluno,
+  type ContatoDoAlunoParaMensagem,
   type CamposDoContrato,
   type Contrato,
   type DadosPessoaisDoAluno,
@@ -413,6 +414,35 @@ export class RepositorioDeAlunosPrisma extends RepositorioDeAlunos {
       .cliente()
       .aluno.findFirst({ where: { emailHash }, select: { id: true } });
     return linha?.id ?? null;
+  }
+
+  async idPorTelefone(telefone: string): Promise<string | null> {
+    const digitos = telefone.replace(/D/g, '');
+    const variantes = new Set([digitos]);
+    if (digitos.startsWith('55') && digitos.length > 11) {
+      variantes.add(digitos.slice(2));
+    }
+    const telefoneHash = {
+      in: await Promise.all([...variantes].map((v) => this.cifra.indiceCego('telefone', v))),
+    };
+    const linha = await this.contexto
+      .cliente()
+      .aluno.findFirst({ where: { telefoneHash }, select: { id: true } });
+    return linha?.id ?? null;
+  }
+
+  async contato(id: string): Promise<ContatoDoAlunoParaMensagem | null> {
+    const linha = await this.contexto
+      .cliente()
+      .aluno.findFirst({ where: { id }, select: { nome: true, telefone: true, email: true } });
+    if (!linha) {
+      return null;
+    }
+    return {
+      nome: linha.nome,
+      telefone: linha.telefone ? await this.cifra.decifrar('aluno.telefone', linha.telefone) : null,
+      email: linha.email ? await this.cifra.decifrar('aluno.email', linha.email) : null,
+    };
   }
 
   async listar(

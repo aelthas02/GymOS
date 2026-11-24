@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { centavos, formatarBrl } from '@gymos/shared-money';
 import { formatarDataBr } from '@gymos/shared-pipes/formatadores';
 import { type Executor, RegistroDeAtividade } from '../../alunos/application/autoria';
+import { Mensageria } from '../../integracoes/application/mensageria';
 import { PublicadorDeEventos } from '../../platform/application/eventos';
 import { FUSO_PADRAO, Relogio } from '../../platform/domain/relogio';
 import {
@@ -29,7 +30,6 @@ import {
   type EventoDoProvedor,
   type FormaDePagamentoDoAluno,
   GatewayDePagamento,
-  Mensageria,
   type NovoPagamento,
   ReferenciasExternas,
   RepositorioDeCobrancas,

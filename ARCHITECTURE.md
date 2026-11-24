@@ -326,31 +326,33 @@ await auditoria.registrarAtividade({
 
 Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso de uso):
 
-| Ação (chave)                      | Texto                           | Módulo        | Sensível | Caso de uso dono                      |
-| --------------------------------- | ------------------------------- | ------------- | -------- | ------------------------------------- |
-| `alterou-valor`                   | Alterou valor                   | Planos        | sim      | alterar valor do plano (T15a)         |
-| `alterou-permissao`               | Alterou permissão               | Permissões    | sim      | editar tipo de acesso (T26b)          |
-| `cadastrou-aluno`                 | Cadastrou aluno                 | Alunos        | não      | cadastrar aluno (T15a)                |
-| `enviou-cobranca-em-lote`         | Enviou cobrança em lote         | Alunos        | não      | cobrança em lote (T19)                |
-| `registrou-pagamento`             | Registrou pagamento             | Financeiro    | não      | baixa no balcão (T19)                 |
-| `estornou-pagamento`              | Estornou pagamento              | Financeiro    | sim      | estornar (T19)                        |
-| `combinou-nova-data`              | Combinou nova data              | Financeiro    | não      | combinar nova data (T19)              |
-| `trocou-forma-de-pagamento`       | Trocou forma de pagamento       | Financeiro    | não      | troca da forma de pagamento (T19)     |
-| `alterou-configuracao-financeira` | Alterou configuração financeira | Configurações | sim      | tolerância e contratos (T26c)         |
-| `editou-ficha-de-treino`          | Editou ficha de treino          | Treinos       | não      | editar ficha (T25)                    |
-| `excluiu-aluno`                   | Excluiu aluno                   | Alunos        | sim      | excluir aluno (T15a)                  |
-| `trocou-cor-do-app`               | Trocou a cor do app             | Configurações | não      | `PUT /tenant/identidade` (T12, T26c)  |
-| `cadastrou-funcionario`           | Cadastrou funcionário           | Equipe        | não      | cadastrar funcionário (T26a)          |
-| `editou-funcionario`              | Editou funcionário              | Equipe        | não      | editar ou inativar funcionário (T26a) |
-| `alterou-custo-de-funcionario`    | Alterou custo de funcionário    | Equipe        | sim      | alterar o custo mensal (T26a)         |
-| `alterou-acesso-de-funcionario`   | Alterou acesso de funcionário   | Equipe        | sim      | dar, trocar ou tirar o acesso (T26a)  |
-| `excluiu-funcionario`             | Excluiu funcionário             | Equipe        | sim      | excluir funcionário (T26a)            |
-| `enviou-comunicado`               | Enviou comunicado               | Alunos        | não      | comunicado manual (T13e)              |
-| `liberou-acesso-manual`           | Liberou acesso manual           | Acesso        | sim      | liberação manual da Recepção (T23a)   |
-| `registrou-check-in`              | Registrou check-in              | Acesso        | não      | check-in da Recepção (T23a)           |
-| `alterou-regras-de-acesso`        | Alterou regras de acesso        | Configurações | sim      | regras de acesso da catraca (T23a)    |
-| `alterou-alertas-de-frequencia`   | Alterou alertas de frequência   | Configurações | não      | alertas de frequência (T23a)          |
-| `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)      |
+| Ação (chave)                      | Texto                           | Módulo        | Sensível | Caso de uso dono                              |
+| --------------------------------- | ------------------------------- | ------------- | -------- | --------------------------------------------- |
+| `alterou-valor`                   | Alterou valor                   | Planos        | sim      | alterar valor do plano (T15a)                 |
+| `alterou-permissao`               | Alterou permissão               | Permissões    | sim      | editar tipo de acesso (T26b)                  |
+| `cadastrou-aluno`                 | Cadastrou aluno                 | Alunos        | não      | cadastrar aluno (T15a)                        |
+| `enviou-cobranca-em-lote`         | Enviou cobrança em lote         | Alunos        | não      | cobrança em lote (T19)                        |
+| `registrou-pagamento`             | Registrou pagamento             | Financeiro    | não      | baixa no balcão (T19)                         |
+| `estornou-pagamento`              | Estornou pagamento              | Financeiro    | sim      | estornar (T19)                                |
+| `combinou-nova-data`              | Combinou nova data              | Financeiro    | não      | combinar nova data (T19)                      |
+| `trocou-forma-de-pagamento`       | Trocou forma de pagamento       | Financeiro    | não      | troca da forma de pagamento (T19)             |
+| `alterou-configuracao-financeira` | Alterou configuração financeira | Configurações | sim      | tolerância e contratos (T26c)                 |
+| `editou-ficha-de-treino`          | Editou ficha de treino          | Treinos       | não      | editar ficha (T25)                            |
+| `excluiu-aluno`                   | Excluiu aluno                   | Alunos        | sim      | excluir aluno (T15a)                          |
+| `trocou-cor-do-app`               | Trocou a cor do app             | Configurações | não      | `PUT /tenant/identidade` (T12, T26c)          |
+| `cadastrou-funcionario`           | Cadastrou funcionário           | Equipe        | não      | cadastrar funcionário (T26a)                  |
+| `editou-funcionario`              | Editou funcionário              | Equipe        | não      | editar ou inativar funcionário (T26a)         |
+| `alterou-custo-de-funcionario`    | Alterou custo de funcionário    | Equipe        | sim      | alterar o custo mensal (T26a)                 |
+| `alterou-acesso-de-funcionario`   | Alterou acesso de funcionário   | Equipe        | sim      | dar, trocar ou tirar o acesso (T26a)          |
+| `excluiu-funcionario`             | Excluiu funcionário             | Equipe        | sim      | excluir funcionário (T26a)                    |
+| `enviou-comunicado`               | Enviou comunicado               | Alunos        | não      | comunicado manual (T13e)                      |
+| `conectou-integracao`             | Conectou integração             | Configurações | sim      | conectar Instagram, Facebook, WhatsApp (T13d) |
+| `desconectou-integracao`          | Desconectou integração          | Configurações | sim      | desconectar um canal da Meta (T13d)           |
+| `liberou-acesso-manual`           | Liberou acesso manual           | Acesso        | sim      | liberação manual da Recepção (T23a)           |
+| `registrou-check-in`              | Registrou check-in              | Acesso        | não      | check-in da Recepção (T23a)                   |
+| `alterou-regras-de-acesso`        | Alterou regras de acesso        | Configurações | sim      | regras de acesso da catraca (T23a)            |
+| `alterou-alertas-de-frequencia`   | Alterou alertas de frequência   | Configurações | não      | alertas de frequência (T23a)                  |
+| `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)              |
 
 ### Alunos, planos e contratos
 
@@ -420,7 +422,8 @@ balcão ─ trava a parcela (FOR UPDATE) ─▶ PagamentoConfirmado · parcela j
   HMAC-SHA256 do corpo em `x-assinatura` (`PAGAMENTOS_WEBHOOK_SEGREDO`); sem assinatura, 401.
   Idempotente pelo id do evento do provedor. A página simulada fica em
   `/api/pagamento-simulado/:idExterno` (fora de produção).
-- **Mensageria** (`{link}`, cobrança em lote): porta própria com adapter de log até o T13d.
+- **Mensageria** (`{link}`, cobrança em lote): usa a `Mensageria` da plataforma (T13d); o `{link}` é a página da
+  cobrança pendente da parcela a receber mais antiga (`VariavelLinkDePagamento`).
 - **Pendências** (T18): `GET /api/cobranca/pendencias` ("Mensalidade em atraso" e pagamentos em
   duplicidade a estornar).
 - **LGPD**: pagamentos têm retenção fiscal (5 anos): a exclusão anonimiza e cancela o que estava a receber.
@@ -514,6 +517,63 @@ agente offline ─ validarQrOffline (chave pública + nonces locais) ─▶ guar
 - **Leituras**: `GET /api/acesso/frequencia/{checkins-de-hoje,por-horario,por-aluno,presencas-do-mes,alunos-em-risco}`. Em
   processo, `Frequencia` (check-ins de hoje e frequência por horário para o Início; `presencasDoMes` para o rateio do T21).
 - **LGPD**: o provedor `acesso` exporta acessos e alertas do aluno e a exclusão apaga tudo (sem retenção legal).
+
+### Integrações de plataforma (Meta, mensageria, IA e arquivos)
+
+`modules/integracoes` (T13d, ADR-011 e ADR-012) é global e não depende de nenhum domínio de negócio: alunos, cobrança e
+funcionários registram nele os seus dados. Cada porta tem adapter fake determinístico (os flags de ambiente só aceitam
+`fake`; só o armazenamento aceita `s3`). Os testes dos domínios usam sempre os fakes.
+
+**Conexões Meta** (`ConexoesMeta`, único dono das contas): `GET /api/integracoes/meta` (estado dos três canais) e, com
+`configuracoes.redes-sociais:editar`, `POST /:canal/conectar` (devolve `urlDoFluxo`; o WhatsApp passa a "Verificação
+pendente"), `POST /:canal/retorno` (`codigo` e `state` devolvidos pela Meta), `POST /:canal/concluir` ("Concluir conexão":
+pergunta à Meta se a verificação terminou) e `DELETE /:canal`. Não passa pelo módulo Marketing.
+
+- O `state` é `<tenant>.<canal>.<expira>.<HMAC>` (15 min): amarra o retorno ao tenant e ao canal.
+- O token fica cifrado (`conexao_meta.token`, T13c) e nunca sai pela API. `RenovacaoDosTokensDaMeta` renova o que vence em
+  até 7 dias (ao subir e a cada 24 h, só com `FILAS_PROCESSAR`); a Meta recusar a renovação marca "expirado".
+- Fake: qualquer código vale; `verificacao-pendente` deixa o WhatsApp pendente até "Concluir conexão".
+
+**Mensageria** (`Mensageria.enviar`): quem chama informa a finalidade e recebe o resultado, sem exceção para recusa.
+
+```ts
+const r = await mensageria.enviar({
+  alunoId,
+  finalidade: 'marketing', // 'transacional' | 'marketing'
+  contexto: 'marketing', // catálogo de variáveis do T08 (padrão: cobranca; marketing não leva {link})
+  modelo: 'Oi, {nome}! O {plano} vence em {vencimento}.',
+  canal: 'whatsapp', // opcional: sem canal, WhatsApp conectado e senão e-mail
+});
+// { enviada: true, mensagemId, canal } | { enviada: false, mensagemId, motivo: 'sem_consentimento' | ... }
+```
+
+- `marketing` só vai com aceite (`Consentimentos.elegivel`, T13c); `transacional` sempre. A recusa, com o motivo, e a
+  falha do provedor ficam gravadas em `mensagem` (estado `recusada` ou `falha`).
+- E-mail delega à `EnvioDeEmail` do T12. O telefone nunca é gravado: só passa pelo transporte (`TransporteDeWhatsapp`).
+- **Webhook** `POST /api/webhooks/whatsapp/:tenantSlug` (tenant sempre pelo caminho; não há rota por id externo), com
+  `x-hub-signature-256: sha256=<HMAC do JSON>` (`MENSAGERIA_WEBHOOK_SEGREDO`). Corpos: `{ tipo: 'status', idExterno,
+status: 'delivered' | 'read' | 'failed' }` e `{ tipo: 'resposta', de, texto }`. A resposta de número que não é de aluno
+  da academia é ignorada; "SAIR" (qualquer caixa e pontuação) revoga o marketing; toda resposta publica `MensagemRecebida`.
+- **Fonte de contatos e variáveis**: o domínio dono registra no `onModuleInit`:
+  `diretorio.registrar(fonte)` (alunos: nome, telefone, e-mail, aluno por telefone) e
+  `variaveis.registrar({ variavel: 'professor', valor: (alunoId) => ... })`. Hoje: alunos (`nome`, `plano`, `vencimento`,
+  `valor`), funcionários (`professor`) e cobrança (`link`). Valor passado em `variaveis` vence o do provedor; variável sem
+  dado vira texto vazio. `ResolvedorDeVariaveis.resolver(modelo, contexto, alunoId)` serve a quem só quer o texto.
+- Dev: o fake guarda as mensagens em memória e `GET /api/integracoes/dev/mensagens` as lista (fora de produção).
+- LGPD: o provedor `integracoes` exporta e apaga as mensagens do aluno.
+
+**GeradorIA** (`gerar({ finalidade, instrucao, dados, formato })`): `formato` é `{ campo: 'texto' | 'lista' }` e o retorno traz
+cada campo. Antes de sair para qualquer provedor, o pedido perde as chaves `nome`, `cpf`, `telefone`, `email` (e variantes)
+em qualquer profundidade e tem CPF, telefone e e-mail trocados por `[removido]` nos textos. Nome no meio de um texto livre
+não é detectável: o domínio não deve mandá-lo. Cada chamada grava `uso_de_ia` (finalidade, provedor, tokens estimados), sem
+prompt nem resposta. O fake devolve texto determinístico do pedido e guarda o que recebeu (`pedidos`) para os testes.
+
+**Armazenamento** (`Armazenamento.enviar | urlAssinada | remover`): toda chave é `tenant/<id>/<pasta>/<uuid>.<ext>` (o nome do
+cliente não entra) e só se abre a chave do tenant do contexto. O upload confere tipo (JPEG, PNG, WebP, PDF e MP4), extensão,
+primeiros bytes e tamanho (5 MB imagens, 10 MB PDF, 50 MB vídeo). URL de leitura assinada de 5 min por padrão (máximo 1 h).
+HTTP: `POST /api/arquivos` (multipart `arquivo` e `pasta`), `GET /api/arquivos/url?chave=`, `DELETE /api/arquivos?chave=`.
+`ARMAZENAMENTO=fake` guarda em memória e serve `/api/arquivos/baixar` (assinatura HMAC de chave e prazo);
+`ARMAZENAMENTO=s3` usa o MinIO/S3 (`S3_*`) com URLs pré-assinadas SigV4 sem SDK e cria o bucket ao subir.
 
 ### Configuração
 

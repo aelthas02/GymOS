@@ -1,9 +1,15 @@
 import { Module, type OnModuleInit } from '@nestjs/common';
 import { RegistroDeProvedoresDoTitular } from '../platform/application/direitos-do-titular';
+import { RegistroDeVariaveis } from '../integracoes/application/resolvedor';
+import { IntegracoesModule } from '../integracoes/integracoes.module';
 import { AutoriaDosFuncionarios } from './application/autoria';
 import { Funcionarios } from './application/funcionarios';
 import { RegistroDeVinculos, RepositorioDeFuncionarios } from './application/portas';
-import { DadosDoTitularDosFuncionarios, VinculoComAlunos } from './infra/adapters';
+import {
+  DadosDoTitularDosFuncionarios,
+  VariavelProfessorDoAluno,
+  VinculoComAlunos,
+} from './infra/adapters';
 import { RepositorioDeFuncionariosPrisma } from './infra/repositorios.prisma';
 import { FuncionariosController } from './interface/http/funcionarios.controller';
 
@@ -13,6 +19,7 @@ import { FuncionariosController } from './interface/http/funcionarios.controller
  * (T28, T30). Outros domínios registram seus vínculos no `RegistroDeVinculos` para barrar a exclusão.
  */
 @Module({
+  imports: [IntegracoesModule],
   controllers: [FuncionariosController],
   providers: [
     { provide: RepositorioDeFuncionarios, useClass: RepositorioDeFuncionariosPrisma },
@@ -20,6 +27,7 @@ import { FuncionariosController } from './interface/http/funcionarios.controller
     AutoriaDosFuncionarios,
     VinculoComAlunos,
     DadosDoTitularDosFuncionarios,
+    VariavelProfessorDoAluno,
     Funcionarios,
   ],
   exports: [Funcionarios, RegistroDeVinculos, RepositorioDeFuncionarios],
@@ -30,10 +38,13 @@ export class FuncionariosModule implements OnModuleInit {
     private readonly dadosDoTitular: DadosDoTitularDosFuncionarios,
     private readonly vinculos: RegistroDeVinculos,
     private readonly vinculoComAlunos: VinculoComAlunos,
+    private readonly variaveis: RegistroDeVariaveis,
+    private readonly professor: VariavelProfessorDoAluno,
   ) {}
 
   onModuleInit(): void {
     this.titular.registrar(this.dadosDoTitular);
     this.vinculos.registrar(this.vinculoComAlunos);
+    this.variaveis.registrar(this.professor);
   }
 }

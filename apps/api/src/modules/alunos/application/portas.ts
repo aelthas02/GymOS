@@ -65,6 +65,12 @@ export interface PaginaDeAlunos {
   contadores: Record<'todos' | SituacaoDeVencimento, number>;
 }
 
+export interface ContatoDoAlunoParaMensagem {
+  nome: string;
+  telefone: string | null;
+  email: string | null;
+}
+
 export abstract class RepositorioDeAlunos {
   /** Unidade em que o aluno nasce quando o cadastro não informa (a primeira da academia). */
   abstract unidadePadrao(): Promise<string>;
@@ -81,6 +87,10 @@ export abstract class RepositorioDeAlunos {
   abstract todosOsIds(): Promise<string[]>;
   abstract idPorCpf(cpf: string): Promise<string | null>;
   abstract idPorEmail(email: string): Promise<string | null>;
+  /** Pelo índice cego do telefone; aceita o número com ou sem o DDI 55 (resposta do WhatsApp). */
+  abstract idPorTelefone(telefone: string): Promise<string | null>;
+  /** Nome e contatos revelados (sem dado de saúde): a Mensageria só envia, não guarda o telefone. */
+  abstract contato(id: string): Promise<ContatoDoAlunoParaMensagem | null>;
   abstract listar(
     filtro: FiltroDeAlunos,
     paginacao: { limite: number; cursor?: string },
