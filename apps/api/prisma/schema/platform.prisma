@@ -46,3 +46,36 @@ model ReferenciaExterna {
   @@index([tenantId, recurso, recursoId])
   @@map("referencia_externa")
 }
+
+/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
+/// e gere a migração seguinte com `prisma migrate diff`.
+model ChaveDoTenant {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String   @map("tenant_id") @db.Uuid
+  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@map("chave_do_tenant")
+}
+
+/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
+/// e gere a migração seguinte com `prisma migrate diff`.
+model Consentimento {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String   @map("tenant_id") @db.Uuid
+  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@map("consentimento")
+}
+
+/// Gerado por `nx g @gymos/api:tabela`: RLS por tenant (ADR-003). Acrescente os campos do domínio
+/// e gere a migração seguinte com `prisma migrate diff`.
+model AcessoADadoSensivel {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String   @map("tenant_id") @db.Uuid
+  criadoEm DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@map("acesso_a_dado_sensivel")
+}
