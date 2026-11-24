@@ -1,0 +1,65 @@
+// Modelos do domínio integracoes (T13d): conexões Meta, mensagens e uso da IA. Tabelas criadas por
+// `nx g @gymos/api:tabela`; campos na migração `campos_das_integracoes`.
+
+/// Conexão da academia com um canal da Meta (instagram, facebook ou whatsapp), uma por canal.
+/// `estado`: conectado, verificacao_pendente, desconectado ou expirado. O `token` fica cifrado (T13c)
+/// e nunca sai da API. `contaId` e `contaNome` identificam a conta na Meta (sem dado de aluno).
+model ConexaoMeta {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  criadoEm     DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  canal        String
+  estado       String
+  contaId      String?   @map("conta_id")
+  contaNome    String?   @map("conta_nome")
+  token        String?
+  expiraEm     DateTime? @map("expira_em") @db.Timestamptz(3)
+  conectadoEm  DateTime? @map("conectado_em") @db.Timestamptz(3)
+  atualizadoEm DateTime  @map("atualizado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, canal])
+  @@index([tenantId])
+  @@index([tenantId, estado, expiraEm])
+  @@map("conexao_meta")
+}
+
+/// Mensagem enviada ou recebida pelo WhatsApp ou e-mail. `direcao`: enviada ou recebida. `estado`:
+/// enviada, entregue, lida, recusada (com `motivo`), falha ou recebida. `finalidade` só existe nas
+/// enviadas. `idExterno` é o id no provedor, para o webhook de status. O texto tem dado do aluno:
+/// o provedor do titular (LGPD) exporta e apaga.
+model Mensagem {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  criadoEm     DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId      String?  @map("aluno_id") @db.Uuid
+  direcao      String
+  canal        String
+  finalidade   String?
+  contexto     String?
+  texto        String
+  estado       String
+  motivo       String?
+  idExterno    String?  @map("id_externo")
+  atualizadoEm DateTime @map("atualizado_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([tenantId, idExterno])
+  @@index([tenantId, alunoId, criadoEm(sort: Desc)])
+  @@map("mensagem")
+}
+
+/// Uma chamada ao GeradorIA, para o consumo por tenant. Sem prompt nem resposta: só quem pediu
+/// (`finalidade`, chave do domínio), o provedor e o tamanho estimado em tokens.
+model UsoDeIa {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  criadoEm       DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  finalidade     String
+  provedor       String
+  tokensEntrada  Int      @map("tokens_entrada")
+  tokensSaida    Int      @map("tokens_saida")
+
+  @@index([tenantId])
+  @@index([tenantId, criadoEm])
+  @@map("uso_de_ia")
+}

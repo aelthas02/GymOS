@@ -250,6 +250,28 @@
         ],
         "type": "object"
       },
+      "ArquivoEnviadoDto": {
+        "properties": {
+          "chave": {
+            "example": "tenant/6b1f…/treinos/0c9d….png",
+            "type": "string"
+          },
+          "tamanhoEmBytes": {
+            "example": 20480,
+            "type": "number"
+          },
+          "tipo": {
+            "example": "image/png",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chave",
+          "tipo",
+          "tamanhoEmBytes"
+        ],
+        "type": "object"
+      },
       "AtividadeDto": {
         "properties": {
           "acao": {
@@ -768,6 +790,51 @@
         "required": [
           "titulo",
           "texto"
+        ],
+        "type": "object"
+      },
+      "ConexaoMetaDto": {
+        "properties": {
+          "canal": {
+            "enum": [
+              "instagram",
+              "facebook",
+              "whatsapp"
+            ],
+            "type": "string"
+          },
+          "conectadoEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "contaNome": {
+            "example": "Ritmo Academia",
+            "nullable": true,
+            "type": "string"
+          },
+          "estado": {
+            "description": "\"verificacao_pendente\" mostra a ação \"Concluir conexão\".",
+            "enum": [
+              "conectado",
+              "verificacao_pendente",
+              "desconectado",
+              "expirado"
+            ],
+            "type": "string"
+          },
+          "expiraEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "canal",
+          "estado",
+          "contaNome",
+          "expiraEm",
+          "conectadoEm"
         ],
         "type": "object"
       },
@@ -1830,6 +1897,32 @@
         ],
         "type": "object"
       },
+      "IniciarConexaoDto": {
+        "properties": {
+          "redirecionarPara": {
+            "description": "Para onde a Meta devolve o usuário no fim do fluxo (padrão: o painel).",
+            "example": "https://ritmo.gymos.app/configuracoes",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "InicioDaConexaoDto": {
+        "properties": {
+          "conexao": {
+            "$ref": "#/components/schemas/ConexaoMetaDto"
+          },
+          "urlDoFluxo": {
+            "description": "Endereço do fluxo oficial da Meta, para o usuário abrir.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conexao",
+          "urlDoFluxo"
+        ],
+        "type": "object"
+      },
       "InscreverPushDto": {
         "properties": {
           "dispositivo": {
@@ -2016,6 +2109,26 @@
           "cpf",
           "situacao",
           "motivo"
+        ],
+        "type": "object"
+      },
+      "MensagemDeDevDto": {
+        "properties": {
+          "idExterno": {
+            "type": "string"
+          },
+          "telefone": {
+            "description": "Telefone com DDI; só existe no adapter fake, nunca é gravado.",
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "idExterno",
+          "telefone",
+          "texto"
         ],
         "type": "object"
       },
@@ -3069,6 +3182,23 @@
         ],
         "type": "object"
       },
+      "RetornoDaMetaDto": {
+        "properties": {
+          "codigo": {
+            "description": "Código devolvido pela Meta no fim do fluxo.",
+            "type": "string"
+          },
+          "state": {
+            "description": "`state` devolvido junto do código, sem alteração.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "state"
+        ],
+        "type": "object"
+      },
       "SegundaViaDoAppDto": {
         "properties": {
           "forma": {
@@ -3234,6 +3364,22 @@
         },
         "required": [
           "dias"
+        ],
+        "type": "object"
+      },
+      "UrlAssinadaDto": {
+        "properties": {
+          "expiraEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "expiraEm"
         ],
         "type": "object"
       }
@@ -4891,6 +5037,176 @@
         "summary": "Inscreve o dispositivo no push; repetir o mesmo endpoint atualiza as chaves.",
         "tags": [
           "app"
+        ]
+      }
+    },
+    "/api/arquivos": {
+      "delete": {
+        "operationId": "removerArquivo",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "chave",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "404": {
+            "description": "Arquivo de outra academia."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove um arquivo do tenant.",
+        "tags": [
+          "arquivos"
+        ]
+      },
+      "post": {
+        "operationId": "enviarArquivo",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "arquivo": {
+                    "format": "binary",
+                    "type": "string"
+                  },
+                  "pasta": {
+                    "description": "Pasta lógica dentro do tenant.",
+                    "example": "treinos",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "arquivo",
+                  "pasta"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArquivoEnviadoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Envia um arquivo (JPEG, PNG, WebP, PDF ou MP4, com limite por tipo).",
+        "tags": [
+          "arquivos"
+        ]
+      }
+    },
+    "/api/arquivos/baixar": {
+      "get": {
+        "operationId": "baixarArquivoAssinado",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "chave",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expira",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "assinatura",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Download pela URL assinada (adapter fake).",
+        "tags": [
+          "arquivos"
+        ]
+      }
+    },
+    "/api/arquivos/url": {
+      "get": {
+        "operationId": "urlAssinadaDoArquivo",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "chave",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UrlAssinadaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "404": {
+            "description": "Arquivo de outra academia."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "URL de leitura de curta duração para um arquivo do tenant.",
+        "tags": [
+          "arquivos"
         ]
       }
     },
@@ -6838,6 +7154,272 @@
         "summary": "Reativa o funcionário e religa o login dele, se tinha acesso.",
         "tags": [
           "funcionarios"
+        ]
+      }
+    },
+    "/api/integracoes/dev/mensagens": {
+      "get": {
+        "operationId": "listarMensagensDoFake",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MensagemDeDevDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mensagens de WhatsApp guardadas pelo adapter fake (somente fora de produção).",
+        "tags": [
+          "integracoes"
+        ]
+      }
+    },
+    "/api/integracoes/meta": {
+      "get": {
+        "operationId": "listarConexoesMeta",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ConexaoMetaDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estado de cada canal: Instagram, Facebook e WhatsApp.",
+        "tags": [
+          "integracoes"
+        ]
+      }
+    },
+    "/api/integracoes/meta/{canal}": {
+      "delete": {
+        "operationId": "desconectarMeta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "canal",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConexaoMetaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.redes-sociais:editar."
+          },
+          "404": {
+            "description": "Canal desconhecido."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Desconecta o canal e apaga o token.",
+        "tags": [
+          "integracoes"
+        ]
+      }
+    },
+    "/api/integracoes/meta/{canal}/concluir": {
+      "post": {
+        "operationId": "concluirConexaoMeta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "canal",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConexaoMetaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.redes-sociais:editar."
+          },
+          "404": {
+            "description": "Canal desconhecido."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Concluir conexão\": confere com a Meta se a verificação pendente terminou.",
+        "tags": [
+          "integracoes"
+        ]
+      }
+    },
+    "/api/integracoes/meta/{canal}/conectar": {
+      "post": {
+        "operationId": "iniciarConexaoMeta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "canal",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IniciarConexaoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InicioDaConexaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.redes-sociais:editar."
+          },
+          "404": {
+            "description": "Canal desconhecido."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Abre o fluxo oficial (OAuth ou cadastro do WhatsApp Business). O WhatsApp passa a \"Verificação pendente\".",
+        "tags": [
+          "integracoes"
+        ]
+      }
+    },
+    "/api/integracoes/meta/{canal}/retorno": {
+      "post": {
+        "operationId": "concluirRetornoDaMeta",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "canal",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetornoDaMetaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConexaoMetaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.redes-sociais:editar."
+          },
+          "404": {
+            "description": "Canal desconhecido."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Recebe o código do fluxo oficial e guarda o token (cifrado) da conta.",
+        "tags": [
+          "integracoes"
         ]
       }
     },

@@ -67,6 +67,16 @@ export const envSchema = z
     PAGAMENTOS_WEBHOOK_SEGREDO: z.string().min(16).default('gymos-dev-segredo-dos-webhooks'),
     // Endereço público da API, usado nas páginas de pagamento simuladas do fake.
     PAGAMENTOS_URL_PUBLICA: required.default('http://localhost:3000'),
+    // Integrações de plataforma (T13d). Só adapters fake até haver contas reais (Meta, IA); o segredo
+    // assina os webhooks de mensagem (HMAC-SHA256 no cabeçalho x-hub-signature-256).
+    META_PROVEDOR: z.enum(['fake']).default('fake'),
+    MENSAGERIA_TRANSPORTE: z.enum(['fake']).default('fake'),
+    MENSAGERIA_WEBHOOK_SEGREDO: z.string().min(16).default('gymos-dev-segredo-da-mensageria'),
+    IA_PROVEDOR: z.enum(['fake']).default('fake'),
+    // fake guarda os arquivos em memória e serve as URLs assinadas pela própria API; s3 usa o bucket.
+    ARMAZENAMENTO: z.enum(['fake', 's3']).default('fake'),
+    // Endereço público da API, usado nas URLs assinadas do armazenamento fake.
+    ARMAZENAMENTO_URL_PUBLICA: required.default('http://localhost:3000'),
     S3_ENDPOINT: z.url({ protocol: /^https?$/ }),
     S3_REGION: required,
     S3_BUCKET: required,

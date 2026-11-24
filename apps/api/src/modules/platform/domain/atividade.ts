@@ -50,6 +50,12 @@ export const ACOES_DA_AUDITORIA = {
   },
   'excluiu-funcionario': { texto: 'Excluiu funcionário', modulo: 'equipe', sensivel: true },
   'enviou-comunicado': { texto: 'Enviou comunicado', modulo: 'alunos', sensivel: false },
+  'conectou-integracao': { texto: 'Conectou integração', modulo: 'configuracoes', sensivel: true },
+  'desconectou-integracao': {
+    texto: 'Desconectou integração',
+    modulo: 'configuracoes',
+    sensivel: true,
+  },
   'liberou-acesso-manual': { texto: 'Liberou acesso manual', modulo: 'acesso', sensivel: true },
   'registrou-check-in': { texto: 'Registrou check-in', modulo: 'acesso', sensivel: false },
   'alterou-regras-de-acesso': {
