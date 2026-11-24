@@ -206,3 +206,17 @@ describe('variáveis de filas e Redis', () => {
     ]);
   });
 });
+
+describe('TRUST_PROXY_HOPS', () => {
+  const base = { ...readEnvExample() };
+
+  it('vale 0 quando ausente (nenhum proxy confiável)', () => {
+    expect(loadEnv(base).TRUST_PROXY_HOPS).toBe(0);
+  });
+
+  it('aceita de 0 a 5 saltos e rejeita o resto', () => {
+    expect(loadEnv({ ...base, TRUST_PROXY_HOPS: '2' }).TRUST_PROXY_HOPS).toBe(2);
+    expect(parseEnv({ ...base, TRUST_PROXY_HOPS: '6' }).ok).toBe(false);
+    expect(parseEnv({ ...base, TRUST_PROXY_HOPS: '-1' }).ok).toBe(false);
+  });
+});
