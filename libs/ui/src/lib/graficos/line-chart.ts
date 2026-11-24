@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { EmptyState } from '../states/empty-state';
-import { passoDeRotulos, pontosDaLinha } from './escala';
+import { passoDeRotulos, pontosDaLinha, poligonoDaArea, pontosSvg } from './escala';
 import { GraficoDeSerie, GraficoTabela, graficoStyles } from './grafico-base';
 
 const LARGURA = 320;
@@ -92,17 +92,10 @@ export class LineChart extends GraficoDeSerie {
 
   protected readonly grade = computed(() => [MARGEM, AREA / 2, AREA - MARGEM]);
 
-  protected readonly linha = computed(() =>
-    this.coordenadas()
-      .map((p) => `${p.x},${p.y}`)
-      .join(' '),
-  );
+  protected readonly linha = computed(() => pontosSvg(this.coordenadas()));
 
   protected readonly poligono = computed(() => {
-    const pontos = this.coordenadas();
-    const base = AREA - MARGEM;
-    // Uma linha de um ponto só não tem largura: a área fecha em duas pontas do mesmo x.
-    return `${pontos[0].x},${base} ${this.linha()} ${pontos[pontos.length - 1].x},${base}`;
+    return poligonoDaArea(this.coordenadas(), AREA - MARGEM);
   });
 
   protected readonly pontos = computed(() => {
@@ -112,7 +105,7 @@ export class LineChart extends GraficoDeSerie {
     return this.coordenadas().map((p, i) => ({
       ...p,
       marcar: marcarTodos || i === dados.length - 1,
-      rotulo: i % passo === 0 ? dados[i].rotulo : null,
+      rotulo: i % passo === 0 ? (dados[i]?.rotulo ?? null) : null,
     }));
   });
 }

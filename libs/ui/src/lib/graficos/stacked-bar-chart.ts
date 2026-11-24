@@ -161,15 +161,16 @@ export class StackedBarChart {
     const largura = Math.min(faixa * 0.72, 32);
 
     return dados.map((ponto, i) => {
-      const alturaPositivo =
-        totais[i] === 0 ? 0 : (safe(ponto.positivo) / totais[i]) * alturasTotais[i];
-      const alturaNegativo = alturasTotais[i] - alturaPositivo;
+      const total = totais[i] ?? 0;
+      const alturaTotal = alturasTotais[i] ?? 0;
+      const alturaPositivo = total === 0 ? 0 : (safe(ponto.positivo) / total) * alturaTotal;
+      const alturaNegativo = alturaTotal - alturaPositivo;
       return {
         x: i * faixa + (faixa - largura) / 2,
         largura,
         yPositivo: BASE - alturaPositivo,
         alturaPositivo,
-        yNegativo: BASE - alturasTotais[i],
+        yNegativo: BASE - alturaTotal,
         alturaNegativo,
         rotulo: i % passo === 0 ? ponto.rotulo : null,
       };

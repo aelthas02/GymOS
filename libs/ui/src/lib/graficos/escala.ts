@@ -106,7 +106,7 @@ const cores = ['accent', 'chart-2', 'chart-3', 'chart-4', 'chart-5'] as const;
 
 /** Cor da série `indice` por token: o acento da academia primeiro, depois a paleta de apoio. */
 export function corDaSerie(indice: number): string {
-  return cssVar(cores[indice % cores.length]);
+  return cssVar(cores[indice % cores.length] ?? 'accent');
 }
 
 /** Texto de leitor de tela para um gráfico de uma série: o resumo da tela mais o pico. */
@@ -117,7 +117,19 @@ export function resumoDaSerie(
   formatar: FormatarValor,
 ): string {
   const indice = indiceDestaque(dados.map((p) => p.valor));
-  const pico =
-    indice >= 0 ? `; maior valor ${formatar(dados[indice].valor)} em ${dados[indice].rotulo}` : '';
+  const maior = dados[indice];
+  const pico = maior ? `; maior valor ${formatar(maior.valor)} em ${maior.rotulo}` : '';
   return `${titulo ?? nome}. ${dados.length} pontos${pico}.`;
+}
+
+/** Pontos no formato do atributo `points` de polyline e polygon. */
+export const pontosSvg = (pontos: readonly { x: number; y: number }[]): string =>
+  pontos.map((p) => `${p.x},${p.y}`).join(' ');
+
+/** Polígono da área sob a linha, fechado na base; vazio se não há pontos. */
+export function poligonoDaArea(pontos: readonly { x: number; y: number }[], base: number): string {
+  const primeiro = pontos[0];
+  const ultimo = pontos[pontos.length - 1];
+  if (!primeiro || !ultimo) return '';
+  return `${primeiro.x},${base} ${pontosSvg(pontos)} ${ultimo.x},${base}`;
 }

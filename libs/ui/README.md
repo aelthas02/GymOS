@@ -47,15 +47,16 @@ chama o serviço; sem chamada, vale o tema padrão de `tokens.css`.
 Todos standalone, `OnPush`, com `input()`/`output()`/`model()` e seletor `ui-*`. Cada um tem teste ao
 lado (`*.spec.ts`) e história em `src/stories/`. Import por `@gymos/ui`.
 
-| Grupo      | Componentes                                                                         |
-| ---------- | ----------------------------------------------------------------------------------- |
-| Ações      | `Button` (primary, accent, outline, danger; sm, md, lg; `loading`), `IconButton`    |
-| Dados      | `Badge` (`ok`, `late`, `soon`, `off`), `Avatar`, `Card` (`inverse`), `Kpi`, `Table` |
-| Navegação  | `Tabs` (rota), `SidebarNav`, `AppShell`, `PageHeader`, `BottomTabBar`               |
-| Formulário | `Field` + `FieldControl`, `Select`, `Toggle`, `Checkbox`, `Chips`                   |
-| Camadas    | `Modal` (janela ou `variant="drawer"`), `ToastService` + `ToastOutlet`              |
-| Estados    | `EmptyState`, `ErrorState`, `NoPermissionState`, `Skeleton`                         |
-| Ícones     | `Icon` e o conjunto `icons` (24×24, traço de 2 px); acrescente em `icon/icons.ts`   |
+| Grupo      | Componentes                                                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Ações      | `Button` (primary, accent, outline, danger; sm, md, lg; `loading`), `IconButton`                                                      |
+| Dados      | `Badge` (`ok`, `late`, `soon`, `off`), `Avatar`, `Card` (`inverse`), `Kpi`, `Table`                                                   |
+| Navegação  | `Tabs` (rota), `SidebarNav`, `AppShell`, `PageHeader`, `BottomTabBar`                                                                 |
+| Formulário | `Field` + `FieldControl`, `Select`, `Toggle`, `Checkbox`, `Chips`                                                                     |
+| Camadas    | `Modal` (janela ou `variant="drawer"`), `ToastService` + `ToastOutlet`                                                                |
+| Estados    | `EmptyState`, `ErrorState`, `NoPermissionState`, `Skeleton`                                                                           |
+| Gráficos   | `BarChart`, `StackedBarChart`, `HorizontalBars`, `Donut`, `LineChart`, `AreaChart`, `Sparkline`, `Heatmap`, `ProgressBar`, `WeekDots` |
+| Ícones     | `Icon` e o conjunto `icons` (24×24, traço de 2 px); acrescente em `icon/icons.ts`                                                     |
 
 Decisões que valem para o uso:
 
@@ -75,6 +76,28 @@ Decisões que valem para o uso:
   não o verde fixo `#0F8F63` do protótipo.
 - Novos tokens de T05: `--on-ink`, `--border-dashed`, `--nav-*` e `--state-error-*`/`--state-warn-*`
   (cores que o protótipo repete e que não estavam em `design-tokens.json`).
+
+### Gráficos ()
+
+SVG próprio, sem biblioteca: e , então o gráfico acompanha a largura do pai.
+
+- **Dados e formatação por input.** Os de uma série recebem ; recebe
+  , a matriz e .
+  é uma função : as telas injetam aqui os pipes do T08 (moeda, número,
+  percentual). Sem ela vale o número em pt-BR; valor que não é número aparece como —.
+- **Cor só por token.** A primeira série é (segue o tema da academia); as seguintes, a
+  ; barras sem destaque, ; cancelamentos, . pinta o maior valor
+  de acento e escreve o rótulo dele (112 às 18h); aceita para o 54% da legenda.
+- **Acessibilidade.** O leva com o resumo ( da tela mais o pico) e, ao lado,
+  uma tabela com todos os pontos já formatados; os cabeçalhos dela vêm de e
+  . A cor nunca é a única pista: valor e rótulo estão no texto, na legenda e na tabela.
+- **Estado vazio.** Lista vazia (ou total zero no ) mostra um com , nunca um
+  SVG quebrado. Busca de dados e ficam com cada tela.
+- **** parte de zero; com a escala vai do menor ao maior valor (evolução de carga,
+  taxas). é o mesmo gráfico com a área preenchida.
+- **Tamanho.** Medido num lazy chunk do staff-web (produção): o , o maior, com e a tabela,
+  soma 4,9 kB em brotli; os dez juntos, cerca de 9 kB. Nenhum passa de 8 kB.
+- Cores dos gráficos viram token em e , como as demais.
 
 ### Testes e acessibilidade
 

@@ -38,7 +38,7 @@ describe('BarChart', () => {
     expect(barras).toHaveLength(3);
     const alturasPx = barras.map((b) => Number(b.getAttribute('height')));
     expect(alturasPx[0]).toBe(0);
-    expect(alturasPx[1]).toBeCloseTo(alturasPx[2] / 2, 5);
+    expect(alturasPx[1]).toBeCloseTo(alturasPx[2]! / 2, 5);
   });
 
   it('só o maior recebe a classe de destaque e o rótulo do valor', () => {
@@ -149,7 +149,7 @@ describe('HorizontalBars', () => {
     const larguras = [...el.querySelectorAll('rect.ui-barra')].map((b) =>
       Number(b.getAttribute('width')),
     );
-    expect(larguras[1]).toBeCloseTo(larguras[0] / 2, 5);
+    expect(larguras[1]).toBeCloseTo(larguras[0]! / 2, 5);
   });
 
   it('mostra o valor formatado e a tabela acessível', () => {
@@ -186,7 +186,7 @@ describe('Donut', () => {
     const comprimentos = arcos.map((c) =>
       Number(c.getAttribute('stroke-dasharray')!.split(' ')[0]),
     );
-    const circunferencia = 2 * Math.PI * Number(arcos[0].getAttribute('r'));
+    const circunferencia = 2 * Math.PI * Number(arcos[0]!.getAttribute('r'));
 
     expect(arcos).toHaveLength(3);
     expect(comprimentos.reduce((s, n) => s + n, 0)).toBeCloseTo(circunferencia, 1);
@@ -307,7 +307,7 @@ describe('Sparkline', () => {
   });
 
   it('sem rótulos, numera os pontos', () => {
-    expect(celulas(render(Sparkline, { valores: [4, 5] }))[0][0]).toBe('1');
+    expect(celulas(render(Sparkline, { valores: [4, 5] }))[0]![0]).toBe('1');
   });
 
   it('lista vazia mostra o estado vazio', () => {
@@ -334,8 +334,8 @@ describe('Heatmap', () => {
 
     expect(celulasSvg).toHaveLength(4);
     expect(opacidade[3]).toBe(1);
-    expect(opacidade[2]).toBeGreaterThan(opacidade[0]);
-    expect(opacidade[3]).toBeGreaterThan(opacidade[1]);
+    expect(opacidade[2]).toBeGreaterThan(opacidade[0]!);
+    expect(opacidade[3]).toBeGreaterThan(opacidade[1]!);
   });
 
   it('a tabela acessível traz linha, dia e valor formatado', () => {

@@ -99,14 +99,17 @@ export class BarChart extends GraficoDeSerie {
     const largura = Math.min(faixa * 0.72, 32);
     const formatar = this.formato();
 
-    return dados.map((ponto, i) => ({
-      x: i * faixa + (faixa - largura) / 2,
-      y: BASE - hs[i],
-      largura,
-      altura: hs[i],
-      destaque: i === pico,
-      valor: formatar(ponto.valor),
-      rotulo: i % passo === 0 || i === pico ? ponto.rotulo : null,
-    }));
+    return dados.map((ponto, i) => {
+      const altura = hs[i] ?? 0;
+      return {
+        x: i * faixa + (faixa - largura) / 2,
+        y: BASE - altura,
+        largura,
+        altura,
+        destaque: i === pico,
+        valor: formatar(ponto.valor),
+        rotulo: i % passo === 0 || i === pico ? ponto.rotulo : null,
+      };
+    });
   });
 }

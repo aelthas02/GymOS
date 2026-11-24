@@ -49,9 +49,9 @@ describe('fatiasDonut', () => {
 
   it('com um valor zero, a fatia tem 0° e as outras ainda somam 360°', () => {
     const fatias = fatiasDonut([60, 0, 40]);
-    expect(fatias[1].angulo).toBe(0);
+    expect(fatias[1]!.angulo).toBe(0);
     expect(fatias.reduce((s, f) => s + f.angulo, 0)).toBeCloseTo(360, 10);
-    expect(fatias[2].inicio).toBeCloseTo(216, 10);
+    expect(fatias[2]!.inicio).toBeCloseTo(216, 10);
   });
 
   it('total zero ou lista vazia devolve fatias de 0°', () => {

@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { EmptyState } from '../states/empty-state';
-import { type FormatarValor, formatarPadrao, pontosDaLinha } from './escala';
+import {
+  type FormatarValor,
+  formatarPadrao,
+  poligonoDaArea,
+  pontosDaLinha,
+  pontosSvg,
+} from './escala';
 import { GraficoTabela, graficoStyles } from './grafico-base';
 
 const LARGURA = 140;
@@ -75,22 +81,17 @@ export class Sparkline {
     }),
   );
 
-  protected readonly linha = computed(() =>
-    this.coordenadas()
-      .map((p) => `${p.x},${p.y}`)
-      .join(' '),
-  );
+  protected readonly linha = computed(() => pontosSvg(this.coordenadas()));
 
   protected readonly poligono = computed(() => {
-    const pontos = this.coordenadas();
-    return `${pontos[0].x},${ALTURA} ${this.linha()} ${pontos[pontos.length - 1].x},${ALTURA}`;
+    return poligonoDaArea(this.coordenadas(), ALTURA);
   });
 
   protected readonly textoAlternativo = computed(() => {
     const valores = this.valores();
     const formatar = this.formatar();
-    const primeiro = formatar(valores[0]);
-    const ultimo = formatar(valores[valores.length - 1]);
+    const primeiro = formatar(valores[0] ?? 0);
+    const ultimo = formatar(valores[valores.length - 1] ?? 0);
     return `${this.resumo() ?? 'Tendência'}. ${valores.length} pontos, de ${primeiro} a ${ultimo}.`;
   });
 

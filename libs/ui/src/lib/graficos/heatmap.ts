@@ -124,7 +124,10 @@ export class Heatmap {
 
   protected readonly linhasDaTabela = computed(() => {
     const formatar = this.formatar();
-    return this.linhas().map((rotulo, l) => [rotulo, ...this.matriz()[l].map((v) => formatar(v))]);
+    return this.linhas().map((rotulo, l) => [
+      rotulo,
+      ...(this.matriz()[l] ?? []).map((v) => formatar(v)),
+    ]);
   });
 
   protected readonly textoAlternativo = computed(() => {

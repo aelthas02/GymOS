@@ -141,13 +141,16 @@ export class Donut extends GraficoDeSerie {
     const geometria = fatiasDonut(dados.map((p) => p.valor));
     const formatar = this.formato();
     const parte = this.formatarParte();
-    return dados.map((ponto, i) => ({
-      rotulo: ponto.rotulo,
-      valor: formatar(ponto.valor),
-      parte: parte && geometria[i].fracao > 0 ? parte(geometria[i].fracao) : '',
-      cor: corDaSerie(i),
-      comprimento: (geometria[i].angulo / 360) * CIRCUNFERENCIA,
-      deslocamento: (geometria[i].inicio / 360) * CIRCUNFERENCIA,
-    }));
+    return dados.map((ponto, i) => {
+      const { fracao = 0, angulo = 0, inicio = 0 } = geometria[i] ?? {};
+      return {
+        rotulo: ponto.rotulo,
+        valor: formatar(ponto.valor),
+        parte: parte && fracao > 0 ? parte(fracao) : '',
+        cor: corDaSerie(i),
+        comprimento: (angulo / 360) * CIRCUNFERENCIA,
+        deslocamento: (inicio / 360) * CIRCUNFERENCIA,
+      };
+    });
   });
 }
