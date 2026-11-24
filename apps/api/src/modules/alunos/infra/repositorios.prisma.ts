@@ -382,6 +382,16 @@ export class RepositorioDeAlunosPrisma extends RepositorioDeAlunos {
     return linha?.nome ?? null;
   }
 
+  async resumos(
+    ids: readonly string[],
+  ): Promise<Map<string, { nome: string; professorId: string | null }>> {
+    const linhas = await this.contexto.cliente().aluno.findMany({
+      where: { id: { in: [...ids] } },
+      select: { id: true, nome: true, professorId: true },
+    });
+    return new Map(linhas.map((l) => [l.id, { nome: l.nome, professorId: l.professorId }]));
+  }
+
   async todosOsIds(): Promise<string[]> {
     const linhas = await this.contexto
       .cliente()

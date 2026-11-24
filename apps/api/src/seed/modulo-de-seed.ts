@@ -14,6 +14,7 @@ export const ORDEM_DOS_DOMINIOS = [
   'contratos',
   'parcelas',
   'pagamentos',
+  'acesso',
   'notas',
 ] as const;
 

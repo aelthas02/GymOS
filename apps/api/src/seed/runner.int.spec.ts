@@ -1,4 +1,5 @@
 import type { INestApplicationContext } from '@nestjs/common';
+import { AcessoModule } from '../modules/acesso/acesso.module';
 import { AlunosModule } from '../modules/alunos/alunos.module';
 import { AvisosModule } from '../modules/avisos/avisos.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
@@ -23,6 +24,7 @@ describe('runner de seed', () => {
       AlunosModule,
       FuncionariosModule,
       AvisosModule,
+      AcessoModule,
     ]);
   });
 
@@ -45,6 +47,7 @@ describe('runner de seed', () => {
       'alunos',
       'parcelas',
       'pagamentos',
+      'acesso',
       'avisos',
       'sonda',
     ]);

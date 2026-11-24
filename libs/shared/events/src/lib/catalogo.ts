@@ -124,6 +124,14 @@ export interface CatalogoDeEventos {
       unidadeId: Id;
       liberado: boolean;
       registradoEm: Instante;
+      /** facial, biometria, qr_code ou manual (T23a). */
+      metodo: string;
+      /** entrada ou saida. */
+      direcao: string;
+      /** liberado, tolerancia ou negado. */
+      resultado: string;
+      /** Chave do motivo da negação (ex.: mensalidade_em_atraso); nulo quando liberado. */
+      motivo: string | null;
     };
   };
   MensagemRecebida: {

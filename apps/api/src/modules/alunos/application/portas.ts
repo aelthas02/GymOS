@@ -73,6 +73,10 @@ export abstract class RepositorioDeAlunos {
   /** Revela os campos cifrados; a leitura das restrições vai para o log de acesso em nome de `quem`. */
   abstract porId(id: string, quem: string): Promise<Aluno | null>;
   abstract nome(id: string): Promise<string | null>;
+  /** Nome e professor responsável dos alunos (sem revelar campos cifrados): listas e alertas do T23a. */
+  abstract resumos(
+    ids: readonly string[],
+  ): Promise<Map<string, { nome: string; professorId: string | null }>>;
   /** Ids de todos os alunos da academia (comunicados do T13e). */
   abstract todosOsIds(): Promise<string[]>;
   abstract idPorCpf(cpf: string): Promise<string | null>;

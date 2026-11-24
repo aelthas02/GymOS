@@ -4,6 +4,176 @@
  */
 
 export interface paths {
+    "/api/acesso/chaves-publicas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chaves públicas do QR para o agente conferir a assinatura offline. */
+        get: operations["listarChavesPublicasDoQr"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check-in ou check-out registrado pela Recepção; as regras de acesso valem como na catraca. */
+        post: operations["registrarCheckInDaRecepcao"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/check-in/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confere o QR do app (assinatura, validade de 60 s e uso único) e registra o acesso; QR recusado vira acesso negado. */
+        post: operations["registrarCheckInPorQr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/frequencia/alunos-em-risco": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alunos com alerta de frequência aberto, urgentes primeiro. */
+        get: operations["listarAlunosEmRisco"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/frequencia/checkins-de-hoje": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check-ins de hoje (entradas liberadas) e acessos negados. */
+        get: operations["obterCheckinsDeHoje"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/frequencia/por-aluno": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Treinos de cada aluno no mês, de quem mais treina a quem está em risco. */
+        get: operations["listarFrequenciaPorAluno"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/frequencia/por-horario": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Entradas por hora: média por dia nos últimos 30 dias. */
+        get: operations["obterFrequenciaPorHorario"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/frequencia/presencas-do-mes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Presenças (aluno-dia com entrada liberada) por aluno no mês, para o rateio de receita. */
+        get: operations["obterPresencasDoMes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/liberacao-manual": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Libera a entrada do aluno apesar da regra que negaria. Exige o motivo e é auditada como sensível. */
+        post: operations["liberarAcessoManualmente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/sincronizacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recebe os acessos que o agente da catraca guardou offline: fora de ordem e repetidos são gravados uma vez cada, na ordem do horário de origem. */
+        post: operations["sincronizarAcessosOffline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/alunos": {
         parameters: {
             query?: never;
@@ -171,6 +341,23 @@ export interface paths {
         get: operations["obterSituacaoDoAluno"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/acesso/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Emite o QR de check-in: assinado, vale 60 s e só pode ser usado uma vez. */
+        post: operations["emitirMeuQrDeCheckin"];
         delete?: never;
         options?: never;
         head?: never;
@@ -809,6 +996,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/configuracoes/acesso": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Regras de acesso: bloqueio por atraso, horário, limite por dia e anti-passback. */
+        get: operations["obterRegrasDeAcesso"];
+        /** Salva as regras de acesso. */
+        put: operations["salvarRegrasDeAcesso"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/configuracoes/alertas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Configuração dos alertas de frequência. */
+        get: operations["obterAlertasDeFrequencia"];
+        /** Salva a configuração dos alertas de frequência. */
+        put: operations["salvarAlertasDeFrequencia"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/configuracoes/alertas/previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Com a regra salva, quantos alunos seriam alertados hoje (urgentes e comuns). */
+        get: operations["obterPreviaDosAlertas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/configuracoes/contratos": {
         parameters: {
             query?: never;
@@ -1081,6 +1321,27 @@ export interface components {
             senha: string;
             token: string;
         };
+        AcessoDto: {
+            /** Format: uuid */
+            alunoId: string | null;
+            /** @enum {string} */
+            direcao: "entrada" | "saida";
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            idDeOrigem: string;
+            /** @enum {string} */
+            metodo: "facial" | "biometria" | "qr_code" | "manual";
+            modalidade: string | null;
+            /** @enum {string|null} */
+            motivo: "mensalidade_em_atraso" | "contrato_encerrado" | "plano_trancado" | "sem_contrato" | "fora_do_horario" | "modalidade_fora_do_plano" | "limite_diario" | "anti_passback" | "limite_semanal" | "qr_ja_usado" | "qr_invalido" | "qr_expirado" | "aluno_nao_encontrado" | null;
+            /** @example Mensalidade em atraso */
+            motivoTexto: string | null;
+            /** Format: date-time */
+            registradoEm: string;
+            /** @enum {string} */
+            resultado: "liberado" | "tolerancia" | "negado";
+        };
         AderirDto: {
             /**
              * Format: date
@@ -1113,6 +1374,21 @@ export interface components {
             telefone: string | null;
             /** Format: uuid */
             unidadeId: string;
+        };
+        AlunoEmRiscoDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** Format: date-time */
+            desde: string;
+            diasSemTreinar: number | null;
+            /** @enum {string} */
+            nivel: "comum" | "urgente";
+            nome: string;
+            /** Format: uuid */
+            professorId: string | null;
+            quedaPercentual: number | null;
+            /** @enum {string} */
+            tipo: "sem_treinar" | "queda";
         };
         AtividadeDto: {
             /** @example alterou-valor */
@@ -1230,6 +1506,62 @@ export interface components {
             /** @description Chave pública do navegador (base64url). */
             p256dh: string;
         };
+        ChavesPublicasDoQrDto: {
+            /** @description kid → chave pública Ed25519 (SPKI DER em base64), para o agente conferir o QR offline. */
+            chaves: {
+                [key: string]: string;
+            };
+        };
+        CheckInDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /**
+             * @default entrada
+             * @enum {string}
+             */
+            direcao: "entrada" | "saida";
+            /**
+             * Format: uuid
+             * @description Id gerado na origem; reenviar não grava de novo.
+             */
+            idDeOrigem?: string;
+            /**
+             * @description Modalidade do ponto de acesso.
+             * @example Lutas
+             */
+            modalidade?: Record<string, never> | null;
+            /** Format: uuid */
+            unidadeId?: string;
+        };
+        CheckInPorQrDto: {
+            /**
+             * @default entrada
+             * @enum {string}
+             */
+            direcao: "entrada" | "saida";
+            /**
+             * Format: uuid
+             * @description Dispositivo de leitura (T23b).
+             */
+            dispositivoId?: string;
+            /**
+             * Format: uuid
+             * @description Id gerado na origem; reenviar não grava de novo.
+             */
+            idDeOrigem?: string;
+            /** @example Lutas */
+            modalidade?: Record<string, never> | null;
+            /** @description Token do QR mostrado no app do aluno. */
+            token: string;
+            /** Format: uuid */
+            unidadeId?: string;
+        };
+        ChecksInDeHojeDto: {
+            /** @example 2026-11-19 */
+            dia: string;
+            liberados: number;
+            negados: number;
+        };
         CobrancaDto: {
             /** @enum {string} */
             forma: "pix" | "cartao" | "boleto" | "link";
@@ -1279,6 +1611,20 @@ export interface components {
             /** @example Manutenção da piscina */
             titulo: string;
         };
+        ConfiguracaoDeAcessoDto: {
+            /** @example 05:00 */
+            abertura: string;
+            antiPassback: boolean;
+            /**
+             * @description Bloquear após N dias de atraso (ADR-018); nulo não bloqueia.
+             * @example 7
+             */
+            bloqueioPorAtrasoDias: number | null;
+            /** @example 23:00 */
+            fechamento: string;
+            /** @example 1 */
+            limitePorDia: number | null;
+        };
         ConfiguracaoDeContratoDto: {
             /**
              * @description Reativar sem nova adesão até.
@@ -1292,6 +1638,20 @@ export interface components {
             toleranciaDias: number;
             /** @example 90 */
             trancamentoMaximoDias: number;
+        };
+        ConfiguracaoDosAlertasDto: {
+            destinatarios: ("professor" | "recepcao" | "gerencia")[];
+            /** @example 7 */
+            diasSemTreinar: number;
+            /** @example 08:00 */
+            horaDaVerificacao: string;
+            ignorarFeriasETrancados: boolean;
+            /** @description Mensagem automática ao aluno; só para quem aceitou marketing. */
+            mensagemAoAluno: boolean;
+            /** @example 40 */
+            quedaPercentual: number;
+            /** @example 15 */
+            urgenteAposDias: number;
         };
         ConsentimentoDto: {
             /** @enum {string} */
@@ -1546,6 +1906,12 @@ export interface components {
             /** @example Cadastro duplicado */
             motivo?: string;
         };
+        FaixaDeHorarioDto: {
+            entradas: number;
+            hora: number;
+            /** @description Média de entradas por dia, uma casa decimal. */
+            mediaPorDia: number;
+        };
         FormaDePagamentoDoAlunoDto: {
             /** Format: date-time */
             atualizadoEm: string;
@@ -1561,6 +1927,25 @@ export interface components {
             forma: "pix" | "cartao" | "boleto";
             /** @description Token do cartão gerado pelo SDK do provedor (só cartão). */
             tokenDoCartao?: string;
+        };
+        FrequenciaDoAlunoDto: {
+            /** @enum {string|null} */
+            alerta: "comum" | "urgente" | null;
+            /** Format: uuid */
+            alunoId: string;
+            diasSemTreinar: number | null;
+            nome: string;
+            planoNome: string | null;
+            treinos: number;
+            ultimoTreino: string | null;
+        };
+        FrequenciaPorHorarioDto: {
+            ate: string;
+            de: string;
+            /** @example 30 */
+            dias: number;
+            faixas: components["schemas"]["FaixaDeHorarioDto"][];
+            horarioMaisCheio: number | null;
         };
         FuncionarioCriadoDto: {
             /** @description Falso quando o e-mail já era de um funcionário (nada foi enviado). */
@@ -1634,6 +2019,16 @@ export interface components {
              * @example 3
              */
             venceEmDias: number | null;
+        };
+        LiberacaoManualDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** @example Lutas */
+            modalidade?: Record<string, never> | null;
+            /** @example Esqueceu o celular; pagamento em dia na Recepção. */
+            motivo: string;
+            /** Format: uuid */
+            unidadeId?: string;
         };
         LinhaDaPlanilhaDto: {
             cpf: string;
@@ -1727,12 +2122,26 @@ export interface components {
             itens: components["schemas"]["ItemDaListaDeAlunosDto"][];
             proximoCursor: string | null;
         };
+        PaginaDeAlunosEmRiscoDto: {
+            comuns: number;
+            destinatarios: ("professor" | "recepcao" | "gerencia")[];
+            itens: components["schemas"]["AlunoEmRiscoDto"][];
+            proximoCursor: string | null;
+            total: number;
+            urgentes: number;
+        };
         PaginaDeAvisosDto: {
             itens: components["schemas"]["AvisoDto"][];
             /** @description Quantos avisos não lidos há no total (selo da aba). */
             naoLidos: number;
             /** @description Nulo na última página. */
             proximoCursor: string | null;
+        };
+        PaginaDeFrequenciaPorAlunoDto: {
+            itens: components["schemas"]["FrequenciaDoAlunoDto"][];
+            mes: string;
+            proximoCursor: string | null;
+            total: number;
         };
         PaginaDeFuncionariosDto: {
             /** @description Chips: respeitam a busca, não o cargo. */
@@ -1901,6 +2310,17 @@ export interface components {
             /** @enum {string} */
             tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
         };
+        PresencaDoAlunoDto: {
+            /** Format: uuid */
+            alunoId: string;
+            presencas: number;
+        };
+        PresencasDoMesDto: {
+            alunos: components["schemas"]["PresencaDoAlunoDto"][];
+            mes: string;
+            /** @description Soma das presenças (aluno-dia): base do rateio de receita (T21). */
+            total: number;
+        };
         PreviaDoPlanoDto: {
             /** @example O aluno tem acesso por 12 meses e paga em 9 parcelas. As cobranças terminam na 9ª parcela, e o contrato segue ativo até o fim dos 12 meses. */
             explicacao: string;
@@ -1910,6 +2330,14 @@ export interface components {
             parcelas: number;
             /** @example 10536 */
             ultimaCentavos: number;
+        };
+        PreviaDosAlertasDto: {
+            /** @description Em nível comum. */
+            comuns: number;
+            /** @description Alunos que seriam alertados hoje com a regra atual. */
+            total: number;
+            /** @description Em nível urgente. */
+            urgentes: number;
         };
         PrimeiroAcessoDto: {
             /**
@@ -1932,9 +2360,48 @@ export interface components {
             id: string;
             nome: string;
         };
+        QrDeCheckinDto: {
+            /** Format: date-time */
+            expiraEm: string;
+            /** @description Token assinado; mostre-o como QR Code. */
+            token: string;
+            /** @example 60 */
+            validadeSegundos: number;
+        };
         RedefinirSenhaDto: {
             senha: string;
             token: string;
+        };
+        RegistroOfflineDto: {
+            /** Format: uuid */
+            alunoId: string | null;
+            /** @enum {string} */
+            direcao: "entrada" | "saida";
+            /** Format: uuid */
+            dispositivoId?: string | null;
+            /**
+             * Format: uuid
+             * @description Gerado no agente; deduplica reenvios.
+             */
+            idDeOrigem: string;
+            /** @enum {string} */
+            metodo: "facial" | "biometria" | "qr_code" | "manual";
+            /** @example Lutas */
+            modalidade?: Record<string, never> | null;
+            /**
+             * @description Obrigatório quando negado.
+             * @enum {string|null}
+             */
+            motivo?: "mensalidade_em_atraso" | "contrato_encerrado" | "plano_trancado" | "sem_contrato" | "fora_do_horario" | "modalidade_fora_do_plano" | "limite_diario" | "anti_passback" | "limite_semanal" | "qr_ja_usado" | "qr_invalido" | "qr_expirado" | "aluno_nao_encontrado" | null;
+            /** @description Nonce do QR usado offline. */
+            qrNonce?: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description Horário de origem (ISO 8601).
+             */
+            registradoEm: string;
+            /** @enum {string} */
+            resultado: "liberado" | "tolerancia" | "negado";
         };
         RelatorioDaImportacaoDto: {
             /** @example 297 */
@@ -1944,6 +2411,17 @@ export interface components {
             linhas: components["schemas"]["LinhaDoRelatorioDto"][];
             /** @example 3 */
             semContrato: number;
+        };
+        ResultadoDaSincronizacaoDto: {
+            gravados: number;
+            /** @description Acessos cujo QR já constava como usado em outro acesso. */
+            qrRepetidos: number;
+            repetidos: number;
+        };
+        ResultadoDoAcessoDto: {
+            acesso: components["schemas"]["AcessoDto"];
+            /** @description O id de origem já estava gravado: nada mudou. */
+            repetido: boolean;
         };
         ResultadoDoComunicadoDto: {
             /** @description Quantos alunos receberam o aviso. */
@@ -1979,6 +2457,11 @@ export interface components {
             accessToken: string;
             /** Format: date-time */
             expiraEm: string;
+        };
+        SincronizarAcessosDto: {
+            registros: components["schemas"]["RegistroOfflineDto"][];
+            /** Format: uuid */
+            unidadeId?: string;
         };
         SituacaoDoAlunoDto: {
             /** Format: uuid */
@@ -2020,6 +2503,388 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    listarChavesPublicasDoQr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChavesPublicasDoQrDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registrarCheckInDaRecepcao: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckInDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoAcessoDto"];
+                };
+            };
+            /** @description Dados inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registrarCheckInPorQr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckInPorQrDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoAcessoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarAlunosEmRisco: {
+        parameters: {
+            query?: {
+                nivel?: "comum" | "urgente";
+                /** @description Só os alunos deste professor (funcionário). */
+                professorId?: string;
+                limite?: number;
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDeAlunosEmRiscoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterCheckinsDeHoje: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChecksInDeHojeDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarFrequenciaPorAluno: {
+        parameters: {
+            query: {
+                /** @description Mês no formato AAAA-MM. */
+                mes: string;
+                limite?: number;
+                /** @description Cursor opaco devolvido pela página anterior. */
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDeFrequenciaPorAlunoDto"];
+                };
+            };
+            /** @description Mês ou cursor inválido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterFrequenciaPorHorario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FrequenciaPorHorarioDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterPresencasDoMes: {
+        parameters: {
+            query: {
+                /** @description Mês no formato AAAA-MM. */
+                mes: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PresencasDoMesDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    liberarAcessoManualmente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LiberacaoManualDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoAcessoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sincronizarAcessosOffline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SincronizarAcessosDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDaSincronizacaoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     listarAlunos: {
         parameters: {
             query?: {
@@ -2583,6 +3448,32 @@ export interface operations {
             };
             /** @description Exige a permissão alunos:ver. */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    emitirMeuQrDeCheckin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QrDeCheckinDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3986,6 +4877,193 @@ export interface operations {
                 content?: never;
             };
             /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterRegrasDeAcesso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfiguracaoDeAcessoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    salvarRegrasDeAcesso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfiguracaoDeAcessoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfiguracaoDeAcessoDto"];
+                };
+            };
+            /** @description Valores fora dos limites. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterAlertasDeFrequencia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfiguracaoDosAlertasDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.alertas:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    salvarAlertasDeFrequencia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfiguracaoDosAlertasDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfiguracaoDosAlertasDto"];
+                };
+            };
+            /** @description Valores fora dos limites. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.alertas:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterPreviaDosAlertas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviaDosAlertasDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.alertas:ver. */
             403: {
                 headers: {
                     [name: string]: unknown;
