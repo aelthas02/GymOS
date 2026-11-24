@@ -51,3 +51,4 @@ export * from './lib/chat-thread/chat-thread';
 export * from './lib/phone-preview/phone-preview';
 export * from './lib/sortable-list/sortable-list';
 export * from './lib/video-embed/video-embed';
+export * from './lib/tutorial-overlay/tutorial-overlay';
