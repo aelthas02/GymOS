@@ -182,3 +182,27 @@ describe('documentação das variáveis', () => {
     expect(documented).toEqual(expect.arrayContaining(Object.keys(envSchema.shape)));
   });
 });
+
+describe('variáveis de filas e Redis', () => {
+  const valoresPadrao = () => {
+    const result = parseEnv(withoutKeys('REDIS_PREFIXO', 'FILAS_PROCESSAR'));
+    return result.ok ? result.env : undefined;
+  };
+
+  it('REDIS_PREFIXO e FILAS_PROCESSAR têm padrão gymos e false', () => {
+    expect(valoresPadrao()).toMatchObject({ REDIS_PREFIXO: 'gymos', FILAS_PROCESSAR: false });
+  });
+
+  it.each(['Gymos', 'a:b', 'a b', ''])('rejeita REDIS_PREFIXO "%s"', (valor) => {
+    expect(invalidVariables(withOverrides({ REDIS_PREFIXO: valor }))).toEqual(['REDIS_PREFIXO']);
+  });
+
+  it('FILAS_PROCESSAR vira booleano e rejeita outros valores', () => {
+    const result = parseEnv(withOverrides({ FILAS_PROCESSAR: 'true' }));
+
+    expect(result.ok && result.env.FILAS_PROCESSAR).toBe(true);
+    expect(invalidVariables(withOverrides({ FILAS_PROCESSAR: 'sim' }))).toEqual([
+      'FILAS_PROCESSAR',
+    ]);
+  });
+});
