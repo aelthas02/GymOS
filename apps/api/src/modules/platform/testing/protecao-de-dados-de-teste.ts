@@ -11,7 +11,7 @@ export interface Ficha {
   saude: string | null;
 }
 
-/** Uma chave de dados de 32 bytes em base64, só para testes. */
+/** Chave mestra local de 32 bytes em base64, só para testes. */
 export const CHAVE_MESTRA_DE_TESTE = Buffer.alloc(32, 7).toString('base64');
 
 export async function criarTabelaDeFichas(migrador: Client): Promise<void> {

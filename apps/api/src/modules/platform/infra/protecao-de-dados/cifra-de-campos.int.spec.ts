@@ -3,7 +3,7 @@ import type { Client } from 'pg';
 import { CifraDeCampos, definirCamposProtegidos } from '../../application/protecao-de-dados';
 import { criarAppDeTeste } from '../../testing/app-de-teste';
 import { usarBancoDeTeste } from '../../testing/banco-de-teste';
-import { criarTenant, type TenantCriado } from '../../testing/fabricas';
+import { comTenant, criarTenant, type TenantCriado } from '../../testing/fabricas';
 import {
   criarTabelaDeFichas,
   type Ficha,
@@ -47,9 +47,9 @@ describe('cifra de campos e índice cego', () => {
       return dados;
     });
 
-    const { rows } = await migrador.query<Ficha>(
-      'SELECT cpf, cpf_hash AS "cpfHash" FROM ficha_de_teste WHERE tenant_id = $1',
-      [academia.id],
+    // A tabela tem RLS forçado até para o dono: o migrador lê com o tenant, mas sem a cifra da API.
+    const { rows } = await comTenant(migrador, academia.id, (sql) =>
+      sql.query<Ficha>('SELECT cpf, cpf_hash AS "cpfHash" FROM ficha_de_teste'),
     );
     const gravado = JSON.stringify(rows);
     expect(rows).toHaveLength(1);
@@ -63,9 +63,9 @@ describe('cifra de campos e índice cego', () => {
     });
     expect(lida.cpf).toBe('123.456.789-09');
 
-    await expect(comoTenant(outra, () => cifra.decifrar('ficha.cpf', protegida.cpf))).rejects.toThrow(
-      CifraInvalidaError,
-    );
+    await expect(
+      comoTenant(outra, () => cifra.decifrar('ficha.cpf', protegida.cpf)),
+    ).rejects.toThrow(CifraInvalidaError);
   });
 
   it('123.456.789-09 e 12345678909 geram o mesmo hash e encontram o mesmo registro', async () => {
@@ -104,9 +104,11 @@ describe('cifra de campos e índice cego', () => {
     const cifra = app.get(CifraDeCampos);
     const acessos = async (titularId: string) =>
       (
-        await migrador.query<{ quem: string; campo: string; acessado_em: Date }>(
-          'SELECT quem, campo, acessado_em FROM acesso_a_dado_sensivel WHERE titular_id = $1',
-          [titularId],
+        await comTenant(migrador, academia.id, (sql) =>
+          sql.query<{ quem: string; campo: string; acessado_em: Date }>(
+            'SELECT quem, campo, acessado_em FROM acesso_a_dado_sensivel WHERE titular_id = $1',
+            [titularId],
+          ),
         )
       ).rows;
 

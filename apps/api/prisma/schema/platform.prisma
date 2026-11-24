@@ -63,7 +63,8 @@ model ChaveDoTenant {
   @@map("chave_do_tenant")
 }
 
-/// Histórico de aceite e revogação por finalidade (T13c); a decisão mais recente vale.
+/// Histórico de aceite e revogação por finalidade (T13c). Vale a decisão mais recente, pela `ordem`
+/// de registro (duas decisões no mesmo instante não empatam).
 model Consentimento {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId     String   @map("tenant_id") @db.Uuid
@@ -73,9 +74,10 @@ model Consentimento {
   decisao      String
   origem       String
   registradoEm DateTime @map("registrado_em") @db.Timestamptz(3)
+  ordem        BigInt   @default(autoincrement())
 
   @@index([tenantId])
-  @@index([tenantId, alunoId, finalidade, registradoEm])
+  @@index([tenantId, alunoId, finalidade, ordem])
   @@map("consentimento")
 }
 

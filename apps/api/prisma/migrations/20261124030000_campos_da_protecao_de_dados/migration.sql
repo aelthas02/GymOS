@@ -15,6 +15,7 @@ ADD COLUMN     "versao" INTEGER NOT NULL;
 ALTER TABLE "consentimento" ADD COLUMN     "aluno_id" UUID NOT NULL,
 ADD COLUMN     "decisao" TEXT NOT NULL,
 ADD COLUMN     "finalidade" TEXT NOT NULL,
+ADD COLUMN     "ordem" BIGSERIAL NOT NULL,
 ADD COLUMN     "origem" TEXT NOT NULL,
 ADD COLUMN     "registrado_em" TIMESTAMPTZ(3) NOT NULL;
 
@@ -25,4 +26,7 @@ CREATE INDEX "acesso_a_dado_sensivel_tenant_id_titular_id_idx" ON "acesso_a_dado
 CREATE UNIQUE INDEX "chave_do_tenant_tenant_id_versao_key" ON "chave_do_tenant"("tenant_id", "versao");
 
 -- CreateIndex
-CREATE INDEX "consentimento_tenant_id_aluno_id_finalidade_registrado_em_idx" ON "consentimento"("tenant_id", "aluno_id", "finalidade", "registrado_em");
+CREATE INDEX "consentimento_tenant_id_aluno_id_finalidade_ordem_idx" ON "consentimento"("tenant_id", "aluno_id", "finalidade", "ordem");
+
+-- A sequência da ordem (BIGSERIAL) precisa de permissão própria para o gymos_app inserir.
+GRANT USAGE ON SEQUENCE "consentimento_ordem_seq" TO gymos_app;

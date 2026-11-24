@@ -13,7 +13,10 @@ describe('consentimento por finalidade', () => {
   let academia: TenantCriado;
 
   /** runAsTenant com o relógio parado no instante dado (o mesmo mecanismo do x-relogio). */
-  const em = <T>(instante: string, fn: (consentimentos: Consentimentos) => Promise<T>): Promise<T> =>
+  const em = <T>(
+    instante: string,
+    fn: (consentimentos: Consentimentos) => Promise<T>,
+  ): Promise<T> =>
     app
       .get(ContextoDoTenant)
       .executar({ instanteFixo: new Date(instante) }, () =>

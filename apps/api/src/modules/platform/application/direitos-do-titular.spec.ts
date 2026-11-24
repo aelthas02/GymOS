@@ -1,4 +1,4 @@
-import { RelogioFixo } from '../infra/relogio/relogio';
+import { Relogio } from '../domain/relogio';
 import {
   DireitosDoTitular,
   type ModoDeExclusao,
@@ -6,6 +6,12 @@ import {
   RegistroDeProvedoresDoTitular,
   type Retencao,
 } from './direitos-do-titular';
+
+class RelogioParado extends Relogio {
+  agora(): Date {
+    return new Date('2026-11-23T12:00:00Z');
+  }
+}
 
 class ProvedorEspiao implements ProvedorDeDadosDoTitular {
   readonly exportados: string[] = [];
@@ -37,7 +43,7 @@ describe('direitos do titular', () => {
     const registro = new RegistroDeProvedoresDoTitular();
     registro.registrar(treinos);
     registro.registrar(fiscal);
-    const direitos = new DireitosDoTitular(registro, new RelogioFixo('2026-11-23T12:00:00Z'));
+    const direitos = new DireitosDoTitular(registro, new RelogioParado());
 
     const exportacao = await direitos.exportar('aluno-1');
 
