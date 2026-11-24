@@ -2,27 +2,25 @@ import type { APIRequestContext, BrowserContext } from '@playwright/test';
 import { URLS } from './config';
 import { cabecalhosDeApi } from './api';
 
-/** Senha de todos os usuários do seed (`apps/api/src/seed/autenticacao.ts`). */
+/** Senha de todos os usuários do seed (equipe em `seed/autenticacao.ts`, aluno em `seed/alunos.ts`). */
 export const SENHA_DO_SEED = 'gymos1234';
 
 export type Papel = 'administrador' | 'gerente' | 'recepcao' | 'professor' | 'aluno';
 
 interface Credencial {
+  /** E-mail da equipe; no app, o identificador do aluno (e-mail ou CPF). */
   email: string;
   /** Login do painel (`staff`) ou do app (`aluno`). */
   area: 'staff' | 'aluno';
 }
 
-/**
- * Quem entra por papel: os usuários do seed da Academia Ritmo. O aluno só passa a existir quando o
- * módulo de seed `alunos` (T15a) criar o aluno do E2E e preencher esta credencial.
- */
-const CREDENCIAIS: Record<Papel, Credencial | null> = {
+/** Quem entra por papel: os usuários do seed da Academia Ritmo; o aluno é o Pedro Almeida (T15a). */
+const CREDENCIAIS: Record<Papel, Credencial> = {
   administrador: { email: 'admin@academiaritmo.com', area: 'staff' },
   gerente: { email: 'carla@academiaritmo.com', area: 'staff' },
   recepcao: { email: 'joao@academiaritmo.com', area: 'staff' },
   professor: { email: 'diego@academiaritmo.com', area: 'staff' },
-  aluno: null,
+  aluno: { email: 'pedro.almeida@email.com', area: 'aluno' },
 };
 
 export interface Sessao {
@@ -35,15 +33,12 @@ export interface Sessao {
  */
 export async function entrarComo(request: APIRequestContext, papel: Papel): Promise<Sessao> {
   const credencial = CREDENCIAIS[papel];
-  if (!credencial) {
-    throw new Error(
-      `O papel "${papel}" ainda não tem usuário no seed: o módulo "alunos" (T15a) o registra em ` +
-        'apps/api/src/seed e a credencial entra em apps/e2e/src/papeis.ts.',
-    );
-  }
   const resposta = await request.post(`${URLS.api}/api/auth/${credencial.area}/login`, {
     headers: cabecalhosDeApi(),
-    data: { email: credencial.email, senha: SENHA_DO_SEED },
+    data:
+      credencial.area === 'aluno'
+        ? { identificador: credencial.email, senha: SENHA_DO_SEED }
+        : { email: credencial.email, senha: SENHA_DO_SEED },
   });
   if (!resposta.ok()) {
     throw new Error(`Login de ${papel} falhou (${resposta.status()}): ${await resposta.text()}`);
