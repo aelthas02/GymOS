@@ -71,6 +71,7 @@
 
 # Agente 10 · Qualidade e Segurança
 /apps/e2e/                                      @gymos/agente-10-qualidade
+/tools/e2e/                                     @gymos/agente-10-qualidade
 /docs/design/                                   @gymos/agente-10-qualidade
 /tools/architecture/                            @gymos/agente-01-plataforma @gymos/agente-10-qualidade
 
