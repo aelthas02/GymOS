@@ -28,6 +28,6 @@ export function dataCivilEm(instante: Date, fusoHorario: string): DataCivil {
     day: '2-digit',
   }).formatToParts(instante);
   const parte = (tipo: Intl.DateTimeFormatPartTypes): string =>
-    partes.find((item) => item.type === tipo)?.value ?? '';
+    (partes.find((item) => item.type === tipo) as Intl.DateTimeFormatPart).value;
   return `${parte('year')}-${parte('month')}-${parte('day')}` as DataCivil;
 }

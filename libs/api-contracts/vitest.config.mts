@@ -19,6 +19,9 @@ export default defineConfig(() => ({
       provider: 'v8' as const,
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: '../../coverage/libs/api-contracts',
+      exclude: ['src/generated/**'],
+      // Portão do CI (T03): 85% de linhas e 80% de branches no geral; 100% nas pastas de regra.
+      thresholds: { lines: 85, branches: 80 },
     },
   },
 }));

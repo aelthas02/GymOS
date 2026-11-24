@@ -116,7 +116,10 @@
       "options": {
         "watch": false,
         "coverage": true,
-        "coverageReporters": ["text-summary", "lcov"]
+        "coverageReporters": ["text-summary", "lcov"],
+        "coverageInclude": ["apps/student-app/src/**/*.ts"],
+        "coverageExclude": ["apps/student-app/src/main.ts", "apps/student-app/src/environments/**"],
+        "coverageThresholds": { "lines": 85, "branches": 80 }
       }
     },
     "serve-static": {

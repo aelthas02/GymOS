@@ -23,7 +23,21 @@ export default defineConfig(() => ({
       provider: 'v8' as const,
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: '../../coverage/apps/api',
-      exclude: ['src/generated/**'],
+      include: ['src/**/*.ts'],
+      // Pontos de entrada (bootstrap e CLIs) e utilitários de teste não entram no portão.
+      exclude: [
+        'src/generated/**',
+        'src/**/*.main.ts',
+        'src/main.ts',
+        'src/instrument.ts',
+        'src/**/testing/**',
+      ],
+      // Portão do CI (T03): 85% de linhas e 80% de branches no geral; 100% nas pastas de regra.
+      thresholds: {
+        lines: 85,
+        branches: 80,
+        '**/domain/**': { lines: 100, branches: 100, functions: 100, statements: 100 },
+      },
     },
     projects: [
       {

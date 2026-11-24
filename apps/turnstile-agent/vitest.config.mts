@@ -19,6 +19,13 @@ export default defineConfig(() => ({
       provider: 'v8' as const,
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: '../../coverage/apps/turnstile-agent',
+      include: ['src/**/*.ts'],
+      // Portão do CI (T03): 85% de linhas e 80% de branches no geral; 100% nas pastas de regra.
+      thresholds: {
+        lines: 85,
+        branches: 80,
+        '**/src/domain/**': { lines: 100, branches: 100, functions: 100, statements: 100 },
+      },
     },
   },
 }));
