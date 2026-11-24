@@ -63,7 +63,12 @@ export default [
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+          // Fixtures de tela (ADR-019): o app as escreve tipadas pelo e2e e o e2e as importa.
+          allow: [
+            '^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$',
+            '^.*/e2e/src/fixture-de-tela$',
+            '^.*/testing/[^/]+\\.fixture$',
+          ],
           depConstraints: [...scopeConstraints, ...typeConstraints],
         },
       ],
