@@ -5,9 +5,14 @@ import { join } from 'node:path';
 
 const raiz = join(import.meta.dirname, '..', '..', '..');
 const script = join(raiz, 'tools', 'deploy', 'deploy.sh');
+// No Windows, `bash` do PATH costuma ser o do WSL (System32); usa o Git Bash.
+const bash =
+  process.platform === 'win32'
+    ? (process.env['GYMOS_BASH'] ?? 'C:\\Program Files\\Git\\bin\\bash.exe')
+    : 'bash';
 
 function deploy(args: string[], env: Record<string, string> = {}) {
-  const r = spawnSync('bash', [script, ...args], {
+  const r = spawnSync(bash, [script, ...args], {
     encoding: 'utf8',
     env: { PATH: process.env['PATH'] ?? '', ...env },
   });
