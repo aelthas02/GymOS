@@ -346,6 +346,10 @@ Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso 
 | `alterou-acesso-de-funcionario`   | Alterou acesso de funcionário   | Equipe        | sim      | dar, trocar ou tirar o acesso (T26a)  |
 | `excluiu-funcionario`             | Excluiu funcionário             | Equipe        | sim      | excluir funcionário (T26a)            |
 | `enviou-comunicado`               | Enviou comunicado               | Alunos        | não      | comunicado manual (T13e)              |
+| `liberou-acesso-manual`           | Liberou acesso manual           | Acesso        | sim      | liberação manual da Recepção (T23a)   |
+| `registrou-check-in`              | Registrou check-in              | Acesso        | não      | check-in da Recepção (T23a)           |
+| `alterou-regras-de-acesso`        | Alterou regras de acesso        | Configurações | sim      | regras de acesso da catraca (T23a)    |
+| `alterou-alertas-de-frequencia`   | Alterou alertas de frequência   | Configurações | não      | alertas de frequência (T23a)          |
 | `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)      |
 
 ### Alunos, planos e contratos
@@ -473,6 +477,43 @@ notificarEm ─▶ aviso_agendado (pendente) + job atrasado na fila notificacoes
 - **Conteúdo**: título até 120 e texto até 500 caracteres. Não ponha dado de saúde no texto: o push passa pelo
   provedor do navegador. O aviso do tipo `saude` deve só apontar para a tela.
 - **LGPD**: o provedor `avisos` exporta avisos, dispositivos (sem as chaves) e preferências, e a exclusão apaga tudo.
+
+### Acesso e frequência
+
+`modules/acesso` (T23a, ADR-018) e o pacote puro `@gymos/shared-acesso` (`libs/shared/acesso`, `type:domain`), que a API
+e o agente da catraca (T24a) usam com as mesmas regras. Dispositivos, pareamento e tempo real são do T23b.
+
+```
+pedido ─▶ contrato → atraso (ADR-018) → horário → modalidade → anti-passback → limite diário → semanal ─▶ liberado | tolerância | negado(motivo)
+QR do app ─ emitirQr (Ed25519, 60 s, nonce) ─▶ catraca ou Recepção ─ verificarQr + nonce de uso único ─▶ regras
+agente offline ─ validarQrOffline (chave pública + nonces locais) ─▶ guarda acessos ─ sincronização ─▶ API (deduplica por idDeOrigem)
+```
+
+- **Regras** (`avaliarAcesso`): a primeira negação encerra; a tolerância só vale se nenhuma regra negar; **saída nunca é
+  barrada**. Quem chama traz os fatos (contrato, `diasDeAtraso`, plano, passagens liberadas); nada lê relógio nem banco.
+- **Atraso (ADR-018)**: `diasDeAtraso` vem da Cobrança (o estado do contrato é avaliado por `Contratos.situacao`). Com
+  "bloquear após N dias" (padrão 7), nega com `diasDeAtraso ≥ N − 1` e libera "na tolerância" de 1 a `N − 2`
+  (N = 1 bloqueia a partir do 1º dia, nunca quem está em dia). Contrato Encerrado, Trancado ou ausente nega.
+- **Horário** de funcionamento no fuso de São Paulo (padrão 5h às 23h; início inclusivo, fim exclusivo). **Limite por dia**
+  conta cada entrada (sair e voltar é nova entrada); **anti-passback** nega nova entrada no mesmo dia sem saída;
+  **acessos por semana** (segunda a domingo) contam **dias** com entrada. Modalidade (ex.: `Lutas`) só com plano que a inclui.
+- **QR** `gq1.<kid>.<payload>.<assinatura>`: a assinatura cobre `gymos-qr-v1\n` mais o texto exato transmitido, sem campo de
+  algoritmo; o payload só é lido depois de a assinatura valer; o `tenantId` assinado barra uso em outra academia; validade
+  de 60 s (emissão até 5 s no futuro é tolerada). **Uso único**: o nonce entra em `qr_usado` com `UNIQUE (tenant, nonce)`
+  e `ON CONFLICT DO NOTHING` (duas leituras simultâneas disputam o índice e só uma vence). A chave privada fica cifrada
+  (T13c) em `chave_de_qr`; o agente baixa as públicas em `GET /api/acesso/chaves-publicas` e guarda os nonces usados
+  (`NoncesEmMemoria`) até sincronizar. Limite conhecido: dois agentes offline distintos aceitam o mesmo QR; a sincronização
+  detecta o caso (`qrRepetidos`).
+- **Registro**: `Acessos.registrar` (catraca online), `checkInDaRecepcao`, `liberarManualmente` (exige motivo; auditoria
+  sensível), `registrarPorQr` (QR recusado vira acesso negado) e `sincronizar` (deduplica por `idDeOrigem`, ordena pelo
+  horário de origem e não reavalia: a pessoa já passou). O evento `AcessoRegistrado` sai só na primeira gravação.
+- **Alertas de frequência**: `GET/PUT /api/configuracoes/alertas` e o job `RotinaDosAlertas` (a cada 5 min vê, por tenant, se
+  passou da hora configurada e ainda não verificou hoje; só com `FILAS_PROCESSAR`). `verificar` abre, escala (comum para
+  urgente) e resolve alertas; `mensagemAoAluno` só envia com consentimento de marketing (`Consentimentos.elegivel`) e pelo
+  `Notificador`.
+- **Leituras**: `GET /api/acesso/frequencia/{checkins-de-hoje,por-horario,por-aluno,presencas-do-mes,alunos-em-risco}`. Em
+  processo, `Frequencia` (check-ins de hoje e frequência por horário para o Início; `presencasDoMes` para o rateio do T21).
+- **LGPD**: o provedor `acesso` exporta acessos e alertas do aluno e a exclusão apaga tudo (sem retenção legal).
 
 ### Configuração
 
