@@ -151,6 +151,57 @@ jobs:
           path: dist/reports
           if-no-files-found: ignore
 
+  # Regressão visual (T35, ADR-019): compara cada tela com o HTML de referência no mesmo contêiner e
+  # navegador. Obrigatório no PR que toca telas (marque como check exigido no GitHub); sem tela
+  # tocada, os passos são pulados e o check passa. A versão da imagem acompanha o @playwright/test.
+  visual:
+    name: Regressão visual
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container: mcr.microsoft.com/playwright:v1.65.1-noble
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Alguma tela foi tocada?
+        id: telas
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD"             | grep -Eq '^(apps/(staff-web|student-app)/src|libs/ui/|docs/design/telas/|apps/e2e/)'; then
+            echo "tocadas=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Nenhuma tela tocada: regressão visual pulada."
+          fi
+      - if: steps.telas.outputs.tocadas == 'true'
+        uses: pnpm/action-setup@v6
+      - if: steps.telas.outputs.tocadas == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - if: steps.telas.outputs.tocadas == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.telas.outputs.tocadas == 'true'
+        run: cp .env.example .env
+      - name: Build dos apps
+        if: steps.telas.outputs.tocadas == 'true'
+        run: pnpm nx run-many -t build -p staff-web student-app --configuration=development
+      # A API é interceptada pelo Playwright: nenhum back sobe aqui.
+      - name: Testes visuais
+        if: steps.telas.outputs.tocadas == 'true'
+        run: pnpm exec playwright test -c apps/e2e/playwright.config.ts mecanismo '.visual.'
+        env:
+          CI: 'true'
+      - name: Relatório de diferenças
+        if: always() && steps.telas.outputs.tocadas == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-visual
+          path: |
+            dist/e2e/relatorio-visual
+            dist/e2e/relatorio
+          if-no-files-found: ignore
+
   portoes:
     name: Verifica os portões (budget, cobertura e rollback)
     runs-on: ubuntu-latest

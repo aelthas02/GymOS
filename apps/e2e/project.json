@@ -1,0 +1,23 @@
+{
+  "name": "e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/e2e/src",
+  "projectType": "application",
+  "tags": ["scope:shared", "type:util"],
+  "implicitDependencies": ["api", "staff-web", "student-app"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --noEmit -p {projectRoot}/tsconfig.json"],
+        "parallel": false
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/e2e/executar.mjs"
+      }
+    }
+  }
+}

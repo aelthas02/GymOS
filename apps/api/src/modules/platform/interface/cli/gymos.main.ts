@@ -3,12 +3,15 @@ import { existsSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
 import { AppModule } from '../../../../app/app.module';
+import { MODULOS_DE_SEED } from '../../../../seed/modulos';
+import { executarSeed } from '../../../../seed/runner';
 import { CriarAcademia } from '../../application/casos-de-uso';
 import { credenciaisDaUrl, prepararBanco } from '../../infra/database/preparar-banco';
 
 // Comando de operação (dist/apps/api/gymos.js), pela raiz: `pnpm gymos <comando> [opções]`.
 //   preparar-banco   cria gymos_migrator e gymos_app, o banco de DATABASE_URL e os privilégios
 //   criar-academia   --slug --nome --admin-email [--cor] [--unidade]
+//   seed             roda os módulos de seed (T35), em ordem de dependência; idempotente
 const AJUDA = `Uso: pnpm gymos <comando>
 
   preparar-banco
@@ -17,7 +20,11 @@ const AJUDA = `Uso: pnpm gymos <comando>
 
   criar-academia --slug ritmo --nome "Academia Ritmo" --admin-email adm@ritmo.com.br
                  [--cor "#22C98A"] [--unidade "Unidade Centro"]
-      Cria o tenant, a primeira unidade e o convite do administrador (imprime o link).`;
+      Cria o tenant, a primeira unidade e o convite do administrador (imprime o link).
+
+  seed
+      Popula a Academia Ritmo com os módulos de seed registrados (só dev e E2E). Pode rodar
+      de novo: não duplica dados.`;
 
 const postgres = z.url({ protocol: /^postgres(ql)?$/ });
 
@@ -71,6 +78,23 @@ async function criarAcademia(argumentos: string[]): Promise<void> {
   }
 }
 
+async function seed(): Promise<void> {
+  if (process.env['APP_ENV'] === 'production' || process.env['NODE_ENV'] === 'production') {
+    throw new Error('O seed de desenvolvimento não roda em produção.');
+  }
+  // O seed não precisa dos workers das filas nem do despachante do outbox.
+  process.env['FILAS_PROCESSAR'] = 'false';
+  const app = await NestFactory.createApplicationContext(AppModule, { logger: ['error'] });
+  try {
+    const executados = await executarSeed(app, MODULOS_DE_SEED, {
+      aoExecutar: (nome) => console.log(`seed: ${nome}`),
+    });
+    console.log(`Seed concluído (${executados.length} módulos).`);
+  } finally {
+    await app.close();
+  }
+}
+
 async function principal([comando, ...argumentos]: string[]): Promise<void> {
   if (existsSync('.env')) {
     process.loadEnvFile('.env');
@@ -80,6 +104,8 @@ async function principal([comando, ...argumentos]: string[]): Promise<void> {
       return prepararBancoDoAmbiente();
     case 'criar-academia':
       return criarAcademia(argumentos);
+    case 'seed':
+      return seed();
     default:
       console.log(AJUDA);
       if (comando && comando !== '--help') {

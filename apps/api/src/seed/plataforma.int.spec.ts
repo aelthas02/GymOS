@@ -2,6 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import { criarAppDeTeste } from '../modules/platform/testing/app-de-teste';
 import { usarBancoDeTeste } from '../modules/platform/testing/banco-de-teste';
 import { comTenant } from '../modules/platform/testing/fabricas';
+import { contextoDoSeed } from './runner';
 import { ACADEMIA_RITMO, seedDaPlataforma } from './plataforma';
 
 describe('seed da plataforma', () => {
@@ -13,8 +14,8 @@ describe('seed da plataforma', () => {
   });
 
   it('cria a Academia Ritmo com a Unidade Centro e não duplica ao rodar de novo', async () => {
-    await seedDaPlataforma.executar(app);
-    await seedDaPlataforma.executar(app);
+    await seedDaPlataforma.executar(app, contextoDoSeed(app));
+    await seedDaPlataforma.executar(app, contextoDoSeed(app));
 
     const conexao = await banco.conectarComoApp();
     const { rows: tenants } = await conexao.query<{ id: string; nome: string }>(
