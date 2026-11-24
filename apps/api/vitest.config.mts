@@ -27,6 +27,7 @@ export default defineConfig(() => ({
       // Pontos de entrada (bootstrap e CLIs) e utilitários de teste não entram no portão.
       exclude: [
         'src/generated/**',
+        'src/**/*.spec.ts',
         'src/**/*.main.ts',
         'src/main.ts',
         'src/instrument.ts',

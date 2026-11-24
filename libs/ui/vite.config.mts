@@ -24,7 +24,7 @@ export default defineConfig(() => ({
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: '../../coverage/libs/ui',
       include: ['src/**/*.ts', 'styles/**/*.ts'],
-      exclude: ['src/stories/**', '.storybook/**'],
+      exclude: ['src/stories/**', '.storybook/**', '**/*.spec.ts'],
       // Portão do CI (T03): 85% de linhas e 80% de branches no geral; 100% nas pastas de regra.
       thresholds: {
         lines: 85,
