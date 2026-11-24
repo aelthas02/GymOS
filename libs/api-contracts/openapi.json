@@ -24,6 +24,75 @@
         ],
         "type": "object"
       },
+      "AtividadeDto": {
+        "properties": {
+          "acao": {
+            "example": "alterou-valor",
+            "type": "string"
+          },
+          "acaoTexto": {
+            "example": "Alterou valor",
+            "type": "string"
+          },
+          "detalhe": {
+            "example": "Plano Mensal: R$ 109,00 para R$ 119,00",
+            "type": "string"
+          },
+          "etiqueta": {
+            "example": "Sensível",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "modulo": {
+            "example": "planos",
+            "type": "string"
+          },
+          "moduloTexto": {
+            "example": "Planos",
+            "type": "string"
+          },
+          "papel": {
+            "example": "Gerente",
+            "type": "string"
+          },
+          "quando": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "quem": {
+            "example": "Carla Menezes",
+            "type": "string"
+          },
+          "quemId": {
+            "description": "Nulo: o sistema.",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "sensivel": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "quando",
+          "quem",
+          "quemId",
+          "papel",
+          "acao",
+          "acaoTexto",
+          "modulo",
+          "moduloTexto",
+          "detalhe",
+          "sensivel",
+          "etiqueta"
+        ],
+        "type": "object"
+      },
       "ConvidarDto": {
         "properties": {
           "email": {
@@ -160,6 +229,26 @@
           "saude"
         ],
         "type": "string"
+      },
+      "PaginaDoLogDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AtividadeDto"
+            },
+            "type": "array"
+          },
+          "proximoCursor": {
+            "description": "Nulo na última página.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "itens",
+          "proximoCursor"
+        ],
+        "type": "object"
       },
       "PerfilDto": {
         "properties": {
@@ -307,6 +396,211 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/api/auditoria/atividades": {
+      "get": {
+        "operationId": "listarAtividades",
+        "parameters": [
+          {
+            "description": "Usuário que agiu.",
+            "in": "query",
+            "name": "usuarioId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Chave do módulo (catálogo de módulos).",
+            "in": "query",
+            "name": "modulo",
+            "required": false,
+            "schema": {
+              "example": "planos",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Início do período, inclusive.",
+            "in": "query",
+            "name": "de",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Fim do período, exclusivo.",
+            "in": "query",
+            "name": "ate",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "`todos`: cronológico; `destaque` (\"Todos, com sensíveis em destaque\"): sensíveis primeiro; `sensiveis`: só os sensíveis.",
+            "in": "query",
+            "name": "tipo",
+            "required": false,
+            "schema": {
+              "default": "todos",
+              "enum": [
+                "todos",
+                "destaque",
+                "sensiveis"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "`proximoCursor` da página anterior.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDoLogDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Filtro ou cursor inválido."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão permissoes:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log de atividades paginado por cursor, com os filtros de Log.html.",
+        "tags": [
+          "auditoria"
+        ]
+      }
+    },
+    "/api/auditoria/atividades/exportar": {
+      "get": {
+        "operationId": "exportarAtividades",
+        "parameters": [
+          {
+            "description": "Usuário que agiu.",
+            "in": "query",
+            "name": "usuarioId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Chave do módulo (catálogo de módulos).",
+            "in": "query",
+            "name": "modulo",
+            "required": false,
+            "schema": {
+              "example": "planos",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Início do período, inclusive.",
+            "in": "query",
+            "name": "de",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Fim do período, exclusivo.",
+            "in": "query",
+            "name": "ate",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "`todos`: cronológico; `destaque` (\"Todos, com sensíveis em destaque\"): sensíveis primeiro; `sensiveis`: só os sensíveis.",
+            "in": "query",
+            "name": "tipo",
+            "required": false,
+            "schema": {
+              "default": "todos",
+              "enum": [
+                "todos",
+                "destaque",
+                "sensiveis"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Arquivo CSV (UTF-8 com BOM, separador `;`)."
+          },
+          "400": {
+            "description": "Filtro inválido."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão permissoes:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "CSV do log com os mesmos filtros (Quando, Quem, Ação, Módulo, Sensível, Detalhe).",
+        "tags": [
+          "auditoria"
+        ]
+      }
+    },
     "/api/auth/aluno/esqueci-senha": {
       "post": {
         "operationId": "esqueciSenhaDoApp",

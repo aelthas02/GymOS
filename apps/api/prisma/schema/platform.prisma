@@ -95,3 +95,25 @@ model AcessoADadoSensivel {
   @@index([tenantId, titularId])
   @@map("acesso_a_dado_sensivel")
 }
+
+/// Log de atividades (T13b): quem fez o quê, gravado na transação do caso de uso. A `ordem` desempata
+/// registros do mesmo instante, para a paginação por cursor ser estável.
+model Atividade {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  criadoEm    DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  ocorridoEm  DateTime @map("ocorrido_em") @db.Timestamptz(3)
+  quemId      String?  @map("quem_id") @db.Uuid
+  quem        String
+  papel       String
+  acao        String
+  modulo      String
+  detalhe     String
+  sensivel    Boolean  @default(false)
+  ordem       BigInt   @default(autoincrement())
+
+  @@index([tenantId])
+  @@index([tenantId, ocorridoEm, ordem])
+  @@index([ocorridoEm])
+  @@map("atividade")
+}

@@ -294,6 +294,50 @@ registro.registrar({
 provedor com `excluir`, ou `anonimizar` quando o domínio declara retenção, e devolve o relatório. Tudo
 roda na transação do tenant: se um domínio falha, nada é excluído.
 
+### Auditoria (log de atividades)
+
+`Auditoria` (`modules/platform`, módulo global `AuditoriaModule`) alimenta a aba "Log de atividades" da tela
+Permissões. Todo caso de uso que altera dado chama `registrarAtividade` **dentro da própria transação**:
+o registro usa o cliente do `ContextoDoTenant`, então um rollback do caso de uso também o desfaz.
+
+```ts
+const autor = await auditoria.autorDoUsuario(sessao.sujeitoId); // { nome, papel } atuais
+await auditoria.registrarAtividade({
+  quem: { id: sessao.sujeitoId, nome: autor.nome },
+  papel: autor.papel,
+  acao: 'excluiu-aluno', // chave do catálogo em domain/atividade.ts
+  detalhe: 'Cadastro duplicado: Marcelo Dias',
+  // modulo e sensivel vêm do catálogo; passe `sensivel: true` para marcar uma ação comum.
+});
+```
+
+- **Catálogo em código** (`ACOES_DA_AUDITORIA`): a chave fica no banco; o texto, o módulo e a etiqueta
+  "Sensível" vêm do código. Ação nova entra no catálogo no PR do caso de uso dono.
+- **Consulta** `GET /api/auditoria/atividades` (cursor opaco, `limite` até 100) e **CSV**
+  `GET /api/auditoria/atividades/exportar`; filtros `usuarioId`, `modulo`, `de`, `ate` (exclusivo) e `tipo`
+  (`todos` cronológico, `destaque` com sensíveis primeiro, `sensiveis`). Só o Administrador:
+  `@RequirePermission('permissoes:ver')` (o catálogo do T12 não tem a ação `log`).
+- **Cursor estável:** a ordem é (sensível quando em destaque, `ocorrido_em`, `ordem`), com `ordem` sequencial,
+  então registros do mesmo milissegundo não se repetem nem se perdem entre páginas.
+- **403 vira registro:** `AoNegarPermissaoAuditado` implementa o gancho do T12 e grava "Tentativa negada"
+  (sensível, módulo da permissão negada). Falha ao gravar vai para o log e o 403 continua 403.
+- **Retenção de 12 meses:** `LimpezaDaAuditoria` roda `paraCadaTenant` ao subir e a cada 24 h nos processos com
+  `FILAS_PROCESSAR=true`; apaga `ocorrido_em` anterior a agora menos 12 meses (exatos ficam).
+
+Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso de uso):
+
+| Ação (chave)                      | Texto                           | Módulo        | Sensível | Caso de uso dono                     |
+| --------------------------------- | ------------------------------- | ------------- | -------- | ------------------------------------ |
+| `alterou-valor`                   | Alterou valor                   | Planos        | sim      | alterar valor do plano (T15a)        |
+| `alterou-permissao`               | Alterou permissão               | Permissões    | sim      | editar tipo de acesso (T26b)         |
+| `cadastrou-aluno`                 | Cadastrou aluno                 | Alunos        | não      | cadastrar aluno (T15a)               |
+| `enviou-cobranca-em-lote`         | Enviou cobrança em lote         | Alunos        | não      | cobrança em lote (T19)               |
+| `alterou-configuracao-financeira` | Alterou configuração financeira | Configurações | sim      | tolerância e contratos (T26c)        |
+| `editou-ficha-de-treino`          | Editou ficha de treino          | Treinos       | não      | editar ficha (T25)                   |
+| `excluiu-aluno`                   | Excluiu aluno                   | Alunos        | sim      | excluir aluno (T15a)                 |
+| `trocou-cor-do-app`               | Trocou a cor do app             | Configurações | não      | `PUT /tenant/identidade` (T12, T26c) |
+| `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)     |
+
 ### Configuração
 
 A API valida as variáveis de ambiente com Zod em `apps/api/src/config/env.ts`. `main.ts` chama

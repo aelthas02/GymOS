@@ -4,6 +4,7 @@ import type { NovoEvento, PayloadDoEvento } from '@gymos/shared-events';
 import { randomUUID } from 'node:crypto';
 import type { Client } from 'pg';
 import type { Tenant } from '../domain/tenant';
+import { AuditoriaModule } from '../auditoria.module';
 import { EventosModule } from '../eventos.module';
 import { CONFIGURACAO_DA_PLATAFORMA, type ConfiguracaoDaPlataforma } from '../infra/configuracao';
 import {
@@ -35,7 +36,7 @@ export async function criarModuloDeEventos(
 ): Promise<INestApplicationContext> {
   // A autenticação (T12) fornece o ConviteDoAdministrador que a plataforma exige.
   const modulo = await Test.createTestingModule({
-    imports: [PlatformModule, AutenticacaoModule, EventosModule],
+    imports: [PlatformModule, AutenticacaoModule, EventosModule, AuditoriaModule],
   })
     .overrideProvider(CONFIGURACAO_DA_AUTENTICACAO)
     .useValue({

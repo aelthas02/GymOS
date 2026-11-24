@@ -180,7 +180,7 @@ export interface PermissaoNegada {
   rota: string;
 }
 
-/** Gancho do 403: o T13b grava na auditoria; até lá, um log de aviso. */
+/** Gancho do 403 do guard; o T13b implementa gravando "Tentativa negada" na auditoria. */
 export abstract class AoNegarPermissao {
   abstract registrar(negada: PermissaoNegada): Promise<void>;
 }

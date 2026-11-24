@@ -63,6 +63,8 @@ import {
     { provide: TempoRealPorTenant, useClass: TempoRealRedis },
   ],
   exports: [
+    // A limpeza da auditoria (T13b) roda só nos processos com workers.
+    CONFIGURACAO_DAS_FILAS,
     Filas,
     PublicadorDeEventos,
     CacheComTenant,

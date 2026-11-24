@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuditoriaModule } from '../modules/platform/auditoria.module';
 import { AutenticacaoModule } from '../modules/autenticacao/autenticacao.module';
 import { PlatformModule } from '../modules/platform/platform.module';
 import { EventosModule } from '../modules/platform/eventos.module';
@@ -14,6 +15,7 @@ import { ObservabilidadeModule } from '../observabilidade/observabilidade.module
     AutenticacaoModule,
     EventosModule,
     ProtecaoDeDadosModule,
+    AuditoriaModule,
   ],
 })
 export class AppModule {}
