@@ -11,11 +11,37 @@ concurrency:
   group: pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+env:
+  # Mesmas credenciais do .env.example e do docker-compose; Nx carrega o .env em todas as tarefas.
+  EMAIL_TRANSPORTE: fake
+  TEST_DATABASE_ADMIN_URL: postgresql://gymos:gymos@localhost:5432/postgres
+  DATABASE_URL: postgresql://gymos_app:gymos_app@localhost:5432/gymos
+  DATABASE_MIGRATOR_URL: postgresql://gymos_migrator:gymos_migrator@localhost:5432/gymos
+  REDIS_URL: redis://localhost:6379
+
 jobs:
   verify:
-    name: Lint, teste e build (affected)
+    name: Lint, teste, cobertura e build (affected)
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Postgres e Redis dos testes de integração (README, "Testes de integração").
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: gymos
+          POSTGRES_PASSWORD: gymos
+          POSTGRES_DB: gymos
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U gymos" --health-interval 5s --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s
+          --health-retries 20
     steps:
       - uses: actions/checkout@v7
         with:
@@ -30,6 +56,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: cp .env.example .env
+
       - uses: nrwl/nx-set-shas@v5
 
       - name: Formatação
@@ -38,12 +66,131 @@ jobs:
       - name: Lint e typecheck
         run: pnpm nx affected -t lint typecheck
 
-      - name: Testes
+      # Falha abaixo de 85% de linhas e 80% de branches, ou de 100% nas pastas de regra (T03).
+      - name: Testes e cobertura
         run: pnpm nx affected -t test
 
       # Falha se libs/api-contracts divergir da API (ADR-005).
       - name: Contrato OpenAPI
         run: pnpm nx affected -t openapi-check
 
+      # Os budgets do angular.json fazem o build falhar.
       - name: Build
         run: pnpm nx affected -t build
+
+      - name: Cobertura (lcov)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura
+          path: coverage
+          if-no-files-found: ignore
+
+  bundle:
+    name: Relatório de bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build de produção dos apps
+        run: pnpm nx run-many -t build -p staff-web student-app --configuration=production
+      # JS inicial ≤ 250 kB e chunk lazy ≤ 80 kB, comprimidos (o budget do Angular mede o bruto).
+      - name: Limites de bundle comprimido
+        run: |
+          status=0
+          for app in staff-web student-app; do
+            node tools/architecture/ci/bundle-report.ts "$app" || status=1
+          done
+          cat dist/reports/bundle-*.md >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - name: Publica o relatório
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-de-bundle
+          path: dist/reports
+          if-no-files-found: ignore
+
+  portoes:
+    name: Verifica os portões (budget, cobertura e rollback)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: gymos
+          POSTGRES_PASSWORD: gymos
+          POSTGRES_DB: gymos
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U gymos" --health-interval 5s --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: cp .env.example .env
+      # Fixture acima do budget: o build precisa falhar.
+      - name: Budget falha o build
+        run: node tools/architecture/ci/verificar-budget.ts staff-web student-app
+      # Código sem teste em cada pasta de 100%: o teste do projeto precisa falhar.
+      - name: Cobertura de 100% aplicada a cada pasta
+        run: node tools/architecture/ci/verificar-cobertura.ts
+      # Migração de exemplo aplicada e revertida pelo script de rollback (spec do projeto architecture).
+      - name: Rollback de migração
+        run: pnpm nx test architecture --skip-nx-cache
+
+  lighthouse:
+    name: Lighthouse CI (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [staff-web, student-app]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # A página Entrar nasce no T07; sem a rota o app não pinta nada e não há o que medir.
+      - name: A rota Entrar existe?
+        id: entrar
+        run: |
+          if grep -q "path: 'entrar'" "apps/${{ matrix.app }}/src/app/app.routes.ts"; then
+            echo "existe=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Lighthouse pulado em ${{ matrix.app }}: a rota Entrar ainda não existe (T07)."
+          fi
+      - name: Lighthouse CI
+        if: steps.entrar.outputs.existe == 'true'
+        run: pnpm exec lhci autorun
+        env:
+          LHCI_APP: ${{ matrix.app }}
+      - name: Publica o relatório
+        if: steps.entrar.outputs.existe == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ matrix.app }}
+          path: dist/reports/lighthouse-${{ matrix.app }}
+          if-no-files-found: ignore

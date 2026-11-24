@@ -67,6 +67,7 @@
     "@commitlint/config-conventional": "^21.2.4",
     "@eslint/css": "^2.0.1",
     "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.16.1",
     "@nestjs/schematics": "^11.1.0",
     "@nestjs/testing": "^11.2.11",
     "@nx/angular": "24.0.6",
