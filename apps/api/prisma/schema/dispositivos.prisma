@@ -1,0 +1,134 @@
+// Modelos do domínio dispositivos (T23b): agente local da catraca, pareamento, catracas e leitores,
+// quedas, comandos ao agente, cadastro biométrico e a versão do cache de autorização. Tabelas criadas
+// por `nx g @gymos/api:tabela`; campos na migração `campos_dos_dispositivos`.
+
+/// Programa instalado na academia (ADR-016). A credencial é um segredo aleatório mostrado uma vez ao
+/// agente; só o hash SHA-256 fica aqui. `revogadoEm` corta o acesso na hora. `ultimoBatimentoEm` é o
+/// último sinal do agente e `ultimaSincronizacaoEm` o último lote de acessos recebido.
+model AgenteDaCatraca {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String    @map("tenant_id") @db.Uuid
+  criadoEm              DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nome                  String
+  credencialHash        String    @map("credencial_hash")
+  credencialGeradaEm    DateTime  @map("credencial_gerada_em") @db.Timestamptz(3)
+  versaoDoAgente        String?   @map("versao_do_agente")
+  ultimoBatimentoEm     DateTime? @map("ultimo_batimento_em") @db.Timestamptz(3)
+  ultimaSincronizacaoEm DateTime? @map("ultima_sincronizacao_em") @db.Timestamptz(3)
+  revogadoEm            DateTime? @map("revogado_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@map("agente_da_catraca")
+}
+
+/// Código de pareamento de 6 caracteres, mostrado no Passo 4 e em Configurações. Vale 30 minutos e
+/// uma troca só: `usadoEm` o consome e `agenteId` aponta o agente que nasceu dele.
+model CodigoDePareamento {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  criadoEm   DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  codigo     String
+  expiraEm   DateTime  @map("expira_em") @db.Timestamptz(3)
+  usadoEm    DateTime? @map("usado_em") @db.Timestamptz(3)
+  criadoPor  String?   @map("criado_por") @db.Uuid
+  agenteId   String?   @map("agente_id") @db.Uuid
+
+  @@unique([tenantId, codigo])
+  @@index([tenantId])
+  @@map("codigo_de_pareamento")
+}
+
+/// Catraca ou leitor. `tipo`: catraca ou leitor; `metodos`: facial, biometria, qr_code. `online` e
+/// `ultimoBatimentoEm` vêm do batimento do agente (offline após 90 s sem sinal).
+model Dispositivo {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  criadoEm          DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nome              String
+  tipo              String
+  local             String
+  metodos           String[]
+  unidadeId         String?   @map("unidade_id") @db.Uuid
+  agenteId          String?   @map("agente_id") @db.Uuid
+  online            Boolean   @default(false)
+  ultimoBatimentoEm DateTime? @map("ultimo_batimento_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([tenantId, agenteId])
+  @@map("dispositivo")
+}
+
+/// Histórico de quedas. `desde` é o último sinal antes de cair; `voltouEm` nulo é queda em aberto.
+model QuedaDeDispositivo {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  dispositivoId String    @map("dispositivo_id") @db.Uuid
+  desde         DateTime  @db.Timestamptz(3)
+  voltouEm      DateTime? @map("voltou_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([tenantId, dispositivoId, voltouEm])
+  @@index([tenantId, desde])
+  @@map("queda_de_dispositivo")
+}
+
+/// Fila de comandos do servidor ao agente (ele busca no batimento): `ping` (Testar conexão),
+/// `cadastrar_biometria` e `remover_biometria`. `status`: pendente, entregue, concluido, falhou ou
+/// expirado (o agente não respondeu até `expiraEm`).
+model ComandoDoAgente {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  criadoEm      DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  agenteId      String    @map("agente_id") @db.Uuid
+  dispositivoId String?   @map("dispositivo_id") @db.Uuid
+  tipo          String
+  dados         Json      @default("{}")
+  status        String    @default("pendente")
+  expiraEm      DateTime  @map("expira_em") @db.Timestamptz(3)
+  entregueEm    DateTime? @map("entregue_em") @db.Timestamptz(3)
+  respondidoEm  DateTime? @map("respondido_em") @db.Timestamptz(3)
+  resposta      Json?
+
+  @@index([tenantId])
+  @@index([tenantId, agenteId, status])
+  @@map("comando_do_agente")
+}
+
+/// Face ou digital do aluno no equipamento. O servidor guarda só a referência devolvida pelo agente
+/// (nunca o template) e exige o consentimento `biometria`. `tipo`: facial ou biometria; `status`:
+/// pendente, cadastrado ou falhou.
+model CadastroBiometrico {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId       String   @map("aluno_id") @db.Uuid
+  tipo          String
+  dispositivoId String?  @map("dispositivo_id") @db.Uuid
+  referencia    String?
+  status        String
+  comandoId     String?  @map("comando_id") @db.Uuid
+  atualizadoEm  DateTime @map("atualizado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, alunoId, tipo])
+  @@index([tenantId])
+  @@map("cadastro_biometrico")
+}
+
+/// Versão do cache de autorização do agente. Uma linha por aluno (`chave` `aluno:<id>`) mais a linha
+/// `regras`; cada mudança relevante (contrato, pagamento, regra) dá a ela uma `versao` nova, e o agente
+/// pede só o que passou da versão que já tem.
+model AlteracaoDoCacheDeAcesso {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  criadoEm   DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  chave      String
+  alunoId    String?  @map("aluno_id") @db.Uuid
+  versao     BigInt   @default(autoincrement())
+  alteradoEm DateTime @map("alterado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, chave])
+  @@index([tenantId])
+  @@index([tenantId, versao])
+  @@map("alteracao_do_cache_de_acesso")
+}
