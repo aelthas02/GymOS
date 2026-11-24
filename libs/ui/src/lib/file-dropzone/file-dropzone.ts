@@ -130,7 +130,11 @@ function formatarTamanho(bytes: number): string {
       @if (hint()) {
         <span class="ui-dropzone__dica">{{ hint() }}</span>
       }
-      <button type="button" [disabled]="disabled()" (click)="entrada().nativeElement.click()">
+      <button
+        type="button"
+        [disabled]="disabled()"
+        (click)="campoDeArquivo().nativeElement.click()"
+      >
         {{ buttonLabel() }}
       </button>
       <input
@@ -161,7 +165,7 @@ export class FileDropzone {
   readonly fileSelected = output<File>();
   readonly fileRejected = output<string>();
 
-  protected readonly entrada = viewChild.required<ElementRef<HTMLInputElement>>('entrada');
+  protected readonly campoDeArquivo = viewChild.required<ElementRef<HTMLInputElement>>('entrada');
   protected readonly arrastando = signal(false);
   private readonly erroLocal = signal<string | null>(null);
   protected readonly erro = computed(() => this.externalError() ?? this.erroLocal());
