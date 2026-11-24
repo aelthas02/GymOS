@@ -484,6 +484,128 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/funcionarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista a equipe, com filtro por cargo, busca por nome e os contadores dos chips. */
+        get: operations["listarFuncionarios"];
+        put?: never;
+        /** Cadastra o funcionário. Com tipo de acesso, cria o usuário e envia o convite; sem acesso, só o cadastro. */
+        post: operations["cadastrarFuncionario"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/funcionarios/convites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Passo 3 do onboarding: cadastra cada pessoa e convida quem tem acesso. Idempotente por e-mail: reenviar não duplica nem convida de novo. */
+        post: operations["convidarEquipe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/funcionarios/custos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Custo mensal por funcionário ativo, com a folha do mês e a média (Financeiro, T21). */
+        get: operations["custoDaEquipe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/funcionarios/profissionais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Professores e nutricionistas ativos (ou um cargo), para escolher em aulas e na Saúde (T28, T30). */
+        get: operations["listarProfissionais"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/funcionarios/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Um funcionário. */
+        get: operations["buscarFuncionario"];
+        /** Edita o funcionário. Sem acesso → com acesso convida; com acesso → sem acesso desativa o usuário. */
+        put: operations["editarFuncionario"];
+        post?: never;
+        /** Exclui o funcionário. Com vínculos (alunos, aulas), recusa: inative. */
+        delete: operations["excluirFuncionario"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/funcionarios/{id}/inativar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inativa o funcionário e desativa o login dele, se houver. */
+        post: operations["inativarFuncionario"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/funcionarios/{id}/reativar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reativa o funcionário e religa o login dele, se tinha acesso. */
+        post: operations["reativarFuncionario"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me": {
         parameters: {
             query?: never;
@@ -749,6 +871,15 @@ export interface components {
             /** @enum {string} */
             finalidade: "transacional" | "marketing" | "dados_de_saude" | "biometria";
         };
+        ContadoresDaEquipeDto: {
+            administrativo: number;
+            limpeza: number;
+            manutencao: number;
+            nutricao: number;
+            professor: number;
+            recepcao: number;
+            todos: number;
+        };
         ContadoresDeAlunosDto: {
             /** @example 11 */
             a_vencer: number;
@@ -814,11 +945,38 @@ export interface components {
             /** Format: uuid */
             tipoDeAcessoId: string;
         };
+        ConvidarEquipeDto: {
+            /** @description Pessoas do Passo 3, uma linha cada. */
+            pessoas: components["schemas"]["DadosDoFuncionarioDto"][];
+        };
         ConviteCriadoDto: {
             /** Format: date-time */
             expiraEm: string;
             /** Format: uuid */
             id: string;
+        };
+        ConviteEmLoteDto: {
+            itens: components["schemas"]["FuncionarioCriadoDto"][];
+        };
+        CustoDaEquipeDto: {
+            /** @description Só funcionários ativos. */
+            itens: components["schemas"]["CustoDeFuncionarioDto"][];
+            /** @description Custo médio por funcionário, em centavos (0 sem equipe). */
+            mediaCentavos: number;
+            /** @description Funcionários ativos. */
+            quantidade: number;
+            /** @description Folha do mês, em centavos. */
+            totalCentavos: number;
+        };
+        CustoDeFuncionarioDto: {
+            /** @enum {string} */
+            cargo: "professor" | "recepcao" | "nutricionista" | "limpeza" | "manutencao" | "administrativo" | "gerente" | "outro";
+            cargoDescricao: Record<string, never> | null;
+            /** @description Centavos. */
+            custoMensalCentavos: number;
+            /** Format: uuid */
+            funcionarioId: string;
+            nome: string;
         };
         DadosDoAlunoDto: {
             /**
@@ -844,6 +1002,31 @@ export interface components {
             restricoes?: string | null;
             /** @example (11) 98888-7777 */
             telefone?: string | null;
+        };
+        DadosDoFuncionarioDto: {
+            /**
+             * @example professor
+             * @enum {string}
+             */
+            cargo: "professor" | "recepcao" | "nutricionista" | "limpeza" | "manutencao" | "administrativo" | "gerente" | "outro";
+            /** @description Obrigatório no cargo "outro". */
+            cargoDescricao?: Record<string, never> | null;
+            /**
+             * @description Custo mensal em centavos.
+             * @example 45000
+             */
+            custoMensalCentavos?: number;
+            /** @description E-mail de login: obrigatório com tipo de acesso, opcional sem acesso. */
+            email?: Record<string, never> | null;
+            /** @example Diego Martins */
+            nome: string;
+            /** @example 11987654321 */
+            telefone?: Record<string, never> | null;
+            /**
+             * Format: uuid
+             * @description Tipo de acesso ao painel. Nulo ou o tipo "Sem acesso": só cadastro.
+             */
+            tipoDeAcessoId?: Record<string, never> | null;
         };
         DadosDoPlanoDto: {
             /**
@@ -906,6 +1089,32 @@ export interface components {
         ExcluirAlunoDto: {
             /** @example Cadastro duplicado */
             motivo?: string;
+        };
+        FuncionarioCriadoDto: {
+            /** @description Falso quando o e-mail já era de um funcionário (nada foi enviado). */
+            criado: boolean;
+            funcionario: components["schemas"]["FuncionarioDto"];
+        };
+        FuncionarioDto: {
+            ativo: boolean;
+            /** @enum {string} */
+            cargo: "professor" | "recepcao" | "nutricionista" | "limpeza" | "manutencao" | "administrativo" | "gerente" | "outro";
+            cargoDescricao: Record<string, never> | null;
+            /**
+             * @description Texto do cargo (a descrição, no cargo "outro").
+             * @example Professor
+             */
+            cargoNome: string;
+            /** @description Centavos. */
+            custoMensalCentavos: number;
+            email: Record<string, never> | null;
+            /** Format: uuid */
+            id: string;
+            nome: string;
+            /** @description Só dígitos. */
+            telefone: Record<string, never> | null;
+            /** @description Nulo é "Sem acesso". */
+            tipoDeAcesso: components["schemas"]["TipoDeAcessoResumidoDto"] | null;
         };
         IdentidadeDoTenantDto: {
             /** @example #22C98A */
@@ -974,6 +1183,15 @@ export interface components {
             contadores: components["schemas"]["ContadoresDeAlunosDto"];
             itens: components["schemas"]["ItemDaListaDeAlunosDto"][];
             proximoCursor: string | null;
+        };
+        PaginaDeFuncionariosDto: {
+            /** @description Chips: respeitam a busca, não o cargo. */
+            contadores: components["schemas"]["ContadoresDaEquipeDto"];
+            itens: components["schemas"]["FuncionarioDto"][];
+            limite: number;
+            pagina: number;
+            /** @description Funcionários que passam pelo filtro, em todas as páginas. */
+            total: number;
         };
         PaginaDoLogDto: {
             itens: components["schemas"]["AtividadeDto"][];
@@ -1084,6 +1302,14 @@ export interface components {
             identificador: string;
             senha: string;
         };
+        ProfissionalDto: {
+            /** @enum {string} */
+            cargo: "professor" | "recepcao" | "nutricionista" | "limpeza" | "manutencao" | "administrativo" | "gerente" | "outro";
+            cargoDescricao: Record<string, never> | null;
+            /** Format: uuid */
+            id: string;
+            nome: string;
+        };
         RedefinirSenhaDto: {
             senha: string;
             token: string;
@@ -1114,6 +1340,12 @@ export interface components {
              * @enum {string}
              */
             situacaoDeVencimento: "em_dia" | "a_vencer" | "em_atraso";
+        };
+        TipoDeAcessoResumidoDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example Professor */
+            nome: string;
         };
         TipoDeAcessoResumoDto: {
             /** Format: uuid */
@@ -2341,6 +2573,444 @@ export interface operations {
             };
             /** @description Já existe um usuário com este e-mail. */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarFuncionarios: {
+        parameters: {
+            query?: {
+                /** @description Chip da tela Equipe. */
+                cargo?: "professor" | "recepcao" | "nutricao" | "limpeza" | "manutencao" | "administrativo";
+                /** @description Parte do nome. */
+                busca?: string;
+                pagina?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDeFuncionariosDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cadastrarFuncionario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoFuncionarioDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FuncionarioDto"];
+                };
+            };
+            /** @description Campos inválidos (acesso sem e-mail, cargo, custo). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description E-mail já usado por outro funcionário ou acesso. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    convidarEquipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConvidarEquipeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConviteEmLoteDto"];
+                };
+            };
+            /** @description Campos inválidos ou e-mail ausente. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O e-mail já tem um acesso ao sistema fora da equipe. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    custoDaEquipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustoDaEquipeDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarProfissionais: {
+        parameters: {
+            query?: {
+                /** @description Um cargo só. Sem ele, professores e nutricionistas ativos. */
+                cargo?: "professor" | "recepcao" | "nutricionista" | "limpeza" | "manutencao" | "administrativo" | "gerente" | "outro";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfissionalDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    buscarFuncionario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FuncionarioDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Funcionário não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editarFuncionario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoFuncionarioDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FuncionarioDto"];
+                };
+            };
+            /** @description Campos inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Funcionário não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description E-mail já usado por outro funcionário ou acesso. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    excluirFuncionario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Excluído. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:excluir. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Funcionário não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Tem vínculos; inative em vez de excluir. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inativarFuncionario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FuncionarioDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Funcionário não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reativarFuncionario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FuncionarioDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão equipe:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Funcionário não encontrado. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

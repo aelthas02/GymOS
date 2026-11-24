@@ -1,5 +1,6 @@
 import type { INestApplicationContext } from '@nestjs/common';
 import { AlunosModule } from '../modules/alunos/alunos.module';
+import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
 import { ProtecaoDeDadosModule } from '../modules/platform/protecao-de-dados.module';
 import { criarModuloDeEventos } from '../modules/platform/testing/eventos-de-teste';
 import { usarBancoDeTeste } from '../modules/platform/testing/banco-de-teste';
@@ -16,7 +17,11 @@ describe('runner de seed', () => {
   let app: INestApplicationContext;
 
   beforeAll(async () => {
-    app = await criarModuloDeEventos(banco, redis, {}, [ProtecaoDeDadosModule, AlunosModule]);
+    app = await criarModuloDeEventos(banco, redis, {}, [
+      ProtecaoDeDadosModule,
+      AlunosModule,
+      FuncionariosModule,
+    ]);
   });
 
   it('roda os módulos registrados duas vezes sem duplicar dados', async () => {
@@ -34,6 +39,7 @@ describe('runner de seed', () => {
     expect(await executarSeed(app, modulos)).toEqual([
       'plataforma',
       'autenticacao',
+      'funcionarios',
       'alunos',
       'sonda',
     ]);
@@ -48,12 +54,12 @@ describe('runner de seed', () => {
     expect(dentroDoTenant).toEqual([rows[0]?.id, rows[0]?.id]);
     const total = await comTenant(conexao, rows[0]?.id ?? '', async () => {
       const contagens = await Promise.all(
-        ['unidade', 'usuario', 'plano', 'aluno', 'contrato'].map((tabela) =>
+        ['unidade', 'usuario', 'plano', 'aluno', 'contrato', 'funcionario'].map((tabela) =>
           conexao.query<{ n: string }>(`SELECT count(*) AS n FROM ${tabela}`),
         ),
       );
       return contagens.map((contagem) => contagem.rows[0]?.n);
     });
-    expect(total).toEqual(['1', '4', '6', '8', '8']);
+    expect(total).toEqual(['1', '4', '6', '8', '8', '8']);
   });
 });

@@ -371,6 +371,41 @@
         ],
         "type": "object"
       },
+      "ContadoresDaEquipeDto": {
+        "properties": {
+          "administrativo": {
+            "type": "number"
+          },
+          "limpeza": {
+            "type": "number"
+          },
+          "manutencao": {
+            "type": "number"
+          },
+          "nutricao": {
+            "type": "number"
+          },
+          "professor": {
+            "type": "number"
+          },
+          "recepcao": {
+            "type": "number"
+          },
+          "todos": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "todos",
+          "professor",
+          "recepcao",
+          "nutricao",
+          "limpeza",
+          "manutencao",
+          "administrativo"
+        ],
+        "type": "object"
+      },
       "ContadoresDeAlunosDto": {
         "properties": {
           "a_vencer": {
@@ -528,6 +563,21 @@
         ],
         "type": "object"
       },
+      "ConvidarEquipeDto": {
+        "properties": {
+          "pessoas": {
+            "description": "Pessoas do Passo 3, uma linha cada.",
+            "items": {
+              "$ref": "#/components/schemas/DadosDoFuncionarioDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "pessoas"
+        ],
+        "type": "object"
+      },
       "ConviteCriadoDto": {
         "properties": {
           "expiraEm": {
@@ -542,6 +592,90 @@
         "required": [
           "id",
           "expiraEm"
+        ],
+        "type": "object"
+      },
+      "ConviteEmLoteDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/FuncionarioCriadoDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "itens"
+        ],
+        "type": "object"
+      },
+      "CustoDaEquipeDto": {
+        "properties": {
+          "itens": {
+            "description": "Só funcionários ativos.",
+            "items": {
+              "$ref": "#/components/schemas/CustoDeFuncionarioDto"
+            },
+            "type": "array"
+          },
+          "mediaCentavos": {
+            "description": "Custo médio por funcionário, em centavos (0 sem equipe).",
+            "type": "number"
+          },
+          "quantidade": {
+            "description": "Funcionários ativos.",
+            "type": "number"
+          },
+          "totalCentavos": {
+            "description": "Folha do mês, em centavos.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "itens",
+          "quantidade",
+          "totalCentavos",
+          "mediaCentavos"
+        ],
+        "type": "object"
+      },
+      "CustoDeFuncionarioDto": {
+        "properties": {
+          "cargo": {
+            "enum": [
+              "professor",
+              "recepcao",
+              "nutricionista",
+              "limpeza",
+              "manutencao",
+              "administrativo",
+              "gerente",
+              "outro"
+            ],
+            "type": "string"
+          },
+          "cargoDescricao": {
+            "nullable": true,
+            "type": "object"
+          },
+          "custoMensalCentavos": {
+            "description": "Centavos.",
+            "type": "number"
+          },
+          "funcionarioId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "funcionarioId",
+          "nome",
+          "cargo",
+          "cargoDescricao",
+          "custoMensalCentavos"
         ],
         "type": "object"
       },
@@ -598,6 +732,64 @@
         "required": [
           "nome",
           "cpf"
+        ],
+        "type": "object"
+      },
+      "DadosDoFuncionarioDto": {
+        "properties": {
+          "cargo": {
+            "enum": [
+              "professor",
+              "recepcao",
+              "nutricionista",
+              "limpeza",
+              "manutencao",
+              "administrativo",
+              "gerente",
+              "outro"
+            ],
+            "example": "professor",
+            "type": "string"
+          },
+          "cargoDescricao": {
+            "description": "Obrigatório no cargo \"outro\".",
+            "maxLength": 80,
+            "nullable": true,
+            "type": "object"
+          },
+          "custoMensalCentavos": {
+            "description": "Custo mensal em centavos.",
+            "example": 45000,
+            "minimum": 0,
+            "type": "number"
+          },
+          "email": {
+            "description": "E-mail de login: obrigatório com tipo de acesso, opcional sem acesso.",
+            "maxLength": 160,
+            "nullable": true,
+            "type": "object"
+          },
+          "nome": {
+            "example": "Diego Martins",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "telefone": {
+            "example": "11987654321",
+            "maxLength": 30,
+            "nullable": true,
+            "type": "object"
+          },
+          "tipoDeAcessoId": {
+            "description": "Tipo de acesso ao painel. Nulo ou o tipo \"Sem acesso\": só cadastro.",
+            "format": "uuid",
+            "nullable": true,
+            "type": "object"
+          }
+        },
+        "required": [
+          "nome",
+          "cargo"
         ],
         "type": "object"
       },
@@ -741,6 +933,94 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "FuncionarioCriadoDto": {
+        "properties": {
+          "criado": {
+            "description": "Falso quando o e-mail já era de um funcionário (nada foi enviado).",
+            "type": "boolean"
+          },
+          "funcionario": {
+            "$ref": "#/components/schemas/FuncionarioDto"
+          }
+        },
+        "required": [
+          "funcionario",
+          "criado"
+        ],
+        "type": "object"
+      },
+      "FuncionarioDto": {
+        "properties": {
+          "ativo": {
+            "type": "boolean"
+          },
+          "cargo": {
+            "enum": [
+              "professor",
+              "recepcao",
+              "nutricionista",
+              "limpeza",
+              "manutencao",
+              "administrativo",
+              "gerente",
+              "outro"
+            ],
+            "type": "string"
+          },
+          "cargoDescricao": {
+            "nullable": true,
+            "type": "object"
+          },
+          "cargoNome": {
+            "description": "Texto do cargo (a descrição, no cargo \"outro\").",
+            "example": "Professor",
+            "type": "string"
+          },
+          "custoMensalCentavos": {
+            "description": "Centavos.",
+            "type": "number"
+          },
+          "email": {
+            "nullable": true,
+            "type": "object"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "telefone": {
+            "description": "Só dígitos.",
+            "nullable": true,
+            "type": "object"
+          },
+          "tipoDeAcesso": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TipoDeAcessoResumidoDto"
+              }
+            ],
+            "description": "Nulo é \"Sem acesso\".",
+            "nullable": true,
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "cargo",
+          "cargoNome",
+          "cargoDescricao",
+          "telefone",
+          "email",
+          "tipoDeAcesso",
+          "ativo",
+          "custoMensalCentavos"
+        ],
         "type": "object"
       },
       "IdentidadeDoTenantDto": {
@@ -951,6 +1231,42 @@
         "required": [
           "itens",
           "proximoCursor",
+          "contadores"
+        ],
+        "type": "object"
+      },
+      "PaginaDeFuncionariosDto": {
+        "properties": {
+          "contadores": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ContadoresDaEquipeDto"
+              }
+            ],
+            "description": "Chips: respeitam a busca, não o cargo."
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/FuncionarioDto"
+            },
+            "type": "array"
+          },
+          "limite": {
+            "type": "number"
+          },
+          "pagina": {
+            "type": "number"
+          },
+          "total": {
+            "description": "Funcionários que passam pelo filtro, em todas as páginas.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "itens",
+          "total",
+          "pagina",
+          "limite",
           "contadores"
         ],
         "type": "object"
@@ -1199,6 +1515,41 @@
         ],
         "type": "object"
       },
+      "ProfissionalDto": {
+        "properties": {
+          "cargo": {
+            "enum": [
+              "professor",
+              "recepcao",
+              "nutricionista",
+              "limpeza",
+              "manutencao",
+              "administrativo",
+              "gerente",
+              "outro"
+            ],
+            "type": "string"
+          },
+          "cargoDescricao": {
+            "nullable": true,
+            "type": "object"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "cargo",
+          "cargoDescricao"
+        ],
+        "type": "object"
+      },
       "RedefinirSenhaDto": {
         "properties": {
           "senha": {
@@ -1302,6 +1653,23 @@
           "situacaoDeVencimento",
           "avaliacao",
           "contrato"
+        ],
+        "type": "object"
+      },
+      "TipoDeAcessoResumidoDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "example": "Professor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
         ],
         "type": "object"
       },
@@ -2739,6 +3107,503 @@
         "summary": "Convida por e-mail; o link cria a senha e vale por 7 dias.",
         "tags": [
           "equipe"
+        ]
+      }
+    },
+    "/api/funcionarios": {
+      "get": {
+        "operationId": "listarFuncionarios",
+        "parameters": [
+          {
+            "description": "Chip da tela Equipe.",
+            "in": "query",
+            "name": "cargo",
+            "required": false,
+            "schema": {
+              "enum": [
+                "professor",
+                "recepcao",
+                "nutricao",
+                "limpeza",
+                "manutencao",
+                "administrativo"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Parte do nome.",
+            "in": "query",
+            "name": "busca",
+            "required": false,
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pagina",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDeFuncionariosDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista a equipe, com filtro por cargo, busca por nome e os contadores dos chips.",
+        "tags": [
+          "funcionarios"
+        ]
+      },
+      "post": {
+        "operationId": "cadastrarFuncionario",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoFuncionarioDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FuncionarioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos (acesso sem e-mail, cargo, custo)."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:criar."
+          },
+          "409": {
+            "description": "E-mail já usado por outro funcionário ou acesso."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cadastra o funcionário. Com tipo de acesso, cria o usuário e envia o convite; sem acesso, só o cadastro.",
+        "tags": [
+          "funcionarios"
+        ]
+      }
+    },
+    "/api/funcionarios/convites": {
+      "post": {
+        "operationId": "convidarEquipe",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConvidarEquipeDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConviteEmLoteDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos ou e-mail ausente."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:criar."
+          },
+          "409": {
+            "description": "O e-mail já tem um acesso ao sistema fora da equipe."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Passo 3 do onboarding: cadastra cada pessoa e convida quem tem acesso. Idempotente por e-mail: reenviar não duplica nem convida de novo.",
+        "tags": [
+          "funcionarios"
+        ]
+      }
+    },
+    "/api/funcionarios/custos": {
+      "get": {
+        "operationId": "custoDaEquipe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustoDaEquipeDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Custo mensal por funcionário ativo, com a folha do mês e a média (Financeiro, T21).",
+        "tags": [
+          "funcionarios"
+        ]
+      }
+    },
+    "/api/funcionarios/profissionais": {
+      "get": {
+        "operationId": "listarProfissionais",
+        "parameters": [
+          {
+            "description": "Um cargo só. Sem ele, professores e nutricionistas ativos.",
+            "in": "query",
+            "name": "cargo",
+            "required": false,
+            "schema": {
+              "enum": [
+                "professor",
+                "recepcao",
+                "nutricionista",
+                "limpeza",
+                "manutencao",
+                "administrativo",
+                "gerente",
+                "outro"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProfissionalDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Professores e nutricionistas ativos (ou um cargo), para escolher em aulas e na Saúde (T28, T30).",
+        "tags": [
+          "funcionarios"
+        ]
+      }
+    },
+    "/api/funcionarios/{id}": {
+      "delete": {
+        "operationId": "excluirFuncionario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Excluído."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:excluir."
+          },
+          "404": {
+            "description": "Funcionário não encontrado."
+          },
+          "409": {
+            "description": "Tem vínculos; inative em vez de excluir."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Exclui o funcionário. Com vínculos (alunos, aulas), recusa: inative.",
+        "tags": [
+          "funcionarios"
+        ]
+      },
+      "get": {
+        "operationId": "buscarFuncionario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FuncionarioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:ver."
+          },
+          "404": {
+            "description": "Funcionário não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Um funcionário.",
+        "tags": [
+          "funcionarios"
+        ]
+      },
+      "put": {
+        "operationId": "editarFuncionario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoFuncionarioDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FuncionarioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:editar."
+          },
+          "404": {
+            "description": "Funcionário não encontrado."
+          },
+          "409": {
+            "description": "E-mail já usado por outro funcionário ou acesso."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita o funcionário. Sem acesso → com acesso convida; com acesso → sem acesso desativa o usuário.",
+        "tags": [
+          "funcionarios"
+        ]
+      }
+    },
+    "/api/funcionarios/{id}/inativar": {
+      "post": {
+        "operationId": "inativarFuncionario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FuncionarioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:editar."
+          },
+          "404": {
+            "description": "Funcionário não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Inativa o funcionário e desativa o login dele, se houver.",
+        "tags": [
+          "funcionarios"
+        ]
+      }
+    },
+    "/api/funcionarios/{id}/reativar": {
+      "post": {
+        "operationId": "reativarFuncionario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FuncionarioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão equipe:editar."
+          },
+          "404": {
+            "description": "Funcionário não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reativa o funcionário e religa o login dele, se tinha acesso.",
+        "tags": [
+          "funcionarios"
         ]
       }
     },

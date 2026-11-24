@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AlunosModule } from '../modules/alunos/alunos.module';
+import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
 import { AuditoriaModule } from '../modules/platform/auditoria.module';
 import { AutenticacaoModule } from '../modules/autenticacao/autenticacao.module';
 import { PlatformModule } from '../modules/platform/platform.module';
@@ -19,6 +20,7 @@ import { ObservabilidadeModule } from '../observabilidade/observabilidade.module
     ProtecaoDeDadosModule,
     AuditoriaModule,
     AlunosModule,
+    FuncionariosModule,
     // API de teste do E2E (T35): fora de produção só.
     ...(process.env['NODE_ENV'] === 'production' || process.env['APP_ENV'] === 'production'
       ? []
