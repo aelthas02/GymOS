@@ -230,6 +230,70 @@ O lint proíbe `ioredis`, `bullmq` e `@bull-board/*` fora de `modules/platform`.
   planos e módulos extras em `domain/modulos-do-plano.ts`.
 - E-mail só pela porta `EnvioDeEmail` (`EMAIL_TRANSPORTE=fake` guarda em memória).
 
+### Proteção de dados pessoais (LGPD)
+
+O `ProtecaoDeDadosModule` (`modules/platform/protecao-de-dados.module.ts`, ADR-015, T13c) é global.
+As portas ficam em `modules/platform/application/protecao-de-dados.ts` e
+`application/direitos-do-titular.ts`.
+
+```
+valor ─ AES-256-GCM (chave de dados do tenant, versão ativa) ─▶ g1.<versão>.<iv>.<tag>.<dados>
+valor ─ normalizar ─ HMAC-SHA256 (chave de índice do tenant) ─▶ <campo>_hash
+chaves do tenant ─ envelopadas pela chave mestra (ProvedorDeChaves) ─▶ chave_do_tenant
+```
+
+**Marcar um campo.** Junto do repositório do domínio, defina os campos e use `proteger` ao gravar e
+`revelar` ao ler. A coluna do campo guarda o texto cifrado e a `<campo>_hash` (com
+`UNIQUE (tenant_id, <campo>_hash)` quando o valor é único no tenant) guarda o índice cego:
+
+```ts
+const ALUNO = definirCamposProtegidos('aluno', {
+  cpf: { indice: 'cpf' }, // grava cpf (cifrado) e cpfHash
+  telefone: { indice: 'telefone' },
+  observacoesDeSaude: { sensivel: true }, // cada leitura grava o log de acesso
+});
+
+const data = await cifra.proteger(ALUNO, { nome, cpf, telefone, observacoesDeSaude });
+await contexto.cliente().aluno.create({ data });
+
+const aluno = await cifra.revelar(ALUNO, linha, { titularId: linha.id, quem: sessao.sujeitoId });
+```
+
+- O dado autenticado da cifra é `<tenant>|<entidade>.<campo>`: o texto não decifra em outro tenant
+  nem em outro campo (`CifraInvalidaError`). Nunca logue o valor revelado.
+- **Buscar por índice cego**: `where: { cpfHash: await cifra.indiceCego('cpf', termo) }`. Só busca
+  exata; CPF parcial não é suportado. A normalização é a de `domain/indice-cego.ts` (CPF e telefone
+  só com dígitos, e-mail minúsculo e sem espaços).
+- **Dado sensível** (saúde, biometria): `revelar` grava em `acesso_a_dado_sensivel` quem, quando, qual
+  titular e qual campo, na transação da leitura. `quem` é o id do usuário da sessão, ou
+  `sistema:<processo>` em jobs.
+- **Chaves**: criadas na primeira cifra do tenant, numa transação própria. `ChavesDoTenant.rotacionar`
+  cria uma nova chave de dados (as antigas continuam decifrando; `recifrar` migra um valor) e mantém
+  a chave de índice. Em dev e teste, a chave mestra vem de `CHAVE_MESTRA_LOCAL`; produção recusa a
+  chave local e usa o KMS.
+
+**Checar consentimento.** `Consentimentos.elegivel(alunoId, finalidade)` ou `elegiveis(ids, finalidade)`
+antes de enviar. `transacional` (cobrança, lembrete de vencimento, link de pagamento, nota fiscal,
+avisos de reserva) é sempre elegível; `marketing`, `dados_de_saude` e `biometria` dependem do último
+aceite. `registrar({ alunoId, finalidade, decisao: 'aceite' | 'revogacao', origem })` grava o
+histórico com a data do `Relogio` e vale na hora.
+
+**Implementar o provedor do titular.** Todo domínio que guarda dado de aluno registra um
+`ProvedorDeDadosDoTitular` no `onModuleInit`:
+
+```ts
+registro.registrar({
+  dominio: 'fiscal',
+  retencao: { motivo: 'Guarda de notas fiscais', prazoEmAnos: 5 }, // só com obrigação legal
+  exportar: (alunoId) => repositorio.notasDoAluno(alunoId),
+  excluirOuAnonimizar: (alunoId, modo) => repositorio.anonimizarTomador(alunoId), // modo 'anonimizar'
+});
+```
+
+`DireitosDoTitular.exportar(alunoId)` reúne o JSON de todos os domínios; `excluir(alunoId)` chama cada
+provedor com `excluir`, ou `anonimizar` quando o domínio declara retenção, e devolve o relatório. Tudo
+roda na transação do tenant: se um domínio falha, nada é excluído.
+
 ### Configuração
 
 A API valida as variáveis de ambiente com Zod em `apps/api/src/config/env.ts`. `main.ts` chama
