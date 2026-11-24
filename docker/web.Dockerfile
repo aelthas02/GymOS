@@ -13,7 +13,8 @@ ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 ENV CI=true
 ENV NX_DAEMON=false
-RUN corepack enable
+# O Node 25+ não traz mais o corepack; instala a versão do `packageManager` do package.json.
+RUN npm install -g pnpm@12.21.0
 WORKDIR /repo
 COPY . .
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
