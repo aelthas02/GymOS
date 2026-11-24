@@ -4,6 +4,213 @@
  */
 
 export interface paths {
+    "/api/alunos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista paginada por cursor, com filtros e os contadores Todos/Em dia/A vencer/Em atraso. */
+        get: operations["listarAlunos"];
+        put?: never;
+        /** Cadastra o aluno; com plano, já cria o contrato (adesão). */
+        post: operations["cadastrarAluno"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/importacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Importação em lote: pula CPF inválido, já cadastrado ou repetido; plano inexistente cria o aluno sem contrato. */
+        post: operations["importarAlunos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cadastro do aluno (a leitura das restrições vai para o log de acesso). */
+        get: operations["obterAluno"];
+        /** Edita o cadastro do aluno. */
+        put: operations["editarAluno"];
+        post?: never;
+        /** Exclui o aluno em todos os domínios (LGPD) e grava a auditoria sensível. */
+        delete: operations["excluirAluno"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}/codigo-de-acesso": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Código de primeiro acesso ao app, entregue pela recepção (7 dias, uso único). */
+        post: operations["gerarCodigoDeAcessoDoAluno"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}/contrato": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Contrato vigente do aluno. */
+        get: operations["obterContratoVigente"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}/contrato/destrancar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Destranca; os dias de trancamento não usados saem da vigência. */
+        post: operations["destrancarContrato"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}/contrato/renovar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Renova por mais um período do plano. */
+        post: operations["renovarContrato"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}/contrato/trancar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tranca por N dias (até o máximo configurado); a vigência é estendida pelo mesmo tempo. */
+        post: operations["trancarContrato"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}/contratos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Nova adesão: o contrato passa a ser o vigente. */
+        post: operations["aderirAPlano"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/alunos/{id}/situacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Estado do contrato hoje (ADR-018), dias de atraso, "encerra em" e situação de vencimento. */
+        get: operations["obterSituacaoDoAluno"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/contrato": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Situação e contrato vigente do aluno da sessão. */
+        get: operations["obterMeuContrato"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/contrato/renovar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** "Renovar com 1 toque" do app. */
+        post: operations["renovarMeuContrato"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auditoria/atividades": {
         parameters: {
             query?: never;
@@ -242,6 +449,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/configuracoes/contratos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tolerância de atraso, reativação sem nova adesão e trancamento máximo. */
+        get: operations["obterConfiguracaoDeContratos"];
+        /** Salva o bloco "Contratos e atraso" (auditoria sensível). */
+        put: operations["salvarConfiguracaoDeContratos"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/equipe/convites": {
         parameters: {
             query?: never;
@@ -271,6 +496,60 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Planos da academia, com os alunos ativos de cada um. */
+        get: operations["listarPlanos"];
+        put?: never;
+        /** Cria um plano (parcelas ≤ duração). */
+        post: operations["criarPlano"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planos/previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Valor da parcela (rateio, resto na última) e texto explicativo, sem gravar. */
+        get: operations["previaDoPlano"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/planos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Um plano. */
+        get: operations["obterPlano"];
+        /** Edita o plano (inativar é `ativo: false`); mudar o valor grava auditoria sensível. */
+        put: operations["editarPlano"];
+        post?: never;
+        /** Exclui o plano; com alunos ativos, recusa. */
+        delete: operations["excluirPlano"];
         options?: never;
         head?: never;
         patch?: never;
@@ -320,6 +599,39 @@ export interface components {
             senha: string;
             token: string;
         };
+        AderirDto: {
+            /**
+             * Format: date
+             * @description Padrão: hoje (São Paulo).
+             */
+            inicio?: string;
+            /** Format: uuid */
+            planoId: string;
+        };
+        AlunoDto: {
+            /**
+             * @description Só dígitos.
+             * @example 12345678909
+             */
+            cpf: string;
+            /** Format: date-time */
+            criadoEm: string;
+            /** Format: date */
+            dataNascimento: string | null;
+            email: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            leadId: string | null;
+            meta: string | null;
+            nome: string;
+            /** Format: uuid */
+            professorId: string | null;
+            restricoes: string | null;
+            telefone: string | null;
+            /** Format: uuid */
+            unidadeId: string;
+        };
         AtividadeDto: {
             /** @example alterou-valor */
             acao: string;
@@ -348,6 +660,152 @@ export interface components {
             quemId: string | null;
             sensivel: boolean;
         };
+        AvaliacaoDoContratoDto: {
+            /**
+             * @description Dias corridos desde o vencimento mais antigo em aberto.
+             * @example 6
+             */
+            diasDeAtraso: number;
+            /**
+             * @description Só em Tolerância: "Contrato encerra em N dias" (T − diasDeAtraso).
+             * @example 1
+             */
+            encerraEmDias: number | null;
+            /** Format: date */
+            encerradoEm: string | null;
+            /**
+             * @description Estado hoje (ADR-018).
+             * @enum {string}
+             */
+            estado: "ativo" | "tolerancia" | "encerrado" | "trancado";
+            /** @enum {string|null} */
+            motivoDoEncerramento: "atraso" | "vigencia" | null;
+        };
+        CadastrarAlunoDto: {
+            consentimentos?: components["schemas"]["ConsentimentoDto"][];
+            /**
+             * @description Com ou sem pontuação.
+             * @example 123.456.789-09
+             */
+            cpf: string;
+            /** Format: date */
+            dataNascimento?: string | null;
+            /** @example pedro@email.com */
+            email?: string | null;
+            /**
+             * Format: date
+             * @description Início do contrato; padrão: hoje.
+             */
+            inicioDoContrato?: string;
+            /**
+             * Format: uuid
+             * @description Lead de origem.
+             */
+            leadId?: string | null;
+            meta?: string | null;
+            /** @example Pedro Almeida */
+            nome: string;
+            /**
+             * Format: uuid
+             * @description Com plano, o cadastro já cria o contrato.
+             */
+            planoId?: string;
+            /** Format: uuid */
+            professorId?: string | null;
+            /** @description Dado de saúde: cifrado, e cada leitura vai para o log de acesso. */
+            restricoes?: string | null;
+            /** @example (11) 98888-7777 */
+            telefone?: string | null;
+            /**
+             * Format: uuid
+             * @description Padrão: a primeira unidade da academia.
+             */
+            unidadeId?: string;
+        };
+        CodigoDeAcessoDto: {
+            /**
+             * @description Vale 7 dias e uma vez.
+             * @example K7M2QX9P
+             */
+            codigo: string;
+        };
+        ConfiguracaoDeContratoDto: {
+            /**
+             * @description Reativar sem nova adesão até.
+             * @example 30
+             */
+            reativacaoDias: number;
+            /**
+             * @description Tolerância de atraso (dias).
+             * @example 7
+             */
+            toleranciaDias: number;
+            /** @example 90 */
+            trancamentoMaximoDias: number;
+        };
+        ConsentimentoDto: {
+            /** @enum {string} */
+            decisao: "aceite" | "revogacao";
+            /** @enum {string} */
+            finalidade: "transacional" | "marketing" | "dados_de_saude" | "biometria";
+        };
+        ContadoresDeAlunosDto: {
+            /** @example 11 */
+            a_vencer: number;
+            /** @example 12 */
+            em_atraso: number;
+            /** @example 289 */
+            em_dia: number;
+            /** @example 312 */
+            todos: number;
+        };
+        ContratoDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** Format: date */
+            encerradoEm: string | null;
+            /**
+             * @description Estado guardado (ADR-018).
+             * @enum {string}
+             */
+            estado: "ativo" | "tolerancia" | "encerrado" | "trancado";
+            /**
+             * Format: date
+             * @description Último dia da vigência.
+             * @example 2027-11-18
+             */
+            fim: string;
+            /** Format: uuid */
+            id: string;
+            /**
+             * Format: date
+             * @example 2026-11-19
+             */
+            inicio: string;
+            /** @enum {string|null} */
+            motivoDoEncerramento: "atraso" | "vigencia" | null;
+            /** @example 9 */
+            parcelas: number;
+            /** Format: uuid */
+            planoId: string;
+            /** @example Anual */
+            planoNome: string;
+            /** Format: date */
+            proximoVencimento: string | null;
+            /** Format: date */
+            trancadoAte: string | null;
+            /** Format: date */
+            trancadoDesde: string | null;
+            /** @example 94800 */
+            valorTotalCentavos: number;
+            /** Format: date */
+            vencimentoEmAtraso: string | null;
+            /**
+             * Format: date-time
+             * @description Fim da vigência às 23:59:59 de São Paulo.
+             */
+            vigenteAte: string;
+        };
         ConvidarDto: {
             /** @example diego@ritmo.com.br */
             email: string;
@@ -361,6 +819,68 @@ export interface components {
             expiraEm: string;
             /** Format: uuid */
             id: string;
+        };
+        DadosDoAlunoDto: {
+            /**
+             * @description Com ou sem pontuação.
+             * @example 123.456.789-09
+             */
+            cpf: string;
+            /** Format: date */
+            dataNascimento?: string | null;
+            /** @example pedro@email.com */
+            email?: string | null;
+            /**
+             * Format: uuid
+             * @description Lead de origem.
+             */
+            leadId?: string | null;
+            meta?: string | null;
+            /** @example Pedro Almeida */
+            nome: string;
+            /** Format: uuid */
+            professorId?: string | null;
+            /** @description Dado de saúde: cifrado, e cada leitura vai para o log de acesso. */
+            restricoes?: string | null;
+            /** @example (11) 98888-7777 */
+            telefone?: string | null;
+        };
+        DadosDoPlanoDto: {
+            /**
+             * @description null é ilimitado.
+             * @example null
+             */
+            acessosPorSemana: number | null;
+            /** @description Plano ativo para venda. */
+            ativo: boolean;
+            /** @example 12 */
+            duracaoMeses: number;
+            /**
+             * @example cartao_ou_pix
+             * @enum {string}
+             */
+            formaDeCobranca: "cartao_ou_pix" | "cartao" | "pix" | "boleto";
+            /**
+             * @example [
+             *       "Musculação",
+             *       "Spinning",
+             *       "Funcional"
+             *     ]
+             */
+            modalidades: string[];
+            /** @example Anual */
+            nome: string;
+            /**
+             * @description No máximo a duração em meses.
+             * @example 9
+             */
+            parcelas: number;
+            renovacaoAutomatica: boolean;
+            /**
+             * @description Valor total em centavos.
+             * @example 94800
+             */
+            valorTotalCentavos: number;
         };
         EntrarNoAppDto: {
             /**
@@ -383,6 +903,10 @@ export interface components {
             /** @example carla@ritmo.com.br */
             email: string;
         };
+        ExcluirAlunoDto: {
+            /** @example Cadastro duplicado */
+            motivo?: string;
+        };
         IdentidadeDoTenantDto: {
             /** @example #22C98A */
             corDestaque: string;
@@ -394,8 +918,63 @@ export interface components {
             /** @example Academia Ritmo */
             nome: string;
         };
+        ImportarAlunosDto: {
+            linhas: components["schemas"]["LinhaDaPlanilhaDto"][];
+        };
+        ItemDaListaDeAlunosDto: {
+            /**
+             * @description "Em atraso, 6 dias".
+             * @example 6
+             */
+            diasDeAtraso: number;
+            /**
+             * @description Estado do contrato hoje.
+             * @enum {string|null}
+             */
+            estadoDoContrato: "ativo" | "tolerancia" | "encerrado" | "trancado" | null;
+            /** Format: uuid */
+            id: string;
+            /** @example Rafael Souza */
+            nome: string;
+            plano: components["schemas"]["PlanoResumidoDto"] | null;
+            /** @enum {string} */
+            situacao: "em_dia" | "a_vencer" | "em_atraso";
+            /**
+             * @description "Vence em 3 dias".
+             * @example 3
+             */
+            venceEmDias: number | null;
+        };
+        LinhaDaPlanilhaDto: {
+            cpf: string;
+            /** Format: date */
+            dataNascimento?: string | null;
+            email?: string | null;
+            /** Format: date */
+            inicioDoContrato?: string | null;
+            nome: string;
+            /** @description Nome do plano cadastrado. */
+            plano?: string | null;
+            telefone?: string | null;
+        };
+        LinhaDoRelatorioDto: {
+            cpf: string;
+            /** @example 14 */
+            linha: number;
+            /** @example CPF inválido */
+            motivo: string;
+            nome: string;
+            /** @enum {string} */
+            situacao: "pulada" | "para_corrigir";
+        };
         /** @enum {string} */
         ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
+        PaginaDeAlunosDto: {
+            /** @description Por situação, com plano e busca aplicados. */
+            contadores: components["schemas"]["ContadoresDeAlunosDto"];
+            itens: components["schemas"]["ItemDaListaDeAlunosDto"][];
+            proximoCursor: string | null;
+        };
         PaginaDoLogDto: {
             itens: components["schemas"]["AtividadeDto"][];
             /** @description Nulo na última página. */
@@ -422,6 +1001,76 @@ export interface components {
             tipo: "staff" | "aluno";
             tipoDeAcesso: components["schemas"]["TipoDeAcessoResumoDto"] | null;
         };
+        PlanoDto: {
+            /**
+             * @description null é ilimitado.
+             * @example null
+             */
+            acessosPorSemana: number | null;
+            /**
+             * @description Alunos com contrato vigente não encerrado.
+             * @example 38
+             */
+            alunosAtivos: number;
+            /** @description Plano ativo para venda. */
+            ativo: boolean;
+            /** @example 12 */
+            duracaoMeses: number;
+            /**
+             * @example cartao_ou_pix
+             * @enum {string}
+             */
+            formaDeCobranca: "cartao_ou_pix" | "cartao" | "pix" | "boleto";
+            /** Format: uuid */
+            id: string;
+            /**
+             * @example [
+             *       "Musculação",
+             *       "Spinning",
+             *       "Funcional"
+             *     ]
+             */
+            modalidades: string[];
+            /** @example Anual */
+            nome: string;
+            /**
+             * @description Parcela derivada com o rateio (centavos).
+             * @example 10533
+             */
+            parcelaCentavos: number;
+            /**
+             * @description No máximo a duração em meses.
+             * @example 9
+             */
+            parcelas: number;
+            renovacaoAutomatica: boolean;
+            /**
+             * @description A última parcela leva o resto da divisão.
+             * @example 10536
+             */
+            ultimaParcelaCentavos: number;
+            /**
+             * @description Valor total em centavos.
+             * @example 94800
+             */
+            valorTotalCentavos: number;
+        };
+        PlanoResumidoDto: {
+            /** Format: uuid */
+            id: string;
+            /** @example Mensal */
+            nome: string;
+        };
+        PreviaDoPlanoDto: {
+            /** @example O aluno tem acesso por 12 meses e paga em 9 parcelas. As cobranças terminam na 9ª parcela, e o contrato segue ativo até o fim dos 12 meses. */
+            explicacao: string;
+            /** @example 10533 */
+            parcelaCentavos: number;
+            /** @example 9 */
+            parcelas: number;
+            /** @example 10536 */
+            ultimaCentavos: number;
+        };
         PrimeiroAcessoDto: {
             /**
              * @description Código entregue pela recepção.
@@ -439,17 +1088,45 @@ export interface components {
             senha: string;
             token: string;
         };
+        RelatorioDaImportacaoDto: {
+            /** @example 297 */
+            comContrato: number;
+            /** @example 300 */
+            criados: number;
+            linhas: components["schemas"]["LinhaDoRelatorioDto"][];
+            /** @example 3 */
+            semContrato: number;
+        };
         SessaoDto: {
             /** @description JWT de acesso, válido por 10 minutos (Authorization: Bearer). */
             accessToken: string;
             /** Format: date-time */
             expiraEm: string;
         };
+        SituacaoDoAlunoDto: {
+            /** Format: uuid */
+            alunoId: string;
+            avaliacao: components["schemas"]["AvaliacaoDoContratoDto"] | null;
+            /** @description null quando não há contrato. */
+            contrato: components["schemas"]["ContratoDto"] | null;
+            /**
+             * @description A vencer: até 7 dias, inclusive.
+             * @enum {string}
+             */
+            situacaoDeVencimento: "em_dia" | "a_vencer" | "em_atraso";
+        };
         TipoDeAcessoResumoDto: {
             /** Format: uuid */
             id: string;
             /** @example Gerente */
             nome: string;
+        };
+        TrancarDto: {
+            /**
+             * @description Até o máximo configurado (padrão 90).
+             * @example 30
+             */
+            dias: number;
         };
     };
     responses: never;
@@ -460,6 +1137,635 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    listarAlunos: {
+        parameters: {
+            query?: {
+                situacao?: "em_dia" | "a_vencer" | "em_atraso";
+                planoId?: string;
+                /** @description Nome (parte), CPF completo ou telefone completo. CPF parcial não é suportado. */
+                busca?: string;
+                limite?: number;
+                /** @description proximoCursor da página anterior. */
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDeAlunosDto"];
+                };
+            };
+            /** @description Filtro ou cursor inválido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cadastrarAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CadastrarAlunoDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlunoDto"];
+                };
+            };
+            /** @description Campos inválidos (CPF, e-mail, datas). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description CPF já cadastrado ou plano inativo. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    importarAlunos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportarAlunosDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelatorioDaImportacaoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlunoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editarAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoAlunoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlunoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description CPF de outro aluno. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    excluirAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExcluirAlunoDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:excluir. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    gerarCodigoDeAcessoDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CodigoDeAcessoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterContratoVigente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno sem contrato. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    destrancarContrato: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O contrato não está trancado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    renovarContrato: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Contrato encerrado por atraso ou trancado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    trancarContrato: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrancarDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Prazo acima do máximo ou contrato encerrado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    aderirAPlano: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AderirDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Plano inativo para venda. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterSituacaoDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SituacaoDoAlunoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterMeuContrato: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SituacaoDoAlunoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    renovarMeuContrato: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Contrato encerrado por atraso ou trancado. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     listarAtividades: {
         parameters: {
             query?: {
@@ -921,6 +2227,76 @@ export interface operations {
             };
         };
     };
+    obterConfiguracaoDeContratos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfiguracaoDeContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.contratos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    salvarConfiguracaoDeContratos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfiguracaoDeContratoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfiguracaoDeContratoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.contratos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     convidarParaEquipe: {
         parameters: {
             query?: never;
@@ -991,6 +2367,257 @@ export interface operations {
             };
             /** @description Sem sessão válida. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarPlanos: {
+        parameters: {
+            query?: {
+                busca?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanoDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão planos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    criarPlano: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoPlanoDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanoDto"];
+                };
+            };
+            /** @description Campos inválidos ou parcelas acima da duração. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão planos:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    previaDoPlano: {
+        parameters: {
+            query: {
+                valorTotalCentavos: number;
+                duracaoMeses: number;
+                parcelas: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviaDoPlanoDto"];
+                };
+            };
+            /** @description Parcelas acima da duração ou valores inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão planos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterPlano: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão planos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Plano não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editarPlano: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoPlanoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão planos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Plano não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    excluirPlano: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão planos:excluir. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O plano tem alunos ativos: inative em vez de excluir. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -110,7 +110,7 @@ export class EntrarComoEquipe {
   }
 }
 
-/** Credencial do aluno pelo CPF (via T15a) ou pelo e-mail. */
+/** Credencial do aluno pelo CPF ou pelo e-mail, pelos índices cegos do aluno (T15a). */
 @Injectable()
 export class CredencialPeloIdentificador {
   constructor(
@@ -120,7 +120,11 @@ export class CredencialPeloIdentificador {
 
   async buscar(identificador: IdentificadorDoAluno): Promise<CredencialDoAluno | null> {
     if (identificador.tipo === 'email') {
-      return this.credenciais.porEmail(identificador.email);
+      const alunoId = await this.localizador.alunoDoEmail(identificador.email);
+      return (
+        (alunoId ? await this.credenciais.porAluno(alunoId) : null) ??
+        this.credenciais.porEmail(identificador.email)
+      );
     }
     const alunoId = await this.localizador.alunoDoCpf(identificador.cpf);
     return alunoId ? this.credenciais.porAluno(alunoId) : null;

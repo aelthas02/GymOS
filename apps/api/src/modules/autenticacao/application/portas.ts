@@ -46,11 +46,12 @@ export abstract class RepositorioDeCredenciaisDeAluno {
 }
 
 /**
- * Busca do aluno pelo CPF. O T15a implementa com o índice cego do T13c; até lá o adapter padrão
- * não encontra ninguém (o login por CPF só funciona com o adapter de teste).
+ * Busca do aluno pelo CPF ou pelo e-mail, com o índice cego do T13c (adapter do T15a em
+ * `alunos/infra`). O e-mail só cai na coluna da credencial quando o aluno não o tem no cadastro.
  */
 export abstract class LocalizadorDeAlunoPorCpf {
   abstract alunoDoCpf(cpf: string): Promise<string | null>;
+  abstract alunoDoEmail(email: string): Promise<string | null>;
 }
 
 export abstract class RepositorioDeTiposDeAcesso {

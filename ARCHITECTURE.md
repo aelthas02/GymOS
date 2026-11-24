@@ -338,6 +338,33 @@ Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso 
 | `trocou-cor-do-app`               | Trocou a cor do app             | Configurações | não      | `PUT /tenant/identidade` (T12, T26c) |
 | `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)     |
 
+### Alunos, planos e contratos
+
+`modules/alunos` (T15a, ADR-018). As regras puras ficam em `domain/contrato.ts`, `domain/plano.ts` e
+`domain/datas.ts`; os casos de uso, em `Alunos`, `Planos`, `Contratos` e `ImportarAlunos`.
+
+```
+diasDeAtraso 0 → ativo · 1..T−1 → tolerancia ("encerra em T − dias") · ≥ T → encerrado (vencimento + T)
+pagamento até R dias depois do encerramento → reativa o mesmo contrato · depois → nova adesão
+trancado → não entra em tolerância; trancar N dias estende a vigência em N dias
+```
+
+- **Vigência**: `fimDaVigencia(inicio, meses)` é o dia anterior ao mesmo dia N meses depois (dia
+  inexistente vai para o último dia do mês); vale até 23:59:59 de São Paulo (`fimDoDiaEm`).
+- **Atraso e vencimento**: o contrato guarda `vencimentoEmAtraso` (parcela em aberto mais antiga) e
+  `proximoVencimento`. Os consumidores `alunos.reavaliar-contrato-pago` (`PagamentoConfirmado`) e
+  `alunos.reavaliar-contrato-atrasado` (`PagamentoAtrasado`) os atualizam pela porta
+  `ParcelasDoContrato`; até o T19 implementá-la, usam o que o evento informa. `diasDeAtraso` está em
+  `domain/contrato.ts` até o domínio de Cobrança assumi-lo.
+- **Situação de vencimento** (lista e chips): `em_atraso` com `diasDeAtraso > 0`, `a_vencer` com a
+  próxima parcela em até 7 dias (inclusive), senão `em_dia`. Aluno sem contrato fica em dia.
+- **Rotina diária** (`RotinaDosContratos`, só com `FILAS_PROCESSAR`): renovação automática no fim da
+  vigência e as transições pelo tempo, com os eventos `Contrato*`.
+- **Login do aluno**: `LocalizadorDeAlunoPeloIndiceCego` acha o aluno pelo `cpf_hash` ou `email_hash`;
+  a credencial do app não guarda e-mail em claro (o código de primeiro acesso nasce sem e-mail).
+- **Configuração** "Contratos e atraso": `GET/PUT /api/configuracoes/contratos` (T, R e trancamento
+  máximo; padrões 7, 30 e 90 dias).
+
 ### Configuração
 
 A API valida as variáveis de ambiente com Zod em `apps/api/src/config/env.ts`. `main.ts` chama
