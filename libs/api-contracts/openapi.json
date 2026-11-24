@@ -24,6 +24,93 @@
         ],
         "type": "object"
       },
+      "AderirDto": {
+        "properties": {
+          "inicio": {
+            "description": "Padrão: hoje (São Paulo).",
+            "format": "date",
+            "type": "string"
+          },
+          "planoId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "planoId"
+        ],
+        "type": "object"
+      },
+      "AlunoDto": {
+        "properties": {
+          "cpf": {
+            "description": "Só dígitos.",
+            "example": "12345678909",
+            "type": "string"
+          },
+          "criadoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "dataNascimento": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "email": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "leadId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "meta": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "professorId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "restricoes": {
+            "nullable": true,
+            "type": "string"
+          },
+          "telefone": {
+            "nullable": true,
+            "type": "string"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "unidadeId",
+          "nome",
+          "cpf",
+          "telefone",
+          "email",
+          "dataNascimento",
+          "professorId",
+          "meta",
+          "restricoes",
+          "leadId",
+          "criadoEm"
+        ],
+        "type": "object"
+      },
       "AtividadeDto": {
         "properties": {
           "acao": {
@@ -93,6 +180,330 @@
         ],
         "type": "object"
       },
+      "AvaliacaoDoContratoDto": {
+        "properties": {
+          "diasDeAtraso": {
+            "description": "Dias corridos desde o vencimento mais antigo em aberto.",
+            "example": 6,
+            "type": "number"
+          },
+          "encerraEmDias": {
+            "description": "Só em Tolerância: \"Contrato encerra em N dias\" (T − diasDeAtraso).",
+            "example": 1,
+            "nullable": true,
+            "type": "number"
+          },
+          "encerradoEm": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "estado": {
+            "description": "Estado hoje (ADR-018).",
+            "enum": [
+              "ativo",
+              "tolerancia",
+              "encerrado",
+              "trancado"
+            ],
+            "type": "string"
+          },
+          "motivoDoEncerramento": {
+            "enum": [
+              "atraso",
+              "vigencia"
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "estado",
+          "diasDeAtraso",
+          "encerraEmDias",
+          "encerradoEm",
+          "motivoDoEncerramento"
+        ],
+        "type": "object"
+      },
+      "CadastrarAlunoDto": {
+        "properties": {
+          "consentimentos": {
+            "items": {
+              "$ref": "#/components/schemas/ConsentimentoDto"
+            },
+            "type": "array"
+          },
+          "cpf": {
+            "description": "Com ou sem pontuação.",
+            "example": "123.456.789-09",
+            "type": "string"
+          },
+          "dataNascimento": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "email": {
+            "example": "pedro@email.com",
+            "nullable": true,
+            "type": "string"
+          },
+          "inicioDoContrato": {
+            "description": "Início do contrato; padrão: hoje.",
+            "format": "date",
+            "type": "string"
+          },
+          "leadId": {
+            "description": "Lead de origem.",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "meta": {
+            "maxLength": 500,
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "example": "Pedro Almeida",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "planoId": {
+            "description": "Com plano, o cadastro já cria o contrato.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "professorId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "restricoes": {
+            "description": "Dado de saúde: cifrado, e cada leitura vai para o log de acesso.",
+            "maxLength": 1000,
+            "nullable": true,
+            "type": "string"
+          },
+          "telefone": {
+            "example": "(11) 98888-7777",
+            "nullable": true,
+            "type": "string"
+          },
+          "unidadeId": {
+            "description": "Padrão: a primeira unidade da academia.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "cpf"
+        ],
+        "type": "object"
+      },
+      "CodigoDeAcessoDto": {
+        "properties": {
+          "codigo": {
+            "description": "Vale 7 dias e uma vez.",
+            "example": "K7M2QX9P",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo"
+        ],
+        "type": "object"
+      },
+      "ConfiguracaoDeContratoDto": {
+        "properties": {
+          "reativacaoDias": {
+            "description": "Reativar sem nova adesão até.",
+            "example": 30,
+            "maximum": 365,
+            "minimum": 0,
+            "type": "number"
+          },
+          "toleranciaDias": {
+            "description": "Tolerância de atraso (dias).",
+            "example": 7,
+            "maximum": 90,
+            "minimum": 1,
+            "type": "number"
+          },
+          "trancamentoMaximoDias": {
+            "example": 90,
+            "maximum": 365,
+            "minimum": 1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "toleranciaDias",
+          "reativacaoDias",
+          "trancamentoMaximoDias"
+        ],
+        "type": "object"
+      },
+      "ConsentimentoDto": {
+        "properties": {
+          "decisao": {
+            "enum": [
+              "aceite",
+              "revogacao"
+            ],
+            "type": "string"
+          },
+          "finalidade": {
+            "enum": [
+              "transacional",
+              "marketing",
+              "dados_de_saude",
+              "biometria"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "finalidade",
+          "decisao"
+        ],
+        "type": "object"
+      },
+      "ContadoresDeAlunosDto": {
+        "properties": {
+          "a_vencer": {
+            "example": 11,
+            "type": "number"
+          },
+          "em_atraso": {
+            "example": 12,
+            "type": "number"
+          },
+          "em_dia": {
+            "example": 289,
+            "type": "number"
+          },
+          "todos": {
+            "example": 312,
+            "type": "number"
+          }
+        },
+        "required": [
+          "todos",
+          "em_dia",
+          "a_vencer",
+          "em_atraso"
+        ],
+        "type": "object"
+      },
+      "ContratoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "encerradoEm": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "estado": {
+            "description": "Estado guardado (ADR-018).",
+            "enum": [
+              "ativo",
+              "tolerancia",
+              "encerrado",
+              "trancado"
+            ],
+            "type": "string"
+          },
+          "fim": {
+            "description": "Último dia da vigência.",
+            "example": "2027-11-18",
+            "format": "date",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "inicio": {
+            "example": "2026-11-19",
+            "format": "date",
+            "type": "string"
+          },
+          "motivoDoEncerramento": {
+            "enum": [
+              "atraso",
+              "vigencia"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "parcelas": {
+            "example": 9,
+            "type": "number"
+          },
+          "planoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "planoNome": {
+            "example": "Anual",
+            "type": "string"
+          },
+          "proximoVencimento": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "trancadoAte": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "trancadoDesde": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "valorTotalCentavos": {
+            "example": 94800,
+            "type": "number"
+          },
+          "vencimentoEmAtraso": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "vigenteAte": {
+            "description": "Fim da vigência às 23:59:59 de São Paulo.",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "alunoId",
+          "planoId",
+          "planoNome",
+          "estado",
+          "inicio",
+          "fim",
+          "vigenteAte",
+          "valorTotalCentavos",
+          "parcelas",
+          "vencimentoEmAtraso",
+          "proximoVencimento",
+          "encerradoEm",
+          "motivoDoEncerramento",
+          "trancadoDesde",
+          "trancadoAte"
+        ],
+        "type": "object"
+      },
       "ConvidarDto": {
         "properties": {
           "email": {
@@ -131,6 +542,134 @@
         "required": [
           "id",
           "expiraEm"
+        ],
+        "type": "object"
+      },
+      "DadosDoAlunoDto": {
+        "properties": {
+          "cpf": {
+            "description": "Com ou sem pontuação.",
+            "example": "123.456.789-09",
+            "type": "string"
+          },
+          "dataNascimento": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "email": {
+            "example": "pedro@email.com",
+            "nullable": true,
+            "type": "string"
+          },
+          "leadId": {
+            "description": "Lead de origem.",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "meta": {
+            "maxLength": 500,
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "example": "Pedro Almeida",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "professorId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "restricoes": {
+            "description": "Dado de saúde: cifrado, e cada leitura vai para o log de acesso.",
+            "maxLength": 1000,
+            "nullable": true,
+            "type": "string"
+          },
+          "telefone": {
+            "example": "(11) 98888-7777",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "cpf"
+        ],
+        "type": "object"
+      },
+      "DadosDoPlanoDto": {
+        "properties": {
+          "acessosPorSemana": {
+            "description": "null é ilimitado.",
+            "example": null,
+            "nullable": true,
+            "type": "number"
+          },
+          "ativo": {
+            "description": "Plano ativo para venda.",
+            "type": "boolean"
+          },
+          "duracaoMeses": {
+            "example": 12,
+            "maximum": 120,
+            "minimum": 1,
+            "type": "number"
+          },
+          "formaDeCobranca": {
+            "enum": [
+              "cartao_ou_pix",
+              "cartao",
+              "pix",
+              "boleto"
+            ],
+            "example": "cartao_ou_pix",
+            "type": "string"
+          },
+          "modalidades": {
+            "example": [
+              "Musculação",
+              "Spinning",
+              "Funcional"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "nome": {
+            "example": "Anual",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "parcelas": {
+            "description": "No máximo a duração em meses.",
+            "example": 9,
+            "minimum": 1,
+            "type": "number"
+          },
+          "renovacaoAutomatica": {
+            "type": "boolean"
+          },
+          "valorTotalCentavos": {
+            "description": "Valor total em centavos.",
+            "example": 94800,
+            "type": "number"
+          }
+        },
+        "required": [
+          "nome",
+          "valorTotalCentavos",
+          "duracaoMeses",
+          "parcelas",
+          "formaDeCobranca",
+          "modalidades",
+          "acessosPorSemana",
+          "renovacaoAutomatica",
+          "ativo"
         ],
         "type": "object"
       },
@@ -194,6 +733,16 @@
         ],
         "type": "object"
       },
+      "ExcluirAlunoDto": {
+        "properties": {
+          "motivo": {
+            "example": "Cadastro duplicado",
+            "maxLength": 200,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "IdentidadeDoTenantDto": {
         "properties": {
           "corDestaque": {
@@ -221,6 +770,154 @@
         ],
         "type": "object"
       },
+      "ImportarAlunosDto": {
+        "properties": {
+          "linhas": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaDaPlanilhaDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "linhas"
+        ],
+        "type": "object"
+      },
+      "ItemDaListaDeAlunosDto": {
+        "properties": {
+          "diasDeAtraso": {
+            "description": "\"Em atraso, 6 dias\".",
+            "example": 6,
+            "type": "number"
+          },
+          "estadoDoContrato": {
+            "description": "Estado do contrato hoje.",
+            "enum": [
+              "ativo",
+              "tolerancia",
+              "encerrado",
+              "trancado"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "example": "Rafael Souza",
+            "type": "string"
+          },
+          "plano": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlanoResumidoDto"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          },
+          "situacao": {
+            "enum": [
+              "em_dia",
+              "a_vencer",
+              "em_atraso"
+            ],
+            "type": "string"
+          },
+          "venceEmDias": {
+            "description": "\"Vence em 3 dias\".",
+            "example": 3,
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "plano",
+          "situacao",
+          "estadoDoContrato",
+          "diasDeAtraso",
+          "venceEmDias"
+        ],
+        "type": "object"
+      },
+      "LinhaDaPlanilhaDto": {
+        "properties": {
+          "cpf": {
+            "maxLength": 20,
+            "type": "string"
+          },
+          "dataNascimento": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "email": {
+            "nullable": true,
+            "type": "string"
+          },
+          "inicioDoContrato": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "plano": {
+            "description": "Nome do plano cadastrado.",
+            "nullable": true,
+            "type": "string"
+          },
+          "telefone": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "cpf"
+        ],
+        "type": "object"
+      },
+      "LinhaDoRelatorioDto": {
+        "properties": {
+          "cpf": {
+            "type": "string"
+          },
+          "linha": {
+            "example": 14,
+            "type": "number"
+          },
+          "motivo": {
+            "example": "CPF inválido",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "pulada",
+              "para_corrigir"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "linha",
+          "nome",
+          "cpf",
+          "situacao",
+          "motivo"
+        ],
+        "type": "object"
+      },
       "ModuloExtra": {
         "enum": [
           "aulas",
@@ -229,6 +926,34 @@
           "saude"
         ],
         "type": "string"
+      },
+      "PaginaDeAlunosDto": {
+        "properties": {
+          "contadores": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ContadoresDeAlunosDto"
+              }
+            ],
+            "description": "Por situação, com plano e busca aplicados."
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/ItemDaListaDeAlunosDto"
+            },
+            "type": "array"
+          },
+          "proximoCursor": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "itens",
+          "proximoCursor",
+          "contadores"
+        ],
+        "type": "object"
       },
       "PaginaDoLogDto": {
         "properties": {
@@ -310,6 +1035,145 @@
         ],
         "type": "object"
       },
+      "PlanoDto": {
+        "properties": {
+          "acessosPorSemana": {
+            "description": "null é ilimitado.",
+            "example": null,
+            "nullable": true,
+            "type": "number"
+          },
+          "alunosAtivos": {
+            "description": "Alunos com contrato vigente não encerrado.",
+            "example": 38,
+            "type": "number"
+          },
+          "ativo": {
+            "description": "Plano ativo para venda.",
+            "type": "boolean"
+          },
+          "duracaoMeses": {
+            "example": 12,
+            "maximum": 120,
+            "minimum": 1,
+            "type": "number"
+          },
+          "formaDeCobranca": {
+            "enum": [
+              "cartao_ou_pix",
+              "cartao",
+              "pix",
+              "boleto"
+            ],
+            "example": "cartao_ou_pix",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "modalidades": {
+            "example": [
+              "Musculação",
+              "Spinning",
+              "Funcional"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "nome": {
+            "example": "Anual",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "parcelaCentavos": {
+            "description": "Parcela derivada com o rateio (centavos).",
+            "example": 10533,
+            "type": "number"
+          },
+          "parcelas": {
+            "description": "No máximo a duração em meses.",
+            "example": 9,
+            "minimum": 1,
+            "type": "number"
+          },
+          "renovacaoAutomatica": {
+            "type": "boolean"
+          },
+          "ultimaParcelaCentavos": {
+            "description": "A última parcela leva o resto da divisão.",
+            "example": 10536,
+            "type": "number"
+          },
+          "valorTotalCentavos": {
+            "description": "Valor total em centavos.",
+            "example": 94800,
+            "type": "number"
+          }
+        },
+        "required": [
+          "nome",
+          "valorTotalCentavos",
+          "duracaoMeses",
+          "parcelas",
+          "formaDeCobranca",
+          "modalidades",
+          "acessosPorSemana",
+          "renovacaoAutomatica",
+          "ativo",
+          "id",
+          "parcelaCentavos",
+          "ultimaParcelaCentavos",
+          "alunosAtivos"
+        ],
+        "type": "object"
+      },
+      "PlanoResumidoDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "example": "Mensal",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
+        ],
+        "type": "object"
+      },
+      "PreviaDoPlanoDto": {
+        "properties": {
+          "explicacao": {
+            "example": "O aluno tem acesso por 12 meses e paga em 9 parcelas. As cobranças terminam na 9ª parcela, e o contrato segue ativo até o fim dos 12 meses.",
+            "type": "string"
+          },
+          "parcelaCentavos": {
+            "example": 10533,
+            "type": "number"
+          },
+          "parcelas": {
+            "example": 9,
+            "type": "number"
+          },
+          "ultimaCentavos": {
+            "example": 10536,
+            "type": "number"
+          }
+        },
+        "required": [
+          "parcelas",
+          "parcelaCentavos",
+          "ultimaCentavos",
+          "explicacao"
+        ],
+        "type": "object"
+      },
       "PrimeiroAcessoDto": {
         "properties": {
           "codigo": {
@@ -352,6 +1216,35 @@
         ],
         "type": "object"
       },
+      "RelatorioDaImportacaoDto": {
+        "properties": {
+          "comContrato": {
+            "example": 297,
+            "type": "number"
+          },
+          "criados": {
+            "example": 300,
+            "type": "number"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaDoRelatorioDto"
+            },
+            "type": "array"
+          },
+          "semContrato": {
+            "example": 3,
+            "type": "number"
+          }
+        },
+        "required": [
+          "criados",
+          "comContrato",
+          "semContrato",
+          "linhas"
+        ],
+        "type": "object"
+      },
       "SessaoDto": {
         "properties": {
           "accessToken": {
@@ -366,6 +1259,49 @@
         "required": [
           "accessToken",
           "expiraEm"
+        ],
+        "type": "object"
+      },
+      "SituacaoDoAlunoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "avaliacao": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvaliacaoDoContratoDto"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          },
+          "contrato": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ContratoDto"
+              }
+            ],
+            "description": "null quando não há contrato.",
+            "nullable": true,
+            "type": "object"
+          },
+          "situacaoDeVencimento": {
+            "description": "A vencer: até 7 dias, inclusive.",
+            "enum": [
+              "em_dia",
+              "a_vencer",
+              "em_atraso"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId",
+          "situacaoDeVencimento",
+          "avaliacao",
+          "contrato"
         ],
         "type": "object"
       },
@@ -385,6 +1321,20 @@
           "nome"
         ],
         "type": "object"
+      },
+      "TrancarDto": {
+        "properties": {
+          "dias": {
+            "description": "Até o máximo configurado (padrão 90).",
+            "example": 30,
+            "minimum": 1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "dias"
+        ],
+        "type": "object"
       }
     }
   },
@@ -396,6 +1346,727 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/api/alunos": {
+      "get": {
+        "operationId": "listarAlunos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "situacao",
+            "required": false,
+            "schema": {
+              "enum": [
+                "em_dia",
+                "a_vencer",
+                "em_atraso"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "planoId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Nome (parte), CPF completo ou telefone completo. CPF parcial não é suportado.",
+            "in": "query",
+            "name": "busca",
+            "required": false,
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "proximoCursor da página anterior.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDeAlunosDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Filtro ou cursor inválido."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista paginada por cursor, com filtros e os contadores Todos/Em dia/A vencer/Em atraso.",
+        "tags": [
+          "alunos"
+        ]
+      },
+      "post": {
+        "operationId": "cadastrarAluno",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CadastrarAlunoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos (CPF, e-mail, datas)."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:criar."
+          },
+          "409": {
+            "description": "CPF já cadastrado ou plano inativo."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cadastra o aluno; com plano, já cria o contrato (adesão).",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/importacao": {
+      "post": {
+        "operationId": "importarAlunos",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportarAlunosDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelatorioDaImportacaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Importação em lote: pula CPF inválido, já cadastrado ou repetido; plano inexistente cria o aluno sem contrato.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}": {
+      "delete": {
+        "operationId": "excluirAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExcluirAlunoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:excluir."
+          },
+          "404": {
+            "description": "Aluno não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Exclui o aluno em todos os domínios (LGPD) e grava a auditoria sensível.",
+        "tags": [
+          "alunos"
+        ]
+      },
+      "get": {
+        "operationId": "obterAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:ver."
+          },
+          "404": {
+            "description": "Aluno não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cadastro do aluno (a leitura das restrições vai para o log de acesso).",
+        "tags": [
+          "alunos"
+        ]
+      },
+      "put": {
+        "operationId": "editarAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoAlunoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          },
+          "404": {
+            "description": "Aluno não encontrado."
+          },
+          "409": {
+            "description": "CPF de outro aluno."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita o cadastro do aluno.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}/codigo-de-acesso": {
+      "post": {
+        "operationId": "gerarCodigoDeAcessoDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodigoDeAcessoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          },
+          "404": {
+            "description": "Aluno não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Código de primeiro acesso ao app, entregue pela recepção (7 dias, uso único).",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}/contrato": {
+      "get": {
+        "operationId": "obterContratoVigente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:ver."
+          },
+          "404": {
+            "description": "Aluno sem contrato."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Contrato vigente do aluno.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}/contrato/destrancar": {
+      "post": {
+        "operationId": "destrancarContrato",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          },
+          "409": {
+            "description": "O contrato não está trancado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Destranca; os dias de trancamento não usados saem da vigência.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}/contrato/renovar": {
+      "post": {
+        "operationId": "renovarContrato",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          },
+          "409": {
+            "description": "Contrato encerrado por atraso ou trancado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Renova por mais um período do plano.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}/contrato/trancar": {
+      "post": {
+        "operationId": "trancarContrato",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrancarDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          },
+          "409": {
+            "description": "Prazo acima do máximo ou contrato encerrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Tranca por N dias (até o máximo configurado); a vigência é estendida pelo mesmo tempo.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}/contratos": {
+      "post": {
+        "operationId": "aderirAPlano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AderirDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          },
+          "409": {
+            "description": "Plano inativo para venda."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Nova adesão: o contrato passa a ser o vigente.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/alunos/{id}/situacao": {
+      "get": {
+        "operationId": "obterSituacaoDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SituacaoDoAlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estado do contrato hoje (ADR-018), dias de atraso, \"encerra em\" e situação de vencimento.",
+        "tags": [
+          "alunos"
+        ]
+      }
+    },
+    "/api/app/contrato": {
+      "get": {
+        "operationId": "obterMeuContrato",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SituacaoDoAlunoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Situação e contrato vigente do aluno da sessão.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/contrato/renovar": {
+      "post": {
+        "operationId": "renovarMeuContrato",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "409": {
+            "description": "Contrato encerrado por atraso ou trancado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Renovar com 1 toque\" do app.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
     "/api/auditoria/atividades": {
       "get": {
         "operationId": "listarAtividades",
@@ -948,6 +2619,80 @@
         ]
       }
     },
+    "/api/configuracoes/contratos": {
+      "get": {
+        "operationId": "obterConfiguracaoDeContratos",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfiguracaoDeContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.contratos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Tolerância de atraso, reativação sem nova adesão e trancamento máximo.",
+        "tags": [
+          "configuracoes"
+        ]
+      },
+      "put": {
+        "operationId": "salvarConfiguracaoDeContratos",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfiguracaoDeContratoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfiguracaoDeContratoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.contratos:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Salva o bloco \"Contratos e atraso\" (auditoria sensível).",
+        "tags": [
+          "configuracoes"
+        ]
+      }
+    },
     "/api/equipe/convites": {
       "post": {
         "operationId": "convidarParaEquipe",
@@ -1024,6 +2769,294 @@
         "summary": "Quem está logado, permissões e módulos extras ativos (appPermission, menu lateral).",
         "tags": [
           "autenticacao"
+        ]
+      }
+    },
+    "/api/planos": {
+      "get": {
+        "operationId": "listarPlanos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "busca",
+            "required": false,
+            "schema": {
+              "maxLength": 80,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlanoDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão planos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Planos da academia, com os alunos ativos de cada um.",
+        "tags": [
+          "planos"
+        ]
+      },
+      "post": {
+        "operationId": "criarPlano",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoPlanoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos ou parcelas acima da duração."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão planos:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria um plano (parcelas ≤ duração).",
+        "tags": [
+          "planos"
+        ]
+      }
+    },
+    "/api/planos/previa": {
+      "get": {
+        "operationId": "previaDoPlano",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "valorTotalCentavos",
+            "required": true,
+            "schema": {
+              "example": 94800,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "duracaoMeses",
+            "required": true,
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parcelas",
+            "required": true,
+            "schema": {
+              "example": 9,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviaDoPlanoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Parcelas acima da duração ou valores inválidos."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão planos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Valor da parcela (rateio, resto na última) e texto explicativo, sem gravar.",
+        "tags": [
+          "planos"
+        ]
+      }
+    },
+    "/api/planos/{id}": {
+      "delete": {
+        "operationId": "excluirPlano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão planos:excluir."
+          },
+          "409": {
+            "description": "O plano tem alunos ativos: inative em vez de excluir."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Exclui o plano; com alunos ativos, recusa.",
+        "tags": [
+          "planos"
+        ]
+      },
+      "get": {
+        "operationId": "obterPlano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão planos:ver."
+          },
+          "404": {
+            "description": "Plano não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Um plano.",
+        "tags": [
+          "planos"
+        ]
+      },
+      "put": {
+        "operationId": "editarPlano",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoPlanoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão planos:editar."
+          },
+          "404": {
+            "description": "Plano não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita o plano (inativar é `ativo: false`); mudar o valor grava auditoria sensível.",
+        "tags": [
+          "planos"
         ]
       }
     },

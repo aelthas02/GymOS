@@ -43,7 +43,7 @@ import {
 import { EnvioDeEmailFake } from './infra/email/envio-de-email.fake';
 import { EnvioDeEmailSmtp } from './infra/email/envio-de-email.smtp';
 import { LimiteDeTentativasRedis } from './infra/limite-de-tentativas.redis';
-import { LocalizadorDeAlunoIndisponivel } from './infra/localizador-de-aluno';
+import { LocalizadorDeAlunoPeloIndiceCego } from '../alunos/infra/localizador-de-aluno';
 import {
   RepositorioDeConvitesPrisma,
   RepositorioDeCredenciaisDeAlunoPrisma,
@@ -91,7 +91,7 @@ import {
     { provide: RepositorioDeRefresh, useClass: RepositorioDeRefreshPrisma },
     { provide: RepositorioDeRedefinicoes, useClass: RepositorioDeRedefinicoesPrisma },
     { provide: RepositorioDeModulos, useClass: RepositorioDeModulosPrisma },
-    { provide: LocalizadorDeAlunoPorCpf, useClass: LocalizadorDeAlunoIndisponivel },
+    { provide: LocalizadorDeAlunoPorCpf, useClass: LocalizadorDeAlunoPeloIndiceCego },
     { provide: CifraDeSenha, useClass: CifraDeSenhaArgon2 },
     { provide: GeradorDeSegredos, useClass: GeradorDeSegredosCripto },
     { provide: EmissorDeTokens, useClass: EmissorDeTokensJwt },

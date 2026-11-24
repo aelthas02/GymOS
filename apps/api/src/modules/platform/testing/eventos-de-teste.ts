@@ -1,4 +1,4 @@
-import type { INestApplicationContext } from '@nestjs/common';
+import type { INestApplicationContext, ModuleMetadata } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { NovoEvento, PayloadDoEvento } from '@gymos/shared-events';
 import { randomUUID } from 'node:crypto';
@@ -19,7 +19,12 @@ import {
   type ConfiguracaoDaAutenticacao,
 } from '../../autenticacao/infra/configuracao';
 import { LocalizadorDeAlunoEmMemoria } from '../../autenticacao/infra/localizador-de-aluno';
+import {
+  CONFIGURACAO_DA_CIFRA,
+  type ConfiguracaoDaCifra,
+} from '../infra/protecao-de-dados/configuracao';
 import { CHAVE_DE_OPERACAO_DE_TESTE, SEGREDO_DO_JWT_DE_TESTE } from './app-de-teste';
+import { CHAVE_MESTRA_DE_TESTE } from './protecao-de-dados-de-teste';
 import type { BancoDeTeste } from './banco-de-teste';
 import { comTenant } from './fabricas';
 import type { RedisDeTeste } from './redis-de-teste';
@@ -27,16 +32,18 @@ import type { RedisDeTeste } from './redis-de-teste';
 /**
  * Um "processo" da API com a plataforma e o módulo de eventos, ligado ao banco e ao Redis do arquivo
  * de teste. Dois módulos sobre o mesmo banco e prefixo fazem o papel de dois workers. Os workers não
- * sobem sozinhos: o teste inicia os que precisa.
+ * sobem sozinhos: o teste inicia os que precisa. `modulos` acrescenta módulos de domínio (ex.: o
+ * ProtecaoDeDadosModule e o AlunosModule no seed).
  */
 export async function criarModuloDeEventos(
   banco: BancoDeTeste,
   redis: RedisDeTeste,
   configuracao: Partial<ConfiguracaoDasFilas> = {},
+  modulos: NonNullable<ModuleMetadata['imports']> = [],
 ): Promise<INestApplicationContext> {
   // A autenticação (T12) fornece o ConviteDoAdministrador que a plataforma exige.
   const modulo = await Test.createTestingModule({
-    imports: [PlatformModule, AutenticacaoModule, EventosModule, AuditoriaModule],
+    imports: [PlatformModule, AutenticacaoModule, EventosModule, AuditoriaModule, ...modulos],
   })
     .overrideProvider(CONFIGURACAO_DA_AUTENTICACAO)
     .useValue({
@@ -70,6 +77,8 @@ export async function criarModuloDeEventos(
       tamanhoDoLote: 50,
       ...configuracao,
     } satisfies ConfiguracaoDasFilas)
+    .overrideProvider(CONFIGURACAO_DA_CIFRA)
+    .useValue({ chaveMestraLocal: CHAVE_MESTRA_DE_TESTE } satisfies ConfiguracaoDaCifra)
     .compile();
   modulo.useLogger(false);
   await modulo.init();

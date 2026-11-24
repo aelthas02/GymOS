@@ -1,0 +1,99 @@
+// Modelos do domínio alunos (T15a): o aluno, o plano que ele compra e o contrato que liga os dois
+// (ADR-018). Tabelas criadas por `nx g @gymos/api:tabela`; campos na migração `campos_dos_alunos`.
+
+/// Plano vendido pela academia. Valor em centavos; `acessosPorSemana` nulo é ilimitado. Excluir só
+/// marca `excluidoEm` (os contratos antigos continuam apontando para ele).
+model Plano {
+  id                  String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId            String     @map("tenant_id") @db.Uuid
+  criadoEm            DateTime   @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nome                String
+  valorTotalCentavos  Int        @map("valor_total_centavos")
+  duracaoMeses        Int        @map("duracao_meses")
+  parcelas            Int
+  formaDeCobranca     String     @map("forma_de_cobranca")
+  modalidades         String[]   @default([])
+  acessosPorSemana    Int?       @map("acessos_por_semana")
+  renovacaoAutomatica Boolean    @default(false) @map("renovacao_automatica")
+  ativo               Boolean    @default(true)
+  excluidoEm          DateTime?  @map("excluido_em") @db.Timestamptz(3)
+  contratos           Contrato[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@map("plano")
+}
+
+/// Aluno da academia. CPF, telefone e e-mail cifrados com índice cego (T13c); restrições são dado de
+/// saúde (sensível, cada leitura vai para o log de acesso).
+model Aluno {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String     @map("tenant_id") @db.Uuid
+  criadoEm       DateTime   @default(now()) @map("criado_em") @db.Timestamptz(3)
+  unidadeId      String     @map("unidade_id") @db.Uuid
+  nome           String
+  cpf            String
+  cpfHash        String     @map("cpf_hash")
+  telefone       String?
+  telefoneHash   String?    @map("telefone_hash")
+  email          String?
+  emailHash      String?    @map("email_hash")
+  dataNascimento DateTime?  @map("data_nascimento") @db.Date
+  professorId    String?    @map("professor_id") @db.Uuid
+  meta           String?
+  restricoes     String?
+  leadId         String?    @map("lead_id") @db.Uuid
+  contratos      Contrato[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, cpfHash])
+  @@index([tenantId])
+  @@index([tenantId, telefoneHash])
+  @@index([tenantId, emailHash])
+  @@index([tenantId, nome])
+  @@map("aluno")
+}
+
+/// Contrato do aluno com um plano (ADR-018). `fim` é o último dia da vigência (até 23:59:59 em São
+/// Paulo). `vencimentoEmAtraso` e `proximoVencimento` vêm da cobrança (T19) e alimentam o estado e a
+/// situação de vencimento. Só um contrato por aluno é o `vigente`.
+model Contrato {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId               String    @map("tenant_id") @db.Uuid
+  criadoEm               DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId                String    @map("aluno_id") @db.Uuid
+  planoId                String    @map("plano_id") @db.Uuid
+  vigente                Boolean   @default(true)
+  estado                 String
+  inicio                 DateTime  @db.Date
+  fim                    DateTime  @db.Date
+  valorTotalCentavos     Int       @map("valor_total_centavos")
+  parcelas               Int
+  vencimentoEmAtraso     DateTime? @map("vencimento_em_atraso") @db.Date
+  proximoVencimento      DateTime? @map("proximo_vencimento") @db.Date
+  encerradoEm            DateTime? @map("encerrado_em") @db.Date
+  motivoDoEncerramento   String?   @map("motivo_do_encerramento")
+  trancadoDesde          DateTime? @map("trancado_desde") @db.Date
+  trancadoAte            DateTime? @map("trancado_ate") @db.Date
+  aluno                  Aluno     @relation(fields: [tenantId, alunoId], references: [tenantId, id])
+  plano                  Plano     @relation(fields: [tenantId, planoId], references: [tenantId, id])
+
+  @@index([tenantId])
+  @@index([tenantId, alunoId, vigente])
+  @@index([tenantId, planoId, vigente])
+  @@map("contrato")
+}
+
+/// Bloco "Contratos e atraso" de Configurações (a tela é do T26c). Sem linha, valem os padrões.
+model ConfiguracaoDeContrato {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId               String   @map("tenant_id") @db.Uuid
+  criadoEm               DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  toleranciaDias         Int      @map("tolerancia_dias")
+  reativacaoDias         Int      @map("reativacao_dias")
+  trancamentoMaximoDias  Int      @map("trancamento_maximo_dias")
+
+  @@unique([tenantId])
+  @@index([tenantId])
+  @@map("configuracao_de_contrato")
+}
