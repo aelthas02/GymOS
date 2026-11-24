@@ -47,6 +47,24 @@ se o hook falhar, corrija a causa.
   com a decisão tomada. Os demais arquivos de `docs/design/` não são alterados.
 - Decisão de arquitetura nova vira um ADR em [`docs/adr/`](docs/adr/README.md).
 
+## Teclado virtual em formulários
+
+Formulário longo ou com rodapé fixo (item 5.2.1 do prompt) segue estes passos:
+
+1. Coloque `appKeyboardSafe` (`@gymos/shared-forms`) no container do formulário. Ao focar um campo
+   com o teclado aberto, ele rola o campo para o centro da área visível.
+2. O `KeyboardAwareService` publica a altura do teclado em `--teclado-altura` no `<html>`. O rodapé
+   fixo usa `bottom: var(--teclado-altura, 0px)` e o container, um `padding-bottom` que soma a mesma
+   variável, para o último campo conseguir chegar ao centro.
+3. Use `100dvh` e `env(safe-area-inset-*)` (tokens `--safe-*` de `libs/ui/styles`); os dois apps já
+   declaram `interactive-widget=resizes-content` no meta viewport.
+4. Teste a tela com o harness de `@gymos/shared-testing` em `apps/e2e`, **nos dois modos** (`android`
+   e `ios`): `instalarTeclado(page, modo)` antes de abrir a tela, `abrirTeclado` e `fecharTeclado` com
+   cada item de `TAMANHOS_DO_TECLADO`, `expectVisivelNaAreaVisivel` no campo e no botão principal e
+   `alturaDoRodape` (0 no Android; a altura do teclado no iOS). Modelo: `apps/e2e/src/teclado.e2e.ts`.
+5. Rode o roteiro em aparelho real de [`docs/qa/teclado.md`](docs/qa/teclado.md): o harness não
+   substitui o teclado do iOS.
+
 ## Projetos novos
 
 Gere pelo Nx e dê as tags de escopo e de tipo (ver [`ARCHITECTURE.md`](ARCHITECTURE.md)):

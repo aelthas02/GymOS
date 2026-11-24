@@ -29,3 +29,6 @@ export {
   type PermissionChecker,
 } from './lib/diretivas/acesso';
 export { ErrorFor, FieldError, mensagemVisivel } from './lib/diretivas/erro';
+
+export { KeyboardAwareService } from './lib/teclado/keyboard-aware.service';
+export { KeyboardSafe } from './lib/teclado/keyboard-safe.directive';
