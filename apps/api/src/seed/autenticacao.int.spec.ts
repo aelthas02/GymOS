@@ -3,6 +3,7 @@ import request from 'supertest';
 import { criarAppDeTeste } from '../modules/platform/testing/app-de-teste';
 import { usarBancoDeTeste } from '../modules/platform/testing/banco-de-teste';
 import { EQUIPE_DO_SEED, SENHA_DO_SEED, seedDaAutenticacao } from './autenticacao';
+import { contextoDoSeed } from './runner';
 import { ACADEMIA_RITMO, seedDaPlataforma } from './plataforma';
 
 describe('seed da autenticação', () => {
@@ -14,13 +15,15 @@ describe('seed da autenticação', () => {
   });
 
   it('sem o tenant Ritmo, falha com mensagem clara', async () => {
-    await expect(seedDaAutenticacao.executar(app)).rejects.toThrow(/seed da plataforma/);
+    await expect(seedDaAutenticacao.executar(app, contextoDoSeed(app))).rejects.toThrow(
+      /seed da plataforma/,
+    );
   });
 
   it('cria os tipos padrão e a equipe da Ritmo, que entra com a senha do seed', async () => {
-    await seedDaPlataforma.executar(app);
-    await seedDaAutenticacao.executar(app);
-    await seedDaAutenticacao.executar(app);
+    await seedDaPlataforma.executar(app, contextoDoSeed(app));
+    await seedDaAutenticacao.executar(app, contextoDoSeed(app));
+    await seedDaAutenticacao.executar(app, contextoDoSeed(app));
 
     const conexao = await banco.conectarComoApp();
     const { rows } = await conexao.query<{ total: string }>(

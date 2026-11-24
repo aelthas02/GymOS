@@ -9,7 +9,8 @@ import {
   type ChaveDoTipoPadrao,
   TIPOS_PADRAO,
 } from '../modules/autenticacao/domain/tipos-de-acesso';
-import { ACADEMIA_RITMO, type ModuloDeSeed } from './plataforma';
+import type { ModuloDeSeed } from './modulo-de-seed';
+import { ACADEMIA_RITMO } from './plataforma';
 
 /** Senha dos usuários do seed (só dev e E2E). */
 export const SENHA_DO_SEED = 'gymos1234';

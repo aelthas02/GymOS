@@ -1,17 +1,9 @@
-import type { INestApplicationContext } from '@nestjs/common';
 import { RepositorioDeTenants } from '../modules/platform/application/portas';
 import { ContextoDoTenant } from '../modules/platform/infra/contexto/contexto-do-tenant';
 import { ExecutorDeTenant } from '../modules/platform/infra/contexto/executor-de-tenant';
+import type { ModuloDeSeed } from './modulo-de-seed';
 
-/**
- * Formato provisório de um módulo de seed. O runner (`pnpm seed`) e o contrato definitivo são do T35,
- * que ordena os módulos por `dependeDe` e pode ajustar esta interface.
- */
-export interface ModuloDeSeed {
-  nome: string;
-  dependeDe: readonly string[];
-  executar(app: INestApplicationContext): Promise<void>;
-}
+export type { ModuloDeSeed };
 
 export const ACADEMIA_RITMO = {
   slug: 'ritmo',
