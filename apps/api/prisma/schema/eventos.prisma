@@ -1,0 +1,30 @@
+/// Outbox transacional (ADR-007): o caso de uso grava o evento na mesma transação da mudança, e o
+/// despachante o lê em lotes (FOR UPDATE SKIP LOCKED, pela função gymos_outbox_reservar_lote) e o
+/// entrega pelas filas.
+model EventoOutbox {
+  id          String    @id @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  tipo        String
+  versao      Int
+  payload     Json
+  ocorridoEm  DateTime  @map("ocorrido_em") @db.Timestamptz(3)
+  publicadoEm DateTime? @map("publicado_em") @db.Timestamptz(3)
+  criadoEm    DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([publicadoEm, criadoEm])
+  @@map("evento_outbox")
+}
+
+/// Marca de idempotência: gravada na mesma transação do efeito do consumidor. Reentrega de um evento
+/// já marcado para aquele consumidor é ignorada.
+model EventoProcessado {
+  consumidor   String
+  eventoId     String   @map("evento_id") @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  processadoEm DateTime @default(now()) @map("processado_em") @db.Timestamptz(3)
+
+  @@id([consumidor, eventoId])
+  @@index([tenantId])
+  @@map("evento_processado")
+}

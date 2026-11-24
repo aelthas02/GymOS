@@ -7,6 +7,19 @@ const frameworks = {
   message: 'O domínio é TypeScript puro: sem Nest nem Prisma (ARCHITECTURE.md, back-end).',
 };
 
+// Redis e filas só pela plataforma (T13a): o cliente direto ignora o tenant das chaves e dos jobs.
+const redisDireto = {
+  group: ['ioredis', 'redis', 'bullmq', '@bull-board/*'],
+  message:
+    'Use CacheComTenant, Filas ou TempoRealPorTenant da plataforma (ARCHITECTURE.md, eventos e filas).',
+};
+
+const clienteGlobal = {
+  group: ['**/platform/infra/prisma/prisma.service', '**/generated/prisma/client'],
+  importNames: ['PrismaService', 'PrismaClient'],
+  message: 'Use ContextoDoTenant.cliente(): o cliente global ignora o contexto do tenant.',
+};
+
 // Tempo só pela porta Relogio (ADR-013): o domínio e os casos de uso não leem o relógio do sistema.
 const relogio = [
   {
@@ -44,6 +57,16 @@ export default [
     ignores: ['src/generated/**'],
   },
   {
+    files: ['src/**/*.ts'],
+    // Exceções: a sonda de prontidão (T02) e o limite de tentativas de login (T12), anterior ao tenant.
+    ignores: [
+      'src/modules/platform/**',
+      'src/observabilidade/health/redis.check.ts',
+      'src/modules/autenticacao/infra/limite-de-tentativas.redis.ts',
+    ],
+    rules: { 'no-restricted-imports': ['error', { patterns: [redisDireto] }] },
+  },
+  {
     files: ['src/**/domain/**/*.ts'],
     rules: {
       'no-restricted-imports': [
@@ -55,6 +78,7 @@ export default [
               message: 'O domínio não importa de application, infra nem interface.',
             },
             frameworks,
+            redisDireto,
           ],
         },
       ],
@@ -71,6 +95,7 @@ export default [
               group: [...layer('infra'), ...layer('interface')],
               message: 'Casos de uso dependem de portas do domínio, não de infra nem interface.',
             },
+            redisDireto,
           ],
         },
       ],
@@ -96,16 +121,14 @@ export default [
       'no-restricted-imports': [
         'error',
         {
-          patterns: [
-            {
-              group: ['**/platform/infra/prisma/prisma.service', '**/generated/prisma/client'],
-              importNames: ['PrismaService', 'PrismaClient'],
-              message:
-                'Use ContextoDoTenant.cliente(): o cliente global ignora o contexto do tenant.',
-            },
-          ],
+          patterns: [clienteGlobal, redisDireto],
         },
       ],
     },
+  },
+  {
+    // Limite de tentativas de login (T12): anterior ao tenant e não é cache.
+    files: ['src/modules/autenticacao/infra/limite-de-tentativas.redis.ts'],
+    rules: { 'no-restricted-imports': ['error', { patterns: [clienteGlobal] }] },
   },
 ];

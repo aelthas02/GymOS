@@ -26,6 +26,16 @@ export const envSchema = z.object({
   // Endereço do app do aluno de cada academia, usado nos links de e-mail; {tenant} vira o slug.
   STUDENT_APP_URL: required.default('http://{tenant}.localhost:4300'),
   REDIS_URL: z.url({ protocol: /^rediss?$/ }),
+  // Prefixo de filas, cache e canais no Redis; separa ambientes que dividem o mesmo Redis.
+  REDIS_PREFIXO: z
+    .string()
+    .regex(/^[a-z0-9_-]+$/)
+    .default('gymos'),
+  // Sobe os workers das filas e o despachante do outbox neste processo.
+  FILAS_PROCESSAR: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((valor) => valor === 'true'),
   SMTP_HOST: required,
   SMTP_PORT: port,
   // smtp envia pelo SMTP_HOST; fake só guarda em memória (máquina sem Mailpit).

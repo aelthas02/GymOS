@@ -70,7 +70,8 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
     controllers: options.controllers ?? [],
   })
     .overrideProvider(ENV)
-    .useValue(loadEnv({ ...readEnvExample(), ...options.env }))
+    // Sem workers nem despachante (T13a): as filas são cobertas pelos testes *.int.spec.ts.
+    .useValue(loadEnv({ ...readEnvExample(), FILAS_PROCESSAR: 'false', ...options.env }))
     .overrideProvider(LOG_DESTINATION)
     .useValue(logSink)
     .overrideProvider(PostgresCheck)
