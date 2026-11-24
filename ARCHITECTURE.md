@@ -350,6 +350,10 @@ Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso 
 | `registrou-check-in`              | Registrou check-in              | Acesso        | não      | check-in da Recepção (T23a)           |
 | `alterou-regras-de-acesso`        | Alterou regras de acesso        | Configurações | sim      | regras de acesso da catraca (T23a)    |
 | `alterou-alertas-de-frequencia`   | Alterou alertas de frequência   | Configurações | não      | alertas de frequência (T23a)          |
+| `gerou-codigo-de-pareamento`      | Gerou código de pareamento      | Configurações | não      | código do agente da catraca (T23b)    |
+| `revogou-agente-da-catraca`       | Revogou agente da catraca       | Configurações | sim      | revogar a credencial do agente (T23b) |
+| `alterou-dispositivo`             | Alterou dispositivo             | Configurações | não      | cadastro de catraca ou leitor (T23b)  |
+| `cadastrou-biometria`             | Cadastrou biometria             | Acesso        | sim      | cadastro de face ou digital (T23b)    |
 | `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)      |
 
 ### Alunos, planos e contratos
@@ -481,7 +485,7 @@ notificarEm ─▶ aviso_agendado (pendente) + job atrasado na fila notificacoes
 ### Acesso e frequência
 
 `modules/acesso` (T23a, ADR-018) e o pacote puro `@gymos/shared-acesso` (`libs/shared/acesso`, `type:domain`), que a API
-e o agente da catraca (T24a) usam com as mesmas regras. Dispositivos, pareamento e tempo real são do T23b.
+e o agente da catraca (T24a) usam com as mesmas regras. Dispositivos, pareamento e tempo real estão em "Dispositivos, agente da catraca e tempo real" (T23b).
 
 ```
 pedido ─▶ contrato → atraso (ADR-018) → horário → modalidade → anti-passback → limite diário → semanal ─▶ liberado | tolerância | negado(motivo)
@@ -501,7 +505,7 @@ agente offline ─ validarQrOffline (chave pública + nonces locais) ─▶ guar
   algoritmo; o payload só é lido depois de a assinatura valer; o `tenantId` assinado barra uso em outra academia; validade
   de 60 s (emissão até 5 s no futuro é tolerada). **Uso único**: o nonce entra em `qr_usado` com `UNIQUE (tenant, nonce)`
   e `ON CONFLICT DO NOTHING` (duas leituras simultâneas disputam o índice e só uma vence). A chave privada fica cifrada
-  (T13c) em `chave_de_qr`; o agente baixa as públicas em `GET /api/acesso/chaves-publicas` e guarda os nonces usados
+  (T13c) em `chave_de_qr`; o agente baixa as públicas em `GET /api/agente/chaves-publicas` e guarda os nonces usados
   (`NoncesEmMemoria`) até sincronizar. Limite conhecido: dois agentes offline distintos aceitam o mesmo QR; a sincronização
   detecta o caso (`qrRepetidos`).
 - **Registro**: `Acessos.registrar` (catraca online), `checkInDaRecepcao`, `liberarManualmente` (exige motivo; auditoria
@@ -514,6 +518,45 @@ agente offline ─ validarQrOffline (chave pública + nonces locais) ─▶ guar
 - **Leituras**: `GET /api/acesso/frequencia/{checkins-de-hoje,por-horario,por-aluno,presencas-do-mes,alunos-em-risco}`. Em
   processo, `Frequencia` (check-ins de hoje e frequência por horário para o Início; `presencasDoMes` para o rateio do T21).
 - **LGPD**: o provedor `acesso` exporta acessos e alertas do aluno e a exclusão apaga tudo (sem retenção legal).
+
+### Dispositivos, agente da catraca e tempo real
+
+`modules/dispositivos` (T23b, ADR-010 e ADR-016). O agente local (T24a) é o único cliente das rotas `/api/agente/*`.
+
+```
+painel ─ POST /agentes-da-catraca/codigos ─▶ código de 6 caracteres (30 min, uma troca)
+agente ─ POST /agente/pareamento ─▶ credencial ga1.<agenteId>.<segredo> (só o hash fica no banco)
+agente ─ POST /agente/batimento (30 s) ─▶ dispositivos online · comandos pendentes · versão do cache
+sem batimento por 90 s ─ RotinaDasQuedas (30 s) ─▶ offline + queda aberta + DispositivoMudouDeEstado
+evento ─ consumidor ─ TempoRealPorTenant ─▶ canal tenant:<id>:acesso.ao-vivo ─▶ SSE (qualquer réplica)
+```
+
+- **Credencial do agente**: `AgenteGuard` (rotas `@Publica()` para o guard de sessão) confere `Authorization: Bearer` no tenant
+  do Host; ausente, errada ou revogada é 401. Rotacionar (`POST /agente/credencial/rotacionar`) invalida a anterior na hora;
+  revogar (`POST /agentes-da-catraca/:id/revogar`, sensível) corta o acesso e exige novo pareamento.
+- **Código de pareamento**: alfabeto sem ambíguos, `UPDATE` condicional como ponto de decisão (vence quem chega primeiro),
+  só o último código gerado vale. Aceita minúsculas e hífen (`4f7-92k`).
+- **Contrato do agente** (OpenAPI, tag `agente`): `GET /agente/alunos-autorizados?desde&limite` (cache com versão, regras e a
+  decisão de contrato e atraso por aluno), `GET /agente/chaves-publicas`, `GET /agente/dispositivos`, `POST /agente/acessos`
+  (lote com `idDeOrigem`, `Acessos.sincronizar`), `POST /agente/batimento` e `POST /agente/comandos/:id/resposta`. Os dois
+  endpoints do agente que eram do painel no T23a (`/acesso/sincronizacao` e `/acesso/chaves-publicas`) saíram de lá.
+- **Cache de autorização**: `alteracao_do_cache_de_acesso` dá uma versão (sequência do banco) ao aluno afetado por cada evento
+  de contrato ou pagamento e à linha `regras` (evento `RegrasDeAcessoAlteradas`). O agente guarda a `versao`, a envia como
+  `desde` e só recebe o que mudou (`removido: true` apaga o aluno do cache). A carga completa (sem `desde`) semeia quem nunca
+  mudou.
+- **Dispositivos e quedas**: `online` na API é pelo último batimento (90 s). Cada queda grava `desde` (último sinal) e fecha com
+  a duração quando o batimento volta; `GET /dispositivos/alertas` traz o texto pronto ("Catraca 2 ficou 4 minutos sem
+  resposta às 07:12 e já voltou").
+- **Testar conexão**: `POST /dispositivos/:id/testes` (ou `/agentes-da-catraca/:id/testes` no Passo 4) cria um comando `ping`;
+  o agente o recebe no batimento e responde; a tela consulta `GET /agentes-da-catraca/testes/:comandoId` (aguardando, ok,
+  falhou ou expirou em 60 s).
+- **SSE** `GET /api/acesso/ao-vivo/stream` (`acesso:ver`): `@SemTransacao()` (sem transação por requisição) e Bearer no
+  cabeçalho, então o cliente usa fetch com stream, não `EventSource`. Mensagens `tipo: acesso` e `tipo: dispositivo`, mais um
+  evento `ping` a cada 25 s. A publicação sai de consumidores de evento (`AcessoRegistrado`, `DispositivoMudouDeEstado`), depois
+  do commit; precisa de `FILAS_PROCESSAR=true` em alguma réplica.
+- **Biometria**: `POST /acesso/cadastros-biometricos` exige o consentimento `biometria` (422 sem ele), manda o comando
+  `cadastrar_biometria` ao agente e guarda só a referência devolvida; o template fica no equipamento. A exclusão do titular pede
+  ao agente que apague o cadastro (`remover_biometria`) e dá versão nova ao aluno no cache.
 
 ### Configuração
 

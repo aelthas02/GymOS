@@ -4,15 +4,49 @@
  */
 
 export interface paths {
-    "/api/acesso/chaves-publicas": {
+    "/api/acesso/ao-vivo/stream": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Chaves públicas do QR para o agente conferir a assinatura offline. */
-        get: operations["listarChavesPublicasDoQr"];
+        /** SSE do tenant: cada acesso registrado (`tipo: acesso`) e cada queda ou volta de dispositivo (`tipo: dispositivo`). Autentica com o Bearer, então o cliente usa fetch com stream, não EventSource. Um evento `ping` a cada 25 s mantém a conexão. */
+        get: operations["acompanharAcessosAoVivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/cadastros-biometricos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pede o cadastro de face ou digital do aluno no equipamento. Exige o consentimento de biometria; o template não passa pelo servidor. */
+        post: operations["solicitarCadastroBiometrico"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/acesso/cadastros-biometricos/{alunoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Face e biometria cadastradas do aluno (só o status, nunca o template). */
+        get: operations["listarCadastrosBiometricosDoAluno"];
         put?: never;
         post?: never;
         delete?: never;
@@ -157,7 +191,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/acesso/sincronizacao": {
+    "/api/agente/acessos": {
         parameters: {
             query?: never;
             header?: never;
@@ -166,8 +200,212 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Recebe os acessos que o agente da catraca guardou offline: fora de ordem e repetidos são gravados uma vez cada, na ordem do horário de origem. */
+        /** Lote de acessos guardados offline: fora de ordem e repetidos são gravados uma vez cada (id de origem), na ordem do horário de origem. */
         post: operations["sincronizarAcessosOffline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agente/alunos-autorizados": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cache de autorização com versão: alunos com contrato, atraso e plano mais as regras. Sem `desde` é a carga completa; com `desde`, só o que mudou. Repita com a `versao` devolvida enquanto `maisPaginas`. */
+        get: operations["baixarAlunosAutorizados"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agente/batimento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Batimento a cada 30 s: mantém os dispositivos online e devolve os comandos pendentes e a versão do cache de autorização. */
+        post: operations["enviarBatimentoDoAgente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agente/chaves-publicas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chaves públicas do QR para o agente conferir a assinatura offline. */
+        get: operations["listarChavesPublicasDoQr"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agente/comandos/{id}/resposta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resposta a um comando recebido no batimento (ping, cadastro ou remoção biométrica). */
+        post: operations["responderComandoDoAgente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agente/credencial/rotacionar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Troca a credencial por uma nova; a antiga deixa de valer na hora. */
+        post: operations["rotacionarCredencialDoAgente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agente/dispositivos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catracas e leitores que o agente controla ou pode adotar (ainda sem agente). */
+        get: operations["listarDispositivosDoAgente"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agente/pareamento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** O agente troca o código de pareamento (vale 30 minutos e uma troca) pela credencial própria, mostrada uma vez. */
+        post: operations["parearAgenteDaCatraca"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agentes-da-catraca": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Agentes pareados, com status e a última sincronização. */
+        get: operations["listarAgentesDaCatraca"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agentes-da-catraca/codigos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gera o código de pareamento de 6 caracteres (vale 30 minutos e uma troca); o anterior não usado deixa de valer. */
+        post: operations["gerarCodigoDePareamento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agentes-da-catraca/testes/{comandoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Resultado do Testar conexão: aguardando, ok (com a latência), falhou ou expirou (60 s). */
+        get: operations["obterResultadoDoTesteDeConexao"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agentes-da-catraca/{id}/revogar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoga a credencial do agente: ele não envia mais acessos. Pareie de novo para reativar. */
+        post: operations["revogarAgenteDaCatraca"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agentes-da-catraca/{id}/testes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Testar conexão (Passo 4): envia um ping ao agente. Consulte o resultado pelo id até "ok", "falhou" ou "expirou". */
+        post: operations["testarConexaoDoAgente"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1067,6 +1305,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/dispositivos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Catracas e leitores com status online ou offline pelo último batimento. */
+        get: operations["listarDispositivos"];
+        put?: never;
+        /** Cadastra uma catraca ou leitor. */
+        post: operations["cadastrarDispositivo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/dispositivos/alertas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quedas abertas e das últimas 24 h ("Catraca 2 ficou 4 minutos sem resposta às 07:12 e já voltou"). */
+        get: operations["listarAlertasDeDispositivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/dispositivos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Um dispositivo com o seu status. */
+        get: operations["obterDispositivo"];
+        /** Edita um dispositivo. */
+        put: operations["editarDispositivo"];
+        post?: never;
+        /** Exclui um dispositivo e as quedas dele. */
+        delete: operations["excluirDispositivo"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/dispositivos/{id}/quedas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Histórico de quedas do dispositivo (as 100 mais recentes). */
+        get: operations["listarQuedasDoDispositivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/dispositivos/{id}/testes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Testar conexão: envia um ping ao agente do dispositivo. O agente responde no próximo batimento; consulte o resultado pelo id. */
+        post: operations["testarConexaoDoDispositivo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/equipe/convites": {
         parameters: {
             query?: never;
@@ -1351,6 +1677,59 @@ export interface components {
             /** Format: uuid */
             planoId: string;
         };
+        AgenteDto: {
+            /** Format: uuid */
+            id: string;
+            nome: string;
+            online: boolean;
+            /** Format: date-time */
+            pareadoEm: string;
+            /** Format: date-time */
+            revogadoEm: string | null;
+            /** Format: date-time */
+            ultimaSincronizacaoEm: string | null;
+            /** Format: date-time */
+            ultimoBatimentoEm: string | null;
+            versaoDoAgente: string | null;
+        };
+        AlertaDeDispositivoDto: {
+            /** @description Queda ainda em aberto. */
+            aberto: boolean;
+            /**
+             * Format: date-time
+             * @description Último sinal antes de cair.
+             */
+            desde: string;
+            /** Format: uuid */
+            dispositivoId: string;
+            duracaoEmSegundos: number | null;
+            /** Format: uuid */
+            id: string;
+            nome: string;
+            /** @example Catraca 2 ficou 4 minutos sem resposta às 07:12 e já voltou */
+            texto: string;
+            /** Format: date-time */
+            voltouEm: string | null;
+        };
+        AlunoAutorizadoDto: {
+            acessosPorSemana: number | null;
+            /** Format: uuid */
+            alunoId: string;
+            /** @enum {string|null} */
+            contrato: "ativo" | "tolerancia" | "encerrado" | "trancado" | null;
+            diasDeAtraso: number;
+            modalidadesDoPlano: string[];
+            nome: string | null;
+            planoNome: string | null;
+            /** @description O aluno deixou de existir: apague-o do cache. */
+            removido: boolean;
+            /** @description Decisão pelas regras de contrato e atraso; "negado" é o aluno bloqueado. */
+            situacao: {
+                motivo?: string | null;
+                /** @enum {string} */
+                resultado?: "liberado" | "tolerancia" | "negado";
+            };
+        };
         AlunoDto: {
             /**
              * @description Só dígitos.
@@ -1452,6 +1831,11 @@ export interface components {
             tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
             titulo: string;
         };
+        BatimentoDto: {
+            /** @description Sem a lista, todos os dispositivos do agente contam como vivos. */
+            dispositivos?: components["schemas"]["DispositivoVistoDto"][];
+            versao?: string;
+        };
         CadastrarAlunoDto: {
             consentimentos?: components["schemas"]["ConsentimentoDto"][];
             /**
@@ -1492,6 +1876,29 @@ export interface components {
              * @description Padrão: a primeira unidade da academia.
              */
             unidadeId?: string;
+        };
+        CadastroBiometricoDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** Format: date-time */
+            atualizadoEm: string;
+            /** Format: uuid */
+            dispositivoId: string | null;
+            /** @enum {string} */
+            status: "pendente" | "cadastrado" | "falhou";
+            /** @enum {string} */
+            tipo: "facial" | "biometria";
+        };
+        CadastroBiometricoEntradaDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /**
+             * Format: uuid
+             * @description Equipamento em que o aluno será cadastrado.
+             */
+            dispositivoId: string;
+            /** @enum {string} */
+            tipo: "facial" | "biometria";
         };
         CancelarInscricaoDto: {
             endpoint: string;
@@ -1595,6 +2002,31 @@ export interface components {
              * @example K7M2QX9P
              */
             codigo: string;
+        };
+        CodigoDePareamentoDto: {
+            /** @example 4F792K */
+            codigo: string;
+            /**
+             * @description Como o Passo 4 mostra.
+             * @example 4F7-92K
+             */
+            codigoFormatado: string;
+            /**
+             * Format: date-time
+             * @description Vale 30 minutos e uma troca.
+             */
+            expiraEm: string;
+        };
+        ComandoParaOAgenteDto: {
+            dados: {
+                [key: string]: unknown;
+            };
+            /** Format: uuid */
+            dispositivoId: string | null;
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            tipo: "ping" | "cadastrar_biometria" | "remover_biometria";
         };
         ComunicadoDto: {
             /** @description Só estes alunos; sem a lista, todos os alunos da academia. */
@@ -1749,6 +2181,12 @@ export interface components {
         ConviteEmLoteDto: {
             itens: components["schemas"]["FuncionarioCriadoDto"][];
         };
+        CredencialDoAgenteDto: {
+            /** Format: uuid */
+            agenteId?: string;
+            /** @description Mostrada uma vez: guarde de forma protegida pelo sistema. */
+            credencial: string;
+        };
         CustoDaEquipeDto: {
             /** @description Só funcionários ativos. */
             itens: components["schemas"]["CustoDeFuncionarioDto"][];
@@ -1864,6 +2302,55 @@ export interface components {
              * @enum {string}
              */
             tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
+        };
+        DispositivoDoAgenteDto: {
+            /** Format: uuid */
+            id: string;
+            local: string;
+            metodos: ("facial" | "biometria" | "qr_code")[];
+            nome: string;
+            /** @enum {string} */
+            tipo: "catraca" | "leitor";
+            /** Format: uuid */
+            unidadeId: string | null;
+        };
+        DispositivoDto: {
+            /** Format: uuid */
+            agenteId: string | null;
+            /** Format: uuid */
+            id: string;
+            local: string;
+            metodos: ("facial" | "biometria" | "qr_code")[];
+            nome: string;
+            /** @description Online pelo último batimento: offline após 90 s sem sinal. */
+            online: boolean;
+            /** @enum {string} */
+            tipo: "catraca" | "leitor";
+            /** Format: date-time */
+            ultimoBatimentoEm: string | null;
+            /** Format: uuid */
+            unidadeId: string | null;
+        };
+        DispositivoEntradaDto: {
+            /**
+             * Format: uuid
+             * @description Agente local que controla o equipamento; sem ele, o agente o adota no batimento.
+             */
+            agenteId?: string | null;
+            /** @example Entrada principal */
+            local: string;
+            metodos: ("facial" | "biometria" | "qr_code")[];
+            /** @example Catraca 1 */
+            nome: string;
+            /** @enum {string} */
+            tipo: "catraca" | "leitor";
+            /** Format: uuid */
+            unidadeId?: string | null;
+        };
+        DispositivoVistoDto: {
+            /** Format: uuid */
+            id: string;
+            online: boolean;
         };
         EntrarNoAppDto: {
             /**
@@ -2052,6 +2539,21 @@ export interface components {
             /** @enum {string} */
             situacao: "pulada" | "para_corrigir";
         };
+        ListaDeAgentesDto: {
+            itens: components["schemas"]["AgenteDto"][];
+        };
+        ListaDeAlertasDeDispositivoDto: {
+            itens: components["schemas"]["AlertaDeDispositivoDto"][];
+        };
+        ListaDeCadastrosBiometricosDto: {
+            itens: components["schemas"]["CadastroBiometricoDto"][];
+        };
+        ListaDeDispositivosDoAgenteDto: {
+            itens: components["schemas"]["DispositivoDoAgenteDto"][];
+        };
+        ListaDeDispositivosDto: {
+            itens: components["schemas"]["DispositivoDto"][];
+        };
         /** @enum {string} */
         ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
         NovaDataDto: {
@@ -2151,6 +2653,14 @@ export interface components {
             pagina: number;
             /** @description Funcionários que passam pelo filtro, em todas as páginas. */
             total: number;
+        };
+        PaginaDoCacheDto: {
+            alunos: components["schemas"]["AlunoAutorizadoDto"][];
+            /** @description Há mais alunos além deste lote: chame de novo com a `versao`. */
+            maisPaginas: boolean;
+            regras: components["schemas"]["RegrasParaOAgenteDto"];
+            /** @description Guarde e envie como `desde` na próxima chamada. */
+            versao: number;
         };
         PaginaDoLogDto: {
             itens: components["schemas"]["AtividadeDto"][];
@@ -2403,6 +2913,15 @@ export interface components {
             /** @enum {string} */
             resultado: "liberado" | "tolerancia" | "negado";
         };
+        RegrasParaOAgenteDto: {
+            /** @example 05:00 */
+            abertura: string;
+            antiPassback: boolean;
+            bloqueioPorAtrasoDias: number | null;
+            /** @example 23:00 */
+            fechamento: string;
+            limitePorDia: number | null;
+        };
         RelatorioDaImportacaoDto: {
             /** @example 297 */
             comContrato: number;
@@ -2411,6 +2930,12 @@ export interface components {
             linhas: components["schemas"]["LinhaDoRelatorioDto"][];
             /** @example 3 */
             semContrato: number;
+        };
+        RespostaDeComandoDto: {
+            erro?: string | null;
+            ok: boolean;
+            /** @description Referência do cadastro no equipamento; nunca o template biométrico. */
+            referencia?: string | null;
         };
         ResultadoDaSincronizacaoDto: {
             gravados: number;
@@ -2423,6 +2948,13 @@ export interface components {
             /** @description O id de origem já estava gravado: nada mudou. */
             repetido: boolean;
         };
+        ResultadoDoBatimentoDto: {
+            comandos: components["schemas"]["ComandoParaOAgenteDto"][];
+            /** Format: date-time */
+            recebidoEm: string;
+            /** @description Versão atual do cache de autorização: maior que a do agente, sincronize. */
+            versaoDoCache: number;
+        };
         ResultadoDoComunicadoDto: {
             /** @description Quantos alunos receberam o aviso. */
             destinatarios: number;
@@ -2432,6 +2964,12 @@ export interface components {
             enviadas: number;
             /** @description Alunos sem parcela vencida. */
             semPendencia: string[];
+        };
+        ResultadoDoTesteDto: {
+            /** @enum {string} */
+            estado: "aguardando" | "ok" | "falhou" | "expirou";
+            latenciaEmMs?: number;
+            motivo?: string | null;
         };
         SegundaViaDoAppDto: {
             /**
@@ -2475,6 +3013,13 @@ export interface components {
              */
             situacaoDeVencimento: "em_dia" | "a_vencer" | "em_atraso";
         };
+        TesteDeConexaoDto: {
+            /**
+             * Format: uuid
+             * @description Consulte o resultado por este id.
+             */
+            comandoId: string;
+        };
         TipoDeAcessoResumidoDto: {
             /** Format: uuid */
             id: string;
@@ -2494,6 +3039,17 @@ export interface components {
              */
             dias: number;
         };
+        TrocaDeCodigoDto: {
+            /**
+             * @description Aceita minúsculas, espaço e hífen.
+             * @example 4F7-92K
+             */
+            codigo: string;
+            /** @example PC da recepção */
+            nome?: string;
+            /** @example 1.0.0 */
+            versao?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2503,11 +3059,96 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    listarChavesPublicasDoQr: {
+    acompanharAcessosAoVivo: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Fluxo text/event-stream. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    solicitarCadastroBiometrico: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CadastroBiometricoEntradaDto"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CadastroBiometricoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno ou dispositivo não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O aluno não deu o consentimento de biometria. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarCadastrosBiometricosDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -2517,7 +3158,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ChavesPublicasDoQrDto"];
+                    "application/json": components["schemas"]["ListaDeCadastrosBiometricosDto"];
                 };
             };
             /** @description Sem sessão válida. */
@@ -2869,6 +3510,231 @@ export interface operations {
                     "application/json": components["schemas"]["ResultadoDaSincronizacaoDto"];
                 };
             };
+            /** @description Credencial ausente, inválida ou revogada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    baixarAlunosAutorizados: {
+        parameters: {
+            query?: {
+                /** @description Versão que o agente já tem; sem ela (ou 0) é a carga completa. */
+                desde?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDoCacheDto"];
+                };
+            };
+            /** @description Credencial ausente, inválida ou revogada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    enviarBatimentoDoAgente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatimentoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoBatimentoDto"];
+                };
+            };
+            /** @description Credencial ausente, inválida ou revogada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarChavesPublicasDoQr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChavesPublicasDoQrDto"];
+                };
+            };
+            /** @description Credencial ausente, inválida ou revogada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    responderComandoDoAgente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RespostaDeComandoDto"];
+            };
+        };
+        responses: {
+            /** @description Credencial ausente, inválida ou revogada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Comando desconhecido, de outro agente ou expirado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    rotacionarCredencialDoAgente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CredencialDoAgenteDto"];
+                };
+            };
+            /** @description Credencial ausente, inválida ou revogada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarDispositivosDoAgente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListaDeDispositivosDoAgenteDto"];
+                };
+            };
+            /** @description Credencial ausente, inválida ou revogada. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    parearAgenteDaCatraca: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrocaDeCodigoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CredencialDoAgenteDto"];
+                };
+            };
+            /** @description Código inválido, vencido ou já usado. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarAgentesDaCatraca: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListaDeAgentesDto"];
+                };
+            };
             /** @description Sem sessão válida. */
             401: {
                 headers: {
@@ -2876,7 +3742,158 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Exige a permissão acesso:criar. */
+            /** @description Exige a permissão configuracoes.catraca:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    gerarCodigoDePareamento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CodigoDePareamentoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterResultadoDoTesteDeConexao: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                comandoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoTesteDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Teste não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    revogarAgenteDaCatraca: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Revogado. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Agente não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    testarConexaoDoAgente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TesteDeConexaoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:editar. */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -5134,6 +6151,329 @@ export interface operations {
                 content?: never;
             };
             /** @description Exige a permissão configuracoes.contratos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarDispositivos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListaDeDispositivosDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cadastrarDispositivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DispositivoEntradaDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispositivoDto"];
+                };
+            };
+            /** @description Dados inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarAlertasDeDispositivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListaDeAlertasDeDispositivoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão acesso:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterDispositivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispositivoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Dispositivo não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editarDispositivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DispositivoEntradaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispositivoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Dispositivo não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    excluirDispositivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Excluído. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:excluir. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Dispositivo não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarQuedasDoDispositivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListaDeAlertasDeDispositivoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Dispositivo não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    testarConexaoDoDispositivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TesteDeConexaoDto"];
+                };
+            };
+            /** @description Dispositivo sem agente pareado. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.catraca:editar. */
             403: {
                 headers: {
                     [name: string]: unknown;
