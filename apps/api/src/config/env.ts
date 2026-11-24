@@ -13,6 +13,9 @@ export const envSchema = z.object({
   // Ambiente de implantação; staging roda com NODE_ENV=production.
   APP_ENV: z.enum(['development', 'staging', 'production']).default('development'),
   API_PORT: port.default(3000),
+  // Quantos proxies confiáveis ficam na frente da API (ingress, CDN); define o IP do cliente e,
+  // com ele, os limites de login por IP (T12). 0 ignora o X-Forwarded-For.
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   SENTRY_DSN: optional(z.url({ protocol: /^https?$/ })),
   SENTRY_RELEASE: optional(required),

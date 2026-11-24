@@ -17,7 +17,8 @@
     "build": "nx run-many -t build",
     "format": "nx format:write",
     "format:check": "nx format:check",
-    "gymos": "nx run api:build && node dist/apps/api/gymos.js"
+    "gymos": "nx run api:build && node dist/apps/api/gymos.js",
+    "cobertura": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tools/architecture/ci/cobertura.ts"
   },
   "dependencies": {
     "@angular/cdk": "~22.2.7",
@@ -67,6 +68,7 @@
     "@commitlint/config-conventional": "^21.2.4",
     "@eslint/css": "^2.0.1",
     "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.16.1",
     "@nestjs/schematics": "^11.1.0",
     "@nestjs/testing": "^11.2.11",
     "@nx/angular": "24.0.6",
