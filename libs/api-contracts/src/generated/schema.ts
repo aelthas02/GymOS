@@ -177,6 +177,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/app/avisos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Avisos do aluno, do mais novo ao mais antigo; só os não lidos com `naoLidos`. */
+        get: operations["listarMeusAvisos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/avisos/contador": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quantos avisos não lidos o aluno tem (selo do app). */
+        get: operations["contarMeusAvisosNaoLidos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/avisos/lidos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marca todos os avisos do aluno como lidos. */
+        post: operations["marcarTodosOsAvisosComoLidos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/avisos/preferencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preferência de push de cada tipo de aviso (ligado até o aluno desligar). */
+        get: operations["listarMinhasPreferenciasDeAviso"];
+        /** Liga ou desliga o push de um tipo de aviso; o aviso continua na lista. */
+        put: operations["definirPreferenciaDeAviso"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/avisos/{id}/lido": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marca um aviso como lido. */
+        post: operations["marcarAvisoComoLido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/app/cobranca/pagamentos": {
         parameters: {
             query?: never;
@@ -257,6 +343,41 @@ export interface paths {
         /** "Renovar com 1 toque" do app. */
         post: operations["renovarMeuContrato"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/push/chave-publica": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chave pública VAPID para `applicationServerKey` ao inscrever o navegador. */
+        get: operations["obterChavePublicaDoPush"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/push/inscricoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inscreve o dispositivo no push; repetir o mesmo endpoint atualiza as chaves. */
+        post: operations["inscreverPush"];
+        /** Remove o dispositivo do push (sem erro se ele já não estava inscrito). */
+        delete: operations["desinscreverPush"];
         options?: never;
         head?: never;
         patch?: never;
@@ -494,6 +615,23 @@ export interface paths {
         put?: never;
         /** Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família). */
         post: operations["renovarSessaoDoPainel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/avisos/comunicados": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia um comunicado aos alunos (todos, ou só os de `alunoIds`), com push opcional. */
+        post: operations["enviarComunicado"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1025,6 +1163,19 @@ export interface components {
             /** @enum {string|null} */
             motivoDoEncerramento: "atraso" | "vigencia" | null;
         };
+        AvisoDto: {
+            /** Format: date-time */
+            criadoEm: string;
+            /** Format: uuid */
+            id: string;
+            lido: boolean;
+            /** @description Caminho interno do app. */
+            link: string | null;
+            texto: string;
+            /** @enum {string} */
+            tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
+            titulo: string;
+        };
         CadastrarAlunoDto: {
             consentimentos?: components["schemas"]["ConsentimentoDto"][];
             /**
@@ -1066,6 +1217,19 @@ export interface components {
              */
             unidadeId?: string;
         };
+        CancelarInscricaoDto: {
+            endpoint: string;
+        };
+        ChavePublicaDoPushDto: {
+            /** @description Valor de `applicationServerKey` na inscrição do navegador. */
+            chave: string;
+        };
+        ChavesDaInscricaoDto: {
+            /** @description Segredo de autenticação do navegador (base64url). */
+            auth: string;
+            /** @description Chave pública do navegador (base64url). */
+            p256dh: string;
+        };
         CobrancaDto: {
             /** @enum {string} */
             forma: "pix" | "cartao" | "boleto" | "link";
@@ -1100,6 +1264,21 @@ export interface components {
              */
             codigo: string;
         };
+        ComunicadoDto: {
+            /** @description Só estes alunos; sem a lista, todos os alunos da academia. */
+            alunoIds?: string[];
+            /** @example /aulas */
+            link?: Record<string, never> | null;
+            /**
+             * @description Também envia Web Push.
+             * @default false
+             */
+            push: boolean;
+            /** @example Fechada no domingo, das 8h às 12h. */
+            texto: string;
+            /** @example Manutenção da piscina */
+            titulo: string;
+        };
         ConfiguracaoDeContratoDto: {
             /**
              * @description Reativar sem nova adesão até.
@@ -1119,6 +1298,9 @@ export interface components {
             decisao: "aceite" | "revogacao";
             /** @enum {string} */
             finalidade: "transacional" | "marketing" | "dados_de_saude" | "biometria";
+        };
+        ContadorDeAvisosDto: {
+            naoLidos: number;
         };
         ContadoresDaEquipeDto: {
             administrativo: number;
@@ -1314,6 +1496,15 @@ export interface components {
              */
             valorTotalCentavos: number;
         };
+        DefinirPreferenciaDto: {
+            /** @description Receber push desse tipo de aviso. */
+            push: boolean;
+            /**
+             * @example aula
+             * @enum {string}
+             */
+            tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
+        };
         EntrarNoAppDto: {
             /**
              * @description CPF (com ou sem pontuação) ou e-mail.
@@ -1410,6 +1601,15 @@ export interface components {
         };
         ImportarAlunosDto: {
             linhas: components["schemas"]["LinhaDaPlanilhaDto"][];
+        };
+        InscreverPushDto: {
+            /** @example Chrome no Android */
+            dispositivo?: Record<string, never> | null;
+            /** @description Endereço https do provedor de push do navegador. */
+            endpoint: string;
+            /** @description Ignorado. */
+            expirationTime?: number | null;
+            keys: components["schemas"]["ChavesDaInscricaoDto"];
         };
         ItemDaListaDeAlunosDto: {
             /**
@@ -1525,6 +1725,13 @@ export interface components {
             /** @description Por situação, com plano e busca aplicados. */
             contadores: components["schemas"]["ContadoresDeAlunosDto"];
             itens: components["schemas"]["ItemDaListaDeAlunosDto"][];
+            proximoCursor: string | null;
+        };
+        PaginaDeAvisosDto: {
+            itens: components["schemas"]["AvisoDto"][];
+            /** @description Quantos avisos não lidos há no total (selo da aba). */
+            naoLidos: number;
+            /** @description Nulo na última página. */
             proximoCursor: string | null;
         };
         PaginaDeFuncionariosDto: {
@@ -1689,6 +1896,11 @@ export interface components {
             /** @example Mensal */
             nome: string;
         };
+        PreferenciaDeAvisoDto: {
+            push: boolean;
+            /** @enum {string} */
+            tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
+        };
         PreviaDoPlanoDto: {
             /** @example O aluno tem acesso por 12 meses e paga em 9 parcelas. As cobranças terminam na 9ª parcela, e o contrato segue ativo até o fim dos 12 meses. */
             explicacao: string;
@@ -1732,6 +1944,10 @@ export interface components {
             linhas: components["schemas"]["LinhaDoRelatorioDto"][];
             /** @example 3 */
             semContrato: number;
+        };
+        ResultadoDoComunicadoDto: {
+            /** @description Quantos alunos receberam o aviso. */
+            destinatarios: number;
         };
         ResultadoDoLoteDto: {
             /** @example 12 */
@@ -2374,6 +2590,182 @@ export interface operations {
             };
         };
     };
+    listarMeusAvisos: {
+        parameters: {
+            query?: {
+                /** @description Só os avisos ainda não lidos (aba "Não lidos"). */
+                naoLidos?: boolean;
+                limite?: number;
+                /** @description Cursor opaco devolvido pela página anterior. */
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDeAvisosDto"];
+                };
+            };
+            /** @description Cursor inválido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    contarMeusAvisosNaoLidos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContadorDeAvisosDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    marcarTodosOsAvisosComoLidos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarMinhasPreferenciasDeAviso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferenciaDeAvisoDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    definirPreferenciaDeAviso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DefinirPreferenciaDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    marcarAvisoComoLido: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O aviso não existe ou é de outro aluno. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     listarMeusPagamentos: {
         parameters: {
             query?: never;
@@ -2524,6 +2916,95 @@ export interface operations {
             };
             /** @description Contrato encerrado por atraso ou trancado. */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterChavePublicaDoPush: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChavePublicaDoPushDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    inscreverPush: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InscreverPushDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Endpoint que não é um endereço https público. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    desinscreverPush: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelarInscricaoDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2984,6 +3465,43 @@ export interface operations {
                 content?: never;
             };
             /** @description Sem o cabeçalho x-gymos-csrf ou de outra origem. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    enviarComunicado: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ComunicadoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoComunicadoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:editar. */
             403: {
                 headers: {
                     [name: string]: unknown;

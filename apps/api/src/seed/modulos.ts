@@ -1,4 +1,5 @@
 import { seedDosAlunos } from './alunos';
+import { seedDosAvisos } from './avisos';
 import { seedDosFuncionarios } from './funcionarios';
 import { seedDaAutenticacao } from './autenticacao';
 import type { ModuloDeSeed } from './modulo-de-seed';
@@ -19,4 +20,5 @@ export const MODULOS_DE_SEED: readonly ModuloDeSeed[] = [
   seedDosAlunos,
   seedDasParcelas,
   seedDosPagamentos,
+  seedDosAvisos,
 ];

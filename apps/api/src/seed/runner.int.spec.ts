@@ -1,5 +1,6 @@
 import type { INestApplicationContext } from '@nestjs/common';
 import { AlunosModule } from '../modules/alunos/alunos.module';
+import { AvisosModule } from '../modules/avisos/avisos.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
 import { ProtecaoDeDadosModule } from '../modules/platform/protecao-de-dados.module';
 import { criarModuloDeEventos } from '../modules/platform/testing/eventos-de-teste';
@@ -21,6 +22,7 @@ describe('runner de seed', () => {
       ProtecaoDeDadosModule,
       AlunosModule,
       FuncionariosModule,
+      AvisosModule,
     ]);
   });
 
@@ -43,6 +45,7 @@ describe('runner de seed', () => {
       'alunos',
       'parcelas',
       'pagamentos',
+      'avisos',
       'sonda',
     ]);
     await executarSeed(app, modulos);
@@ -65,10 +68,11 @@ describe('runner de seed', () => {
           'funcionario',
           'parcela',
           'pagamento',
+          'aviso',
         ].map((tabela) => conexao.query<{ n: string }>(`SELECT count(*) AS n FROM ${tabela}`)),
       );
       return contagens.map((contagem) => contagem.rows[0]?.n);
     });
-    expect(total).toEqual(['1', '4', '6', '8', '8', '8', '25', '19']);
+    expect(total).toEqual(['1', '4', '6', '8', '8', '8', '25', '19', '5']);
   });
 });
