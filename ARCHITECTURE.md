@@ -326,17 +326,22 @@ await auditoria.registrarAtividade({
 
 Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso de uso):
 
-| Ação (chave)                      | Texto                           | Módulo        | Sensível | Caso de uso dono                     |
-| --------------------------------- | ------------------------------- | ------------- | -------- | ------------------------------------ |
-| `alterou-valor`                   | Alterou valor                   | Planos        | sim      | alterar valor do plano (T15a)        |
-| `alterou-permissao`               | Alterou permissão               | Permissões    | sim      | editar tipo de acesso (T26b)         |
-| `cadastrou-aluno`                 | Cadastrou aluno                 | Alunos        | não      | cadastrar aluno (T15a)               |
-| `enviou-cobranca-em-lote`         | Enviou cobrança em lote         | Alunos        | não      | cobrança em lote (T19)               |
-| `alterou-configuracao-financeira` | Alterou configuração financeira | Configurações | sim      | tolerância e contratos (T26c)        |
-| `editou-ficha-de-treino`          | Editou ficha de treino          | Treinos       | não      | editar ficha (T25)                   |
-| `excluiu-aluno`                   | Excluiu aluno                   | Alunos        | sim      | excluir aluno (T15a)                 |
-| `trocou-cor-do-app`               | Trocou a cor do app             | Configurações | não      | `PUT /tenant/identidade` (T12, T26c) |
-| `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)     |
+| Ação (chave)                      | Texto                           | Módulo        | Sensível | Caso de uso dono                      |
+| --------------------------------- | ------------------------------- | ------------- | -------- | ------------------------------------- |
+| `alterou-valor`                   | Alterou valor                   | Planos        | sim      | alterar valor do plano (T15a)         |
+| `alterou-permissao`               | Alterou permissão               | Permissões    | sim      | editar tipo de acesso (T26b)          |
+| `cadastrou-aluno`                 | Cadastrou aluno                 | Alunos        | não      | cadastrar aluno (T15a)                |
+| `enviou-cobranca-em-lote`         | Enviou cobrança em lote         | Alunos        | não      | cobrança em lote (T19)                |
+| `alterou-configuracao-financeira` | Alterou configuração financeira | Configurações | sim      | tolerância e contratos (T26c)         |
+| `editou-ficha-de-treino`          | Editou ficha de treino          | Treinos       | não      | editar ficha (T25)                    |
+| `excluiu-aluno`                   | Excluiu aluno                   | Alunos        | sim      | excluir aluno (T15a)                  |
+| `trocou-cor-do-app`               | Trocou a cor do app             | Configurações | não      | `PUT /tenant/identidade` (T12, T26c)  |
+| `cadastrou-funcionario`           | Cadastrou funcionário           | Equipe        | não      | cadastrar funcionário (T26a)          |
+| `editou-funcionario`              | Editou funcionário              | Equipe        | não      | editar ou inativar funcionário (T26a) |
+| `alterou-custo-de-funcionario`    | Alterou custo de funcionário    | Equipe        | sim      | alterar o custo mensal (T26a)         |
+| `alterou-acesso-de-funcionario`   | Alterou acesso de funcionário   | Equipe        | sim      | dar, trocar ou tirar o acesso (T26a)  |
+| `excluiu-funcionario`             | Excluiu funcionário             | Equipe        | sim      | excluir funcionário (T26a)            |
+| `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)      |
 
 ### Alunos, planos e contratos
 
@@ -364,6 +369,28 @@ trancado → não entra em tolerância; trancar N dias estende a vigência em N 
   a credencial do app não guarda e-mail em claro (o código de primeiro acesso nasce sem e-mail).
 - **Configuração** "Contratos e atraso": `GET/PUT /api/configuracoes/contratos` (T, R e trancamento
   máximo; padrões 7, 30 e 90 dias).
+
+### Funcionários (equipe)
+
+`modules/funcionarios` (T26a). O cadastro da equipe vive aqui; o login do painel continua no T12 (`Usuario`).
+
+- **Acesso**: `tipoDeAcessoId` nulo (ou o tipo padrão "Sem acesso") é só cadastro, sem e-mail obrigatório.
+  Com tipo, o e-mail de login é obrigatório; o cadastro cria o `Usuario` sem senha e envia o convite do T12
+  (`ConvidarParaEquipe`). Aceitar o convite só define a senha desse usuário. Voltar para "Sem acesso" ou
+  inativar desativa o usuário e revoga as sessões; religar reativa o mesmo `Usuario` (`usuarioId` fica
+  guardado). O e-mail de quem já teve acesso não muda.
+- **Idempotência**: `criarSeNaoExistir` (Passo 3, `POST /api/funcionarios/convites`) devolve o funcionário
+  que já tem o e-mail, sem novo convite. `POST /api/funcionarios` recusa e-mail repetido com 409.
+- **Cargos** em `domain/funcionario.ts` (Professor, Recepção, Nutricionista, Limpeza, Manutenção,
+  Administrativo, Gerente, Outro com descrição). Os contadores da tela Equipe são `todos` mais um por chip;
+  Gerente e Outro só entram em `todos`.
+- **Excluir** só sem vínculos: cada domínio registra uma `FonteDeVinculos` no `RegistroDeVinculos` (hoje, o
+  professor responsável do aluno; o T28 acrescenta as aulas). Com vínculo, 409: inative.
+- **Consumidores**: `GET /api/funcionarios/custos` (folha dos ativos, `financeiro:ver`, T21) e
+  `GET /api/funcionarios/profissionais` (professores e nutricionistas ativos ou um cargo, qualquer sessão da
+  equipe, T28 e T30a a T30c); em processo, `Funcionarios.custoDaEquipe()` e `profissionais()`.
+- **Permissões**: `equipe:ver|criar|editar|excluir`. Alterar custo e acesso são ações sensíveis da auditoria.
+- **LGPD**: o provedor `funcionarios` exporta o professor responsável do aluno e não tem o que excluir.
 
 ### Configuração
 

@@ -63,7 +63,7 @@ export class RepositorioDeUsuariosPrisma extends RepositorioDeUsuarios {
   async criar(dados: {
     nome: string;
     email: string;
-    senhaHash: string;
+    senhaHash: string | null;
     tipoDeAcessoId: string;
   }): Promise<Usuario> {
     const linha = await this.contexto.cliente().usuario.create({
@@ -75,6 +75,14 @@ export class RepositorioDeUsuariosPrisma extends RepositorioDeUsuarios {
 
   async definirSenha(id: string, senhaHash: string): Promise<void> {
     await this.contexto.cliente().usuario.updateMany({ where: { id }, data: { senhaHash } });
+  }
+
+  async definirAtivo(id: string, ativo: boolean): Promise<void> {
+    await this.contexto.cliente().usuario.updateMany({ where: { id }, data: { ativo } });
+  }
+
+  async definirTipoDeAcesso(id: string, tipoDeAcessoId: string): Promise<void> {
+    await this.contexto.cliente().usuario.updateMany({ where: { id }, data: { tipoDeAcessoId } });
   }
 }
 
@@ -133,6 +141,13 @@ export class RepositorioDeTiposDeAcessoPrisma extends RepositorioDeTiposDeAcesso
   async porChave(chave: string): Promise<TipoDeAcesso | null> {
     const linha = await this.contexto.cliente().tipoDeAcesso.findFirst({ where: { chave } });
     return linha && tipoDaLinha(linha);
+  }
+
+  async porIds(ids: readonly string[]): Promise<TipoDeAcesso[]> {
+    const linhas = await this.contexto
+      .cliente()
+      .tipoDeAcesso.findMany({ where: { id: { in: [...ids] } } });
+    return linhas.map(tipoDaLinha);
   }
 
   async garantirPadrao(padrao: readonly TipoPadrao[]): Promise<void> {

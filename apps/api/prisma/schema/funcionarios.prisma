@@ -1,0 +1,28 @@
+// Modelos do domínio funcionarios (T26a): a equipe da academia, com ou sem login no painel. Tabela
+// criada por `nx g @gymos/api:tabela`; campos na migração `campos_do_funcionario`.
+
+/// Pessoa da equipe. `tipoDeAcessoId` nulo é "Sem acesso" (só cadastro). `usuarioId` liga ao login
+/// do painel (T12) e fica guardado mesmo com o acesso desligado, para religar o mesmo usuário.
+/// `cargo` é uma chave do catálogo em código; `cargoDescricao` só vale para o cargo "outro".
+model Funcionario {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId            String   @map("tenant_id") @db.Uuid
+  criadoEm            DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nome                String
+  cargo               String
+  cargoDescricao      String?  @map("cargo_descricao")
+  telefone            String?
+  email               String?
+  tipoDeAcessoId      String?  @map("tipo_de_acesso_id") @db.Uuid
+  usuarioId           String?  @map("usuario_id") @db.Uuid
+  ativo               Boolean  @default(true)
+  custoMensalCentavos Int      @default(0) @map("custo_mensal_centavos")
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, email])
+  @@unique([tenantId, usuarioId])
+  @@index([tenantId])
+  @@index([tenantId, cargo])
+  @@index([tenantId, nome])
+  @@map("funcionario")
+}

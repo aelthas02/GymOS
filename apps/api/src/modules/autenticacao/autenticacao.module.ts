@@ -120,6 +120,15 @@ import {
     AutorizarPermissao,
     { provide: APP_GUARD, useClass: AcessoGuard },
   ],
-  exports: [ConviteDoAdministrador, EnvioDeEmail, GerarCodigoDePrimeiroAcesso, ModulosDoTenant],
+  exports: [
+    ConviteDoAdministrador,
+    ConvidarParaEquipe,
+    EnvioDeEmail,
+    GerarCodigoDePrimeiroAcesso,
+    ModulosDoTenant,
+    RepositorioDeRefresh,
+    RepositorioDeTiposDeAcesso,
+    RepositorioDeUsuarios,
+  ],
 })
 export class AutenticacaoModule {}
