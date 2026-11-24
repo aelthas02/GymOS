@@ -14,11 +14,8 @@ import {
   RepositorioDeContratos,
   RepositorioDePlanos,
 } from './application/portas';
-import {
-  DadosDoTitularDosAlunos,
-  ParcelasIndisponiveis,
-  RotinaDosContratos,
-} from './infra/adapters';
+import { CobrancaModule } from '../cobranca/cobranca.module';
+import { DadosDoTitularDosAlunos, ParcelasDaCobranca, RotinaDosContratos } from './infra/adapters';
 import {
   RepositorioDeAlunosPrisma,
   RepositorioDeConfiguracaoPrisma,
@@ -32,10 +29,12 @@ import {
 } from './interface/http/planos.controller';
 
 /**
- * Alunos, planos e contratos (T15a, ADR-018). Reavalia o contrato a cada PagamentoConfirmado e
- * PagamentoAtrasado da cobrança (T19) e registra os dados do titular para a LGPD (T13c).
+ * Alunos, planos e contratos (T15a, ADR-018). Reavalia o contrato a cada PagamentoConfirmado,
+ * PagamentoAtrasado, PagamentoEstornado e VencimentoCombinado da cobrança (T19), lendo as parcelas
+ * pela porta ParcelasDoContrato, e registra os dados do titular para a LGPD (T13c).
  */
 @Module({
+  imports: [CobrancaModule],
   controllers: [
     AlunosController,
     ContratoDoAppController,
@@ -47,7 +46,7 @@ import {
     { provide: RepositorioDeAlunos, useClass: RepositorioDeAlunosPrisma },
     { provide: RepositorioDeContratos, useClass: RepositorioDeContratosPrisma },
     { provide: RepositorioDeConfiguracao, useClass: RepositorioDeConfiguracaoPrisma },
-    { provide: ParcelasDoContrato, useClass: ParcelasIndisponiveis },
+    { provide: ParcelasDoContrato, useClass: ParcelasDaCobranca },
     RegistroDeAtividade,
     Contratos,
     ConfiguracaoDosContratos,
@@ -86,6 +85,16 @@ export class AlunosModule implements OnModuleInit {
           evento.payload.alunoId,
           evento.payload.vencimento as Parameters<Contratos['aoAtrasarPagamento']>[1],
         ),
+    });
+    this.consumidores.registrar({
+      nome: 'alunos.reavaliar-contrato-nova-data',
+      evento: 'VencimentoCombinado',
+      tratar: (evento) => this.contratos.aoMudarParcelas(evento.payload.alunoId),
+    });
+    this.consumidores.registrar({
+      nome: 'alunos.reavaliar-contrato-estornado',
+      evento: 'PagamentoEstornado',
+      tratar: (evento) => this.contratos.aoMudarParcelas(evento.payload.alunoId),
     });
   }
 }

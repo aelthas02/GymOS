@@ -20,6 +20,14 @@ export const ACOES_DA_AUDITORIA = {
     modulo: 'alunos',
     sensivel: false,
   },
+  'registrou-pagamento': { texto: 'Registrou pagamento', modulo: 'financeiro', sensivel: false },
+  'estornou-pagamento': { texto: 'Estornou pagamento', modulo: 'financeiro', sensivel: true },
+  'combinou-nova-data': { texto: 'Combinou nova data', modulo: 'financeiro', sensivel: false },
+  'trocou-forma-de-pagamento': {
+    texto: 'Trocou forma de pagamento',
+    modulo: 'financeiro',
+    sensivel: false,
+  },
   'alterou-configuracao-financeira': {
     texto: 'Alterou configuração financeira',
     modulo: 'configuracoes',

@@ -1,5 +1,9 @@
+import { diasDeAtraso } from '../../cobranca/domain/parcela';
 import type { DataCivil } from '../../platform/domain/relogio';
 import { diasEntre, fimDaVigencia, somarDias } from './datas';
+
+// O atraso é do domínio de Cobrança (T19, ADR-018): uma única função para todos os domínios.
+export { diasDeAtraso };
 
 // Contrato do aluno (ADR-018, bloco "Contratos e atraso" de Configurações). O estado sai do atraso
 // informado pela cobrança (T19) e da configuração do tenant:
@@ -65,14 +69,6 @@ export interface EstadoGuardado {
   motivoDoEncerramento: MotivoDoEncerramento | null;
   trancadoDesde: DataCivil | null;
   trancadoAte: DataCivil | null;
-}
-
-/**
- * Dias corridos entre o vencimento e hoje no calendário de São Paulo (ADR-018: 13/11 → 19/11 = 6).
- * A regra é a do domínio de Cobrança; até o T19 existir, ela mora aqui e o T19 a reaproveita.
- */
-export function diasDeAtraso(vencimento: DataCivil | null, hoje: DataCivil): number {
-  return vencimento === null ? 0 : Math.max(0, diasEntre(vencimento, hoje));
 }
 
 export interface AvaliacaoDoContrato {

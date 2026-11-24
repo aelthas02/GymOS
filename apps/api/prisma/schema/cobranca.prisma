@@ -1,0 +1,120 @@
+// Modelos do domínio cobrança (T19, ADR-009 e ADR-018): parcelas do contrato, cobranças no provedor
+// de pagamento, pagamentos, estornos e a forma de pagamento preferida do aluno. Tabelas criadas por
+// `nx g @gymos/api:tabela`; campos na migração `campos_da_cobranca`. Sem FK para aluno e contrato: a
+// exclusão do titular (LGPD) apaga o aluno, e os pagamentos ficam anonimizados pela retenção fiscal.
+
+/// Parcela do contrato. `situacao`: em_aberto, paga, atrasada, cancelada ou suspensa. `pagoCentavos`
+/// soma os pagamentos (menos os estornos); a parcela só fica paga quando o saldo zera.
+model Parcela {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String    @map("tenant_id") @db.Uuid
+  criadoEm           DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  contratoId         String    @map("contrato_id") @db.Uuid
+  alunoId            String?   @map("aluno_id") @db.Uuid
+  periodo            DateTime  @db.Date
+  numero             Int
+  totalDeParcelas    Int       @map("total_de_parcelas")
+  valorCentavos      Int       @map("valor_centavos")
+  pagoCentavos       Int       @default(0) @map("pago_centavos")
+  vencimento         DateTime  @db.Date
+  vencimentoOriginal DateTime  @map("vencimento_original") @db.Date
+  situacao           String
+  suspensaDesde      DateTime? @map("suspensa_desde") @db.Date
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, contratoId, periodo, numero])
+  @@index([tenantId])
+  @@index([tenantId, alunoId, vencimento])
+  @@index([tenantId, situacao, vencimento])
+  @@map("parcela")
+}
+
+/// Cobrança criada no provedor (PIX, cartão, boleto ou link). `dados` guarda o que o aluno usa para
+/// pagar (copia e cola, QR, linha digitável, URL); nenhum dado de cartão.
+model Cobranca {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  parcelaId     String?  @map("parcela_id") @db.Uuid
+  alunoId       String?  @map("aluno_id") @db.Uuid
+  forma         String
+  valorCentavos Int      @map("valor_centavos")
+  vencimento    DateTime @db.Date
+  provedor      String
+  idExterno     String   @map("id_externo")
+  situacao      String
+  dados         Json     @default("{}")
+
+  @@unique([tenantId, id])
+  @@unique([provedor, idExterno])
+  @@index([tenantId])
+  @@index([tenantId, parcelaId])
+  @@map("cobranca")
+}
+
+/// Pagamento recebido no balcão ou confirmado pelo provedor. `origem` define o `setor`; o rateio entre
+/// setores é do Financeiro (T21). `emDuplicidade` marca o segundo pagamento da mesma parcela, que fica
+/// para estorno. `idEventoExterno` é a chave de idempotência do webhook de confirmação.
+model Pagamento {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  criadoEm          DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  parcelaId         String?   @map("parcela_id") @db.Uuid
+  cobrancaId        String?   @map("cobranca_id") @db.Uuid
+  contratoId        String?   @map("contrato_id") @db.Uuid
+  alunoId           String?   @map("aluno_id") @db.Uuid
+  valorCentavos     Int       @map("valor_centavos")
+  taxaCentavos      Int       @default(0) @map("taxa_centavos")
+  estornadoCentavos Int       @default(0) @map("estornado_centavos")
+  forma             String
+  canal             String
+  origem            String
+  setor             String
+  situacao          String
+  emDuplicidade     Boolean   @default(false) @map("em_duplicidade")
+  provedor          String?
+  idEventoExterno   String?   @map("id_evento_externo")
+  confirmadoEm      DateTime  @map("confirmado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, provedor, idEventoExterno])
+  @@index([tenantId])
+  @@index([tenantId, alunoId, confirmadoEm])
+  @@index([tenantId, parcelaId])
+  @@map("pagamento")
+}
+
+/// Estorno total ou parcial de um pagamento. `idEventoExterno` é a chave de idempotência do webhook de
+/// estorno do provedor.
+model Estorno {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  criadoEm        DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  pagamentoId     String   @map("pagamento_id") @db.Uuid
+  valorCentavos   Int      @map("valor_centavos")
+  motivo          String
+  provedor        String?
+  idEventoExterno String?  @map("id_evento_externo")
+  estornadoEm     DateTime @map("estornado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, provedor, idEventoExterno])
+  @@index([tenantId])
+  @@index([tenantId, pagamentoId])
+  @@map("estorno")
+}
+
+/// Forma de pagamento preferida do aluno. Cartão guarda só o token do provedor e os 4 últimos dígitos.
+model FormaDePagamento {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  criadoEm        DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId         String   @map("aluno_id") @db.Uuid
+  forma           String
+  tokenDoCartao   String?  @map("token_do_cartao")
+  finalDoCartao   String?  @map("final_do_cartao")
+  atualizadoEm    DateTime @map("atualizado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, alunoId])
+  @@index([tenantId])
+  @@map("forma_de_pagamento")
+}

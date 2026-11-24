@@ -332,6 +332,10 @@ Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso 
 | `alterou-permissao`               | Alterou permissão               | Permissões    | sim      | editar tipo de acesso (T26b)         |
 | `cadastrou-aluno`                 | Cadastrou aluno                 | Alunos        | não      | cadastrar aluno (T15a)               |
 | `enviou-cobranca-em-lote`         | Enviou cobrança em lote         | Alunos        | não      | cobrança em lote (T19)               |
+| `registrou-pagamento`             | Registrou pagamento             | Financeiro    | não      | baixa no balcão (T19)                |
+| `estornou-pagamento`              | Estornou pagamento              | Financeiro    | sim      | estornar (T19)                       |
+| `combinou-nova-data`              | Combinou nova data              | Financeiro    | não      | combinar nova data (T19)             |
+| `trocou-forma-de-pagamento`       | Trocou forma de pagamento       | Financeiro    | não      | troca da forma de pagamento (T19)    |
 | `alterou-configuracao-financeira` | Alterou configuração financeira | Configurações | sim      | tolerância e contratos (T26c)        |
 | `editou-ficha-de-treino`          | Editou ficha de treino          | Treinos       | não      | editar ficha (T25)                   |
 | `excluiu-aluno`                   | Excluiu aluno                   | Alunos        | sim      | excluir aluno (T15a)                 |
@@ -351,11 +355,11 @@ trancado → não entra em tolerância; trancar N dias estende a vigência em N 
 
 - **Vigência**: `fimDaVigencia(inicio, meses)` é o dia anterior ao mesmo dia N meses depois (dia
   inexistente vai para o último dia do mês); vale até 23:59:59 de São Paulo (`fimDoDiaEm`).
-- **Atraso e vencimento**: o contrato guarda `vencimentoEmAtraso` (parcela em aberto mais antiga) e
-  `proximoVencimento`. Os consumidores `alunos.reavaliar-contrato-pago` (`PagamentoConfirmado`) e
-  `alunos.reavaliar-contrato-atrasado` (`PagamentoAtrasado`) os atualizam pela porta
-  `ParcelasDoContrato`; até o T19 implementá-la, usam o que o evento informa. `diasDeAtraso` está em
-  `domain/contrato.ts` até o domínio de Cobrança assumi-lo.
+- **Atraso e vencimento**: o contrato guarda `vencimentoEmAtraso` (parcela a receber vencida mais
+  antiga) e `proximoVencimento`. Os consumidores `alunos.reavaliar-contrato-*` (`PagamentoConfirmado`,
+  `PagamentoAtrasado`, `PagamentoEstornado` e `VencimentoCombinado`) os atualizam pela porta
+  `ParcelasDoContrato`, que lê as parcelas da Cobrança; contrato sem parcelas usa o que o evento
+  informa. `diasDeAtraso` é da Cobrança (`cobranca/domain/parcela.ts`).
 - **Situação de vencimento** (lista e chips): `em_atraso` com `diasDeAtraso > 0`, `a_vencer` com a
   próxima parcela em até 7 dias (inclusive), senão `em_dia`. Aluno sem contrato fica em dia.
 - **Rotina diária** (`RotinaDosContratos`, só com `FILAS_PROCESSAR`): renovação automática no fim da
@@ -364,6 +368,30 @@ trancado → não entra em tolerância; trancar N dias estende a vigência em N 
   a credencial do app não guarda e-mail em claro (o código de primeiro acesso nasce sem e-mail).
 - **Configuração** "Contratos e atraso": `GET/PUT /api/configuracoes/contratos` (T, R e trancamento
   máximo; padrões 7, 30 e 90 dias).
+
+### Cobrança e pagamentos
+
+`modules/cobranca` (T19, ADR-009 e ADR-018). Regras puras em `domain/parcela.ts` e
+`domain/pagamento.ts`; casos de uso em `Parcelas` e `Pagamentos`.
+
+```
+ContratoCriado/Renovado ─ ratear ─▶ parcelas (vencimento mensal no dia do início; dia inexistente → último)
+em_aberto ─ 00:05 SP, vencida ─▶ atrasada + PagamentoAtrasado · trancado → suspensa · destrancado → reprogramada
+link/2ª via ─ GatewayDePagamento ─▶ cobrança + CobrancaCriada ─ webhook assinado ─▶ PagamentoConfirmado
+balcão ─ trava a parcela (FOR UPDATE) ─▶ PagamentoConfirmado · parcela já quitada → pagamento em duplicidade
+```
+
+- **`diasDeAtraso(vencimento, hoje)`**: dias corridos no calendário de São Paulo; única fonte do atraso.
+- **Pagamento**: valor, forma, taxa, `origem` (`mensalidade`, `plano`, `aula_avulsa`, `personal`,
+  `nutricao`, `loja`) e o `setor` atribuído pela origem. Menor que o saldo fica "pago parcial".
+- **Provedor**: só o fake (`PAGAMENTOS_PROVEDOR=fake`). Webhook em `/api/webhooks/pagamentos-fake`,
+  HMAC-SHA256 do corpo em `x-assinatura` (`PAGAMENTOS_WEBHOOK_SEGREDO`); sem assinatura, 401.
+  Idempotente pelo id do evento do provedor. A página simulada fica em
+  `/api/pagamento-simulado/:idExterno` (fora de produção).
+- **Mensageria** (`{link}`, cobrança em lote): porta própria com adapter de log até o T13d.
+- **Pendências** (T18): `GET /api/cobranca/pendencias` ("Mensalidade em atraso" e pagamentos em
+  duplicidade a estornar).
+- **LGPD**: pagamentos têm retenção fiscal (5 anos): a exclusão anonimiza e cancela o que estava a receber.
 
 ### Configuração
 

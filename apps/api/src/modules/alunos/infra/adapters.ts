@@ -6,6 +6,7 @@ import {
   type OnModuleDestroy,
   Optional,
 } from '@nestjs/common';
+import { Parcelas } from '../../cobranca/application/parcelas';
 import type { ProvedorDeDadosDoTitular } from '../../platform/application/direitos-do-titular';
 import { ExecutorDeTenant } from '../../platform/infra/contexto/executor-de-tenant';
 import {
@@ -20,11 +21,18 @@ import {
   type SituacaoDasParcelas,
 } from '../application/portas';
 
-/** Até a cobrança (T19) existir, não há parcelas: os consumidores usam o que o evento informa. */
+/**
+ * As parcelas vêm da Cobrança (T19). Contrato sem parcelas (anterior ao T19) devolve `null`, e os
+ * consumidores usam o que o evento informa.
+ */
 @Injectable()
-export class ParcelasIndisponiveis extends ParcelasDoContrato {
-  async situacao(): Promise<SituacaoDasParcelas | null> {
-    return null;
+export class ParcelasDaCobranca extends ParcelasDoContrato {
+  constructor(private readonly parcelas: Parcelas) {
+    super();
+  }
+
+  situacao(contratoId: string): Promise<SituacaoDasParcelas | null> {
+    return this.parcelas.situacaoDoContrato(contratoId);
   }
 }
 
