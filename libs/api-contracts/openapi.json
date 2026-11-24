@@ -226,6 +226,54 @@
         ],
         "type": "object"
       },
+      "AvisoDto": {
+        "properties": {
+          "criadoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lido": {
+            "type": "boolean"
+          },
+          "link": {
+            "description": "Caminho interno do app.",
+            "nullable": true,
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "plano",
+              "aula",
+              "reserva",
+              "ficha",
+              "comunicado",
+              "loja",
+              "saude"
+            ],
+            "type": "string"
+          },
+          "titulo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tipo",
+          "titulo",
+          "texto",
+          "link",
+          "lido",
+          "criadoEm"
+        ],
+        "type": "object"
+      },
       "CadastrarAlunoDto": {
         "properties": {
           "consentimentos": {
@@ -303,6 +351,49 @@
         ],
         "type": "object"
       },
+      "CancelarInscricaoDto": {
+        "properties": {
+          "endpoint": {
+            "maxLength": 2048,
+            "type": "string"
+          }
+        },
+        "required": [
+          "endpoint"
+        ],
+        "type": "object"
+      },
+      "ChavePublicaDoPushDto": {
+        "properties": {
+          "chave": {
+            "description": "Valor de `applicationServerKey` na inscrição do navegador.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chave"
+        ],
+        "type": "object"
+      },
+      "ChavesDaInscricaoDto": {
+        "properties": {
+          "auth": {
+            "description": "Segredo de autenticação do navegador (base64url).",
+            "maxLength": 100,
+            "type": "string"
+          },
+          "p256dh": {
+            "description": "Chave pública do navegador (base64url).",
+            "maxLength": 200,
+            "type": "string"
+          }
+        },
+        "required": [
+          "p256dh",
+          "auth"
+        ],
+        "type": "object"
+      },
       "CodigoDeAcessoDto": {
         "properties": {
           "codigo": {
@@ -313,6 +404,43 @@
         },
         "required": [
           "codigo"
+        ],
+        "type": "object"
+      },
+      "ComunicadoDto": {
+        "properties": {
+          "alunoIds": {
+            "description": "Só estes alunos; sem a lista, todos os alunos da academia.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "link": {
+            "example": "/aulas",
+            "maxLength": 300,
+            "nullable": true,
+            "type": "object"
+          },
+          "push": {
+            "default": false,
+            "description": "Também envia Web Push.",
+            "type": "boolean"
+          },
+          "texto": {
+            "example": "Fechada no domingo, das 8h às 12h.",
+            "maxLength": 500,
+            "type": "string"
+          },
+          "titulo": {
+            "example": "Manutenção da piscina",
+            "maxLength": 120,
+            "type": "string"
+          }
+        },
+        "required": [
+          "titulo",
+          "texto"
         ],
         "type": "object"
       },
@@ -368,6 +496,17 @@
         "required": [
           "finalidade",
           "decisao"
+        ],
+        "type": "object"
+      },
+      "ContadorDeAvisosDto": {
+        "properties": {
+          "naoLidos": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "naoLidos"
         ],
         "type": "object"
       },
@@ -865,6 +1004,32 @@
         ],
         "type": "object"
       },
+      "DefinirPreferenciaDto": {
+        "properties": {
+          "push": {
+            "description": "Receber push desse tipo de aviso.",
+            "type": "boolean"
+          },
+          "tipo": {
+            "enum": [
+              "plano",
+              "aula",
+              "reserva",
+              "ficha",
+              "comunicado",
+              "loja",
+              "saude"
+            ],
+            "example": "aula",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tipo",
+          "push"
+        ],
+        "type": "object"
+      },
       "EntrarNoAppDto": {
         "properties": {
           "identificador": {
@@ -1064,6 +1229,34 @@
         ],
         "type": "object"
       },
+      "InscreverPushDto": {
+        "properties": {
+          "dispositivo": {
+            "example": "Chrome no Android",
+            "maxLength": 120,
+            "nullable": true,
+            "type": "object"
+          },
+          "endpoint": {
+            "description": "Endereço https do provedor de push do navegador.",
+            "maxLength": 2048,
+            "type": "string"
+          },
+          "expirationTime": {
+            "description": "Ignorado.",
+            "nullable": true,
+            "type": "number"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/ChavesDaInscricaoDto"
+          }
+        },
+        "required": [
+          "endpoint",
+          "keys"
+        ],
+        "type": "object"
+      },
       "ItemDaListaDeAlunosDto": {
         "properties": {
           "diasDeAtraso": {
@@ -1232,6 +1425,31 @@
           "itens",
           "proximoCursor",
           "contadores"
+        ],
+        "type": "object"
+      },
+      "PaginaDeAvisosDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AvisoDto"
+            },
+            "type": "array"
+          },
+          "naoLidos": {
+            "description": "Quantos avisos não lidos há no total (selo da aba).",
+            "type": "number"
+          },
+          "proximoCursor": {
+            "description": "Nulo na última página.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "itens",
+          "proximoCursor",
+          "naoLidos"
         ],
         "type": "object"
       },
@@ -1463,6 +1681,30 @@
         ],
         "type": "object"
       },
+      "PreferenciaDeAvisoDto": {
+        "properties": {
+          "push": {
+            "type": "boolean"
+          },
+          "tipo": {
+            "enum": [
+              "plano",
+              "aula",
+              "reserva",
+              "ficha",
+              "comunicado",
+              "loja",
+              "saude"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "tipo",
+          "push"
+        ],
+        "type": "object"
+      },
       "PreviaDoPlanoDto": {
         "properties": {
           "explicacao": {
@@ -1593,6 +1835,18 @@
           "comContrato",
           "semContrato",
           "linhas"
+        ],
+        "type": "object"
+      },
+      "ResultadoDoComunicadoDto": {
+        "properties": {
+          "destinatarios": {
+            "description": "Quantos alunos receberam o aviso.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "destinatarios"
         ],
         "type": "object"
       },
@@ -2372,6 +2626,221 @@
         ]
       }
     },
+    "/api/app/avisos": {
+      "get": {
+        "operationId": "listarMeusAvisos",
+        "parameters": [
+          {
+            "description": "Só os avisos ainda não lidos (aba \"Não lidos\").",
+            "in": "query",
+            "name": "naoLidos",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Cursor opaco devolvido pela página anterior.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDeAvisosDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Cursor inválido."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Avisos do aluno, do mais novo ao mais antigo; só os não lidos com `naoLidos`.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/avisos/contador": {
+      "get": {
+        "operationId": "contarMeusAvisosNaoLidos",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContadorDeAvisosDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quantos avisos não lidos o aluno tem (selo do app).",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/avisos/lidos": {
+      "post": {
+        "operationId": "marcarTodosOsAvisosComoLidos",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Marca todos os avisos do aluno como lidos.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/avisos/preferencias": {
+      "get": {
+        "operationId": "listarMinhasPreferenciasDeAviso",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PreferenciaDeAvisoDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preferência de push de cada tipo de aviso (ligado até o aluno desligar).",
+        "tags": [
+          "app"
+        ]
+      },
+      "put": {
+        "operationId": "definirPreferenciaDeAviso",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DefinirPreferenciaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Liga ou desliga o push de um tipo de aviso; o aviso continua na lista.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/avisos/{id}/lido": {
+      "post": {
+        "operationId": "marcarAvisoComoLido",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "404": {
+            "description": "O aviso não existe ou é de outro aluno."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Marca um aviso como lido.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
     "/api/app/contrato": {
       "get": {
         "operationId": "obterMeuContrato",
@@ -2430,6 +2899,103 @@
           }
         ],
         "summary": "\"Renovar com 1 toque\" do app.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/push/chave-publica": {
+      "get": {
+        "operationId": "obterChavePublicaDoPush",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChavePublicaDoPushDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Chave pública VAPID para `applicationServerKey` ao inscrever o navegador.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/push/inscricoes": {
+      "delete": {
+        "operationId": "desinscreverPush",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelarInscricaoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove o dispositivo do push (sem erro se ele já não estava inscrito).",
+        "tags": [
+          "app"
+        ]
+      },
+      "post": {
+        "operationId": "inscreverPush",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InscreverPushDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Endpoint que não é um endereço https público."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Inscreve o dispositivo no push; repetir o mesmo endpoint atualiza as chaves.",
         "tags": [
           "app"
         ]
@@ -2984,6 +3550,49 @@
         "summary": "Troca o refresh do cookie por um novo par (rotativo; reuso revoga a família).",
         "tags": [
           "autenticacao"
+        ]
+      }
+    },
+    "/api/avisos/comunicados": {
+      "post": {
+        "operationId": "enviarComunicado",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComunicadoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoComunicadoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Envia um comunicado aos alunos (todos, ou só os de `alunoIds`), com push opcional.",
+        "tags": [
+          "avisos"
         ]
       }
     },

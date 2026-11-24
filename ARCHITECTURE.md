@@ -341,6 +341,7 @@ Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso 
 | `alterou-custo-de-funcionario`    | Alterou custo de funcionário    | Equipe        | sim      | alterar o custo mensal (T26a)         |
 | `alterou-acesso-de-funcionario`   | Alterou acesso de funcionário   | Equipe        | sim      | dar, trocar ou tirar o acesso (T26a)  |
 | `excluiu-funcionario`             | Excluiu funcionário             | Equipe        | sim      | excluir funcionário (T26a)            |
+| `enviou-comunicado`               | Enviou comunicado               | Alunos        | não      | comunicado manual (T13e)              |
 | `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)      |
 
 ### Alunos, planos e contratos
@@ -391,6 +392,59 @@ trancado → não entra em tolerância; trancar N dias estende a vigência em N 
   equipe, T28 e T30a a T30c); em processo, `Funcionarios.custoDaEquipe()` e `profissionais()`.
 - **Permissões**: `equipe:ver|criar|editar|excluir`. Alterar custo e acesso são ações sensíveis da auditoria.
 - **LGPD**: o provedor `funcionarios` exporta o professor responsável do aluno e não tem o que excluir.
+
+### Avisos e notificações
+
+`modules/avisos` (T13e) é o único lugar que notifica: a caixa de avisos do aluno (tela `AlunoAvisos`) e o Web Push.
+Aulas, Loja, Saúde, Cobrança e Treinos só chamam o `Notificador`; o app (T32 e T33) se inscreve e exibe.
+
+**Como um domínio notifica.** O `AvisosModule` é global: injete o `Notificador` no caso de uso (ou no consumidor de
+evento) e chame dentro da transação do tenant.
+
+```ts
+// aviso na caixa e, com push, Web Push depois do commit
+await notificador.notificar({
+  destinatario: { tipo: 'aluno', id: alunoId }, // 'funcionario': id do usuário do painel
+  tipo: 'reserva', // plano | aula | reserva | ficha | comunicado | loja | saude
+  titulo: 'Reserva confirmada',
+  texto: 'Spinning, quarta 18h30, bike 12.',
+  link: '/aulas', // caminho interno do app; endereço externo é recusado
+  push: true,
+});
+
+// lembrete: agenda por fila; a chave agrupa os agendamentos do fato e repetir a chave substitui o pendente
+const { id } = await notificador.notificarEm(umaHoraAntesDaAula, pedido, {
+  chave: `aula:${reservaId}`,
+});
+await notificador.cancelarAgendamentos(`aula:${reservaId}`); // reserva cancelada
+```
+
+```
+notificar ─▶ aviso (mesma transação) ─▶ PushSolicitado (outbox) ─ commit ─▶ consumidor avisos.enviar-push
+                                                                            ├ preferência do tipo desligada → só o aviso
+                                                                            ├ cada inscrição ─▶ WebPush.enviar
+                                                                            └ 404 ou 410 → remove a inscrição
+notificarEm ─▶ aviso_agendado (pendente) + job atrasado na fila notificacoes ─ na hora ─▶ notificar
+```
+
+- **Push só depois do commit**, pelo evento `PushSolicitado`; rollback do caso de uso leva o aviso e o push junto.
+  Falha de um dispositivo (que não seja 404 ou 410) vai para o log e não falha o evento: o aviso já está na caixa.
+  O push leva `tag = id do aviso`, então uma reentrega não duplica a notificação na tela.
+- **Porta `WebPush`** com VAPID (`PUSH_TRANSPORTE=vapid`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`; um par por
+  ambiente) e adapter fake (`PUSH_TRANSPORTE=fake`, recusado em produção) com `expirar(endpoint)` e `falhar(endpoint)`.
+  O servidor faz POST no endpoint informado pelo cliente: só aceita https com nome de domínio (nunca IP nem localhost).
+- **Preferências**: por destinatário e tipo; sem linha, o push está ligado. Desligar cala só o push, o aviso continua na lista.
+- **Agendamento**: o cancelamento marca o `aviso_agendado`; o job que chegar depois não faz nada. O job espera ao menos
+  1 s (nunca corre antes do commit). Com `FILAS_PROCESSAR=false` o job fica na fila até um worker subir.
+- **Endpoints do app** (sessão do aluno): `GET /api/app/avisos` (`naoLidos`, `limite`, `cursor`; devolve `naoLidos`),
+  `GET /api/app/avisos/contador`, `POST /api/app/avisos/lidos`, `POST /api/app/avisos/:id/lido`,
+  `GET` e `PUT /api/app/avisos/preferencias`, `GET /api/app/push/chave-publica`,
+  `POST` e `DELETE /api/app/push/inscricoes` (corpo no formato de `PushSubscription.toJSON()`).
+- **Comunicado manual**: `POST /api/avisos/comunicados` (`alunos:editar`, auditoria `enviou-comunicado`), para todos os
+  alunos ou os de `alunoIds`; sem tela no painel (lacuna registrada no plano).
+- **Conteúdo**: título até 120 e texto até 500 caracteres. Não ponha dado de saúde no texto: o push passa pelo
+  provedor do navegador. O aviso do tipo `saude` deve só apontar para a tela.
+- **LGPD**: o provedor `avisos` exporta avisos, dispositivos (sem as chaves) e preferências, e a exclusão apaga tudo.
 
 ### Configuração
 
