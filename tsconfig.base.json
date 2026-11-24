@@ -29,6 +29,7 @@
       "@gymos/shared-pipes": ["./libs/shared/pipes/src/index.ts"],
       "@gymos/shared-pipes/formatadores": ["./libs/shared/pipes/src/formatadores/index.ts"],
       "@gymos/shared-forms": ["./libs/shared/forms/src/index.ts"],
+      "@gymos/shared-testing": ["./libs/shared/testing/src/index.ts"],
       "@gymos/api": ["./apps/api/generators/tabela/gerador.ts"]
     }
   },
