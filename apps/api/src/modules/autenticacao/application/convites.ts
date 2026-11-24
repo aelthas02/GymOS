@@ -15,8 +15,12 @@ import {
   RepositorioDeConvites,
   RepositorioDeTiposDeAcesso,
   RepositorioDeUsuarios,
+  type Usuario,
 } from './portas';
 import { type SessaoAberta, Sessoes } from './sessoes';
+
+/** Usuário criado pelo cadastro do Funcionário (T26a) que ainda não aceitou o convite. */
+const usuarioPendente = (usuario: Usuario): boolean => usuario.senhaHash === null && usuario.ativo;
 
 export type ResultadoDoConvite =
   | { tipo: 'ok'; id: string; expiraEm: Date; link: string }
@@ -44,7 +48,8 @@ export class ConvidarParaEquipe {
     if (!(await this.tipos.porId(dados.tipoDeAcessoId))) {
       return { tipo: 'tipo-inexistente' };
     }
-    if (await this.usuarios.porEmail(email)) {
+    const existente = await this.usuarios.porEmail(email);
+    if (existente && !usuarioPendente(existente)) {
       return { tipo: 'email-em-uso' };
     }
     const token = this.segredos.token();
@@ -98,16 +103,27 @@ export class AceitarConvite {
     if (!usoUnicoDisponivel(convite, agora)) {
       return { tipo: 'indisponivel' };
     }
-    if (await this.usuarios.porEmail(convite.email)) {
+    const existente = await this.usuarios.porEmail(convite.email);
+    if (existente && !usuarioPendente(existente)) {
       return { tipo: 'email-em-uso' };
     }
     await this.convites.marcarUsado(convite.id, agora);
-    const usuario = await this.usuarios.criar({
-      nome: dados.nome.trim(),
-      email: convite.email,
-      senhaHash: await this.cifra.cifrar(dados.senha),
-      tipoDeAcessoId: convite.tipoDeAcessoId,
-    });
-    return { tipo: 'ok', sessao: await this.sessoes.abrir('staff', usuario.id, tenantId) };
+    const senhaHash = await this.cifra.cifrar(dados.senha);
+    let usuarioId: string;
+    if (existente) {
+      // O cadastro do Funcionário já criou o usuário, com o tipo de acesso atual dele: só falta a senha.
+      await this.usuarios.definirSenha(existente.id, senhaHash);
+      usuarioId = existente.id;
+    } else {
+      usuarioId = (
+        await this.usuarios.criar({
+          nome: dados.nome.trim(),
+          email: convite.email,
+          senhaHash,
+          tipoDeAcessoId: convite.tipoDeAcessoId,
+        })
+      ).id;
+    }
+    return { tipo: 'ok', sessao: await this.sessoes.abrir('staff', usuarioId, tenantId) };
   }
 }

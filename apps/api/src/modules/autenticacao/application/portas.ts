@@ -18,13 +18,16 @@ export interface Usuario {
 export abstract class RepositorioDeUsuarios {
   abstract porEmail(email: string): Promise<Usuario | null>;
   abstract porId(id: string): Promise<Usuario | null>;
+  /** `senhaHash` nulo é o usuário que ainda não aceitou o convite (Funcionário com acesso, T26a). */
   abstract criar(dados: {
     nome: string;
     email: string;
-    senhaHash: string;
+    senhaHash: string | null;
     tipoDeAcessoId: string;
   }): Promise<Usuario>;
   abstract definirSenha(id: string, senhaHash: string): Promise<void>;
+  abstract definirAtivo(id: string, ativo: boolean): Promise<void>;
+  abstract definirTipoDeAcesso(id: string, tipoDeAcessoId: string): Promise<void>;
 }
 
 export interface CredencialDoAluno {
@@ -57,6 +60,7 @@ export abstract class LocalizadorDeAlunoPorCpf {
 export abstract class RepositorioDeTiposDeAcesso {
   abstract porId(id: string): Promise<TipoDeAcesso | null>;
   abstract porChave(chave: string): Promise<TipoDeAcesso | null>;
+  abstract porIds(ids: readonly string[]): Promise<TipoDeAcesso[]>;
   /** Cria os tipos padrão que faltarem no tenant do contexto. Idempotente. */
   abstract garantirPadrao(padrao: readonly TipoPadrao[]): Promise<void>;
 }
