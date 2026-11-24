@@ -335,6 +335,7 @@ export class Acessos {
         direcao: criado.direcao,
         resultado: criado.resultado,
         motivo: criado.motivo,
+        dispositivoId: criado.dispositivoId,
       },
     });
     return this.resultado(criado, false);

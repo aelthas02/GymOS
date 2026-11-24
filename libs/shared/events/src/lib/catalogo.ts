@@ -132,8 +132,27 @@ export interface CatalogoDeEventos {
       resultado: string;
       /** Chave do motivo da negação (ex.: mensalidade_em_atraso); nulo quando liberado. */
       motivo: string | null;
+      /** Catraca ou leitor que registrou; ausente no check-in da Recepção. */
+      dispositivoId?: Id | null;
     };
   };
+  /** Catraca ou leitor caiu (sem batimento por 90 s) ou voltou (T23b); alimenta o tempo real e os alertas. */
+  DispositivoMudouDeEstado: {
+    versao: 1;
+    payload: {
+      dispositivoId: Id;
+      nome: string;
+      tipo: string;
+      online: boolean;
+      /** Último sinal antes de cair. */
+      desde: Instante;
+      /** Quando voltou; nulo enquanto estiver fora. */
+      voltouEm: Instante | null;
+      duracaoEmSegundos: number | null;
+    };
+  };
+  /** As regras de acesso (T23a) mudaram: o cache de autorização do agente precisa de versão nova. */
+  RegrasDeAcessoAlteradas: { versao: 1; payload: { alteradoEm: Instante } };
   MensagemRecebida: {
     versao: 1;
     payload: {
@@ -186,6 +205,8 @@ export const VERSAO_ATUAL: { readonly [T in TipoDeEvento]: VersaoDoEvento<T> } =
   PagamentoEstornado: 1,
   VencimentoCombinado: 1,
   AcessoRegistrado: 1,
+  DispositivoMudouDeEstado: 1,
+  RegrasDeAcessoAlteradas: 1,
   MensagemRecebida: 1,
   PushSolicitado: 1,
 };

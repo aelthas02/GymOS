@@ -127,6 +127,175 @@
         ],
         "type": "object"
       },
+      "AgenteDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "online": {
+            "type": "boolean"
+          },
+          "pareadoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "revogadoEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "ultimaSincronizacaoEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "ultimoBatimentoEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "versaoDoAgente": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "online",
+          "versaoDoAgente",
+          "ultimoBatimentoEm",
+          "ultimaSincronizacaoEm",
+          "revogadoEm",
+          "pareadoEm"
+        ],
+        "type": "object"
+      },
+      "AlertaDeDispositivoDto": {
+        "properties": {
+          "aberto": {
+            "description": "Queda ainda em aberto.",
+            "type": "boolean"
+          },
+          "desde": {
+            "description": "Último sinal antes de cair.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "dispositivoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "duracaoEmSegundos": {
+            "nullable": true,
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "texto": {
+            "example": "Catraca 2 ficou 4 minutos sem resposta às 07:12 e já voltou",
+            "type": "string"
+          },
+          "voltouEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "dispositivoId",
+          "nome",
+          "desde",
+          "voltouEm",
+          "aberto",
+          "duracaoEmSegundos",
+          "texto"
+        ],
+        "type": "object"
+      },
+      "AlunoAutorizadoDto": {
+        "properties": {
+          "acessosPorSemana": {
+            "nullable": true,
+            "type": "number"
+          },
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "contrato": {
+            "enum": [
+              "ativo",
+              "tolerancia",
+              "encerrado",
+              "trancado"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "diasDeAtraso": {
+            "type": "number"
+          },
+          "modalidadesDoPlano": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "nome": {
+            "nullable": true,
+            "type": "string"
+          },
+          "planoNome": {
+            "nullable": true,
+            "type": "string"
+          },
+          "removido": {
+            "description": "O aluno deixou de existir: apague-o do cache.",
+            "type": "boolean"
+          },
+          "situacao": {
+            "description": "Decisão pelas regras de contrato e atraso; \"negado\" é o aluno bloqueado.",
+            "properties": {
+              "motivo": {
+                "nullable": true,
+                "type": "string"
+              },
+              "resultado": {
+                "enum": [
+                  "liberado",
+                  "tolerancia",
+                  "negado"
+                ],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "alunoId",
+          "removido",
+          "nome",
+          "contrato",
+          "diasDeAtraso",
+          "planoNome",
+          "modalidadesDoPlano",
+          "acessosPorSemana",
+          "situacao"
+        ],
+        "type": "object"
+      },
       "AlunoDto": {
         "properties": {
           "cpf": {
@@ -435,6 +604,22 @@
         ],
         "type": "object"
       },
+      "BatimentoDto": {
+        "properties": {
+          "dispositivos": {
+            "description": "Sem a lista, todos os dispositivos do agente contam como vivos.",
+            "items": {
+              "$ref": "#/components/schemas/DispositivoVistoDto"
+            },
+            "type": "array"
+          },
+          "versao": {
+            "maxLength": 40,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "CadastrarAlunoDto": {
         "properties": {
           "consentimentos": {
@@ -509,6 +694,72 @@
         "required": [
           "nome",
           "cpf"
+        ],
+        "type": "object"
+      },
+      "CadastroBiometricoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "atualizadoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "dispositivoId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "pendente",
+              "cadastrado",
+              "falhou"
+            ],
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "facial",
+              "biometria"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId",
+          "tipo",
+          "dispositivoId",
+          "status",
+          "atualizadoEm"
+        ],
+        "type": "object"
+      },
+      "CadastroBiometricoEntradaDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "dispositivoId": {
+            "description": "Equipamento em que o aluno será cadastrado.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "facial",
+              "biometria"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId",
+          "tipo",
+          "dispositivoId"
         ],
         "type": "object"
       },
@@ -753,6 +1004,62 @@
         },
         "required": [
           "codigo"
+        ],
+        "type": "object"
+      },
+      "CodigoDePareamentoDto": {
+        "properties": {
+          "codigo": {
+            "example": "4F792K",
+            "type": "string"
+          },
+          "codigoFormatado": {
+            "description": "Como o Passo 4 mostra.",
+            "example": "4F7-92K",
+            "type": "string"
+          },
+          "expiraEm": {
+            "description": "Vale 30 minutos e uma troca.",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "codigoFormatado",
+          "expiraEm"
+        ],
+        "type": "object"
+      },
+      "ComandoParaOAgenteDto": {
+        "properties": {
+          "dados": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "dispositivoId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "ping",
+              "cadastrar_biometria",
+              "remover_biometria"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tipo",
+          "dispositivoId",
+          "dados"
         ],
         "type": "object"
       },
@@ -1234,6 +1541,22 @@
         ],
         "type": "object"
       },
+      "CredencialDoAgenteDto": {
+        "properties": {
+          "agenteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "credencial": {
+            "description": "Mostrada uma vez: guarde de forma protegida pelo sistema.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "credencial"
+        ],
+        "type": "object"
+      },
       "CustoDaEquipeDto": {
         "properties": {
           "itens": {
@@ -1513,6 +1836,182 @@
         "required": [
           "tipo",
           "push"
+        ],
+        "type": "object"
+      },
+      "DispositivoDoAgenteDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "local": {
+            "type": "string"
+          },
+          "metodos": {
+            "items": {
+              "enum": [
+                "facial",
+                "biometria",
+                "qr_code"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "catraca",
+              "leitor"
+            ],
+            "type": "string"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "tipo",
+          "local",
+          "metodos",
+          "unidadeId"
+        ],
+        "type": "object"
+      },
+      "DispositivoDto": {
+        "properties": {
+          "agenteId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "local": {
+            "type": "string"
+          },
+          "metodos": {
+            "items": {
+              "enum": [
+                "facial",
+                "biometria",
+                "qr_code"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "online": {
+            "description": "Online pelo último batimento: offline após 90 s sem sinal.",
+            "type": "boolean"
+          },
+          "tipo": {
+            "enum": [
+              "catraca",
+              "leitor"
+            ],
+            "type": "string"
+          },
+          "ultimoBatimentoEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "tipo",
+          "local",
+          "metodos",
+          "unidadeId",
+          "agenteId",
+          "online",
+          "ultimoBatimentoEm"
+        ],
+        "type": "object"
+      },
+      "DispositivoEntradaDto": {
+        "properties": {
+          "agenteId": {
+            "description": "Agente local que controla o equipamento; sem ele, o agente o adota no batimento.",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "local": {
+            "example": "Entrada principal",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "metodos": {
+            "items": {
+              "enum": [
+                "facial",
+                "biometria",
+                "qr_code"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "nome": {
+            "example": "Catraca 1",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "catraca",
+              "leitor"
+            ],
+            "type": "string"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "tipo",
+          "local",
+          "metodos"
+        ],
+        "type": "object"
+      },
+      "DispositivoVistoDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "online": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "online"
         ],
         "type": "object"
       },
@@ -2112,6 +2611,76 @@
         ],
         "type": "object"
       },
+      "ListaDeAgentesDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AgenteDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "itens"
+        ],
+        "type": "object"
+      },
+      "ListaDeAlertasDeDispositivoDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AlertaDeDispositivoDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "itens"
+        ],
+        "type": "object"
+      },
+      "ListaDeCadastrosBiometricosDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/CadastroBiometricoDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "itens"
+        ],
+        "type": "object"
+      },
+      "ListaDeDispositivosDoAgenteDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/DispositivoDoAgenteDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "itens"
+        ],
+        "type": "object"
+      },
+      "ListaDeDispositivosDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/DispositivoDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "itens"
+        ],
+        "type": "object"
+      },
       "MensagemDeDevDto": {
         "properties": {
           "idExterno": {
@@ -2458,6 +3027,34 @@
           "pagina",
           "limite",
           "contadores"
+        ],
+        "type": "object"
+      },
+      "PaginaDoCacheDto": {
+        "properties": {
+          "alunos": {
+            "items": {
+              "$ref": "#/components/schemas/AlunoAutorizadoDto"
+            },
+            "type": "array"
+          },
+          "maisPaginas": {
+            "description": "Há mais alunos além deste lote: chame de novo com a `versao`.",
+            "type": "boolean"
+          },
+          "regras": {
+            "$ref": "#/components/schemas/RegrasParaOAgenteDto"
+          },
+          "versao": {
+            "description": "Guarde e envie como `desde` na próxima chamada.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "versao",
+          "maisPaginas",
+          "regras",
+          "alunos"
         ],
         "type": "object"
       },
@@ -3085,6 +3682,37 @@
         ],
         "type": "object"
       },
+      "RegrasParaOAgenteDto": {
+        "properties": {
+          "abertura": {
+            "example": "05:00",
+            "type": "string"
+          },
+          "antiPassback": {
+            "type": "boolean"
+          },
+          "bloqueioPorAtrasoDias": {
+            "nullable": true,
+            "type": "number"
+          },
+          "fechamento": {
+            "example": "23:00",
+            "type": "string"
+          },
+          "limitePorDia": {
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "bloqueioPorAtrasoDias",
+          "abertura",
+          "fechamento",
+          "limitePorDia",
+          "antiPassback"
+        ],
+        "type": "object"
+      },
       "RelatorioDaImportacaoDto": {
         "properties": {
           "comContrato": {
@@ -3111,6 +3739,28 @@
           "comContrato",
           "semContrato",
           "linhas"
+        ],
+        "type": "object"
+      },
+      "RespostaDeComandoDto": {
+        "properties": {
+          "erro": {
+            "maxLength": 300,
+            "nullable": true,
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "referencia": {
+            "description": "Referência do cadastro no equipamento; nunca o template biométrico.",
+            "maxLength": 200,
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "ok"
         ],
         "type": "object"
       },
@@ -3150,6 +3800,30 @@
         ],
         "type": "object"
       },
+      "ResultadoDoBatimentoDto": {
+        "properties": {
+          "comandos": {
+            "items": {
+              "$ref": "#/components/schemas/ComandoParaOAgenteDto"
+            },
+            "type": "array"
+          },
+          "recebidoEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "versaoDoCache": {
+            "description": "Versão atual do cache de autorização: maior que a do agente, sincronize.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "recebidoEm",
+          "versaoDoCache",
+          "comandos"
+        ],
+        "type": "object"
+      },
       "ResultadoDoComunicadoDto": {
         "properties": {
           "destinatarios": {
@@ -3179,6 +3853,30 @@
         "required": [
           "enviadas",
           "semPendencia"
+        ],
+        "type": "object"
+      },
+      "ResultadoDoTesteDto": {
+        "properties": {
+          "estado": {
+            "enum": [
+              "aguardando",
+              "ok",
+              "falhou",
+              "expirou"
+            ],
+            "type": "string"
+          },
+          "latenciaEmMs": {
+            "type": "number"
+          },
+          "motivo": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "estado"
         ],
         "type": "object"
       },
@@ -3319,6 +4017,19 @@
         ],
         "type": "object"
       },
+      "TesteDeConexaoDto": {
+        "properties": {
+          "comandoId": {
+            "description": "Consulte o resultado por este id.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comandoId"
+        ],
+        "type": "object"
+      },
       "TipoDeAcessoResumidoDto": {
         "properties": {
           "id": {
@@ -3367,6 +4078,29 @@
         ],
         "type": "object"
       },
+      "TrocaDeCodigoDto": {
+        "properties": {
+          "codigo": {
+            "description": "Aceita minúsculas, espaço e hífen.",
+            "example": "4F7-92K",
+            "type": "string"
+          },
+          "nome": {
+            "example": "PC da recepção",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "versao": {
+            "example": "1.0.0",
+            "maxLength": 40,
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo"
+        ],
+        "type": "object"
+      },
       "UrlAssinadaDto": {
         "properties": {
           "expiraEm": {
@@ -3393,16 +4127,100 @@
   },
   "openapi": "3.0.0",
   "paths": {
-    "/api/acesso/chaves-publicas": {
+    "/api/acesso/ao-vivo/stream": {
       "get": {
-        "operationId": "listarChavesPublicasDoQr",
+        "operationId": "acompanharAcessosAoVivo",
         "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Fluxo text/event-stream."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "SSE do tenant: cada acesso registrado (`tipo: acesso`) e cada queda ou volta de dispositivo (`tipo: dispositivo`). Autentica com o Bearer, então o cliente usa fetch com stream, não EventSource. Um evento `ping` a cada 25 s mantém a conexão.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/cadastros-biometricos": {
+      "post": {
+        "operationId": "solicitarCadastroBiometrico",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CadastroBiometricoEntradaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CadastroBiometricoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:criar."
+          },
+          "404": {
+            "description": "Aluno ou dispositivo não encontrado."
+          },
+          "422": {
+            "description": "O aluno não deu o consentimento de biometria."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pede o cadastro de face ou digital do aluno no equipamento. Exige o consentimento de biometria; o template não passa pelo servidor.",
+        "tags": [
+          "acesso"
+        ]
+      }
+    },
+    "/api/acesso/cadastros-biometricos/{alunoId}": {
+      "get": {
+        "operationId": "listarCadastrosBiometricosDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChavesPublicasDoQrDto"
+                  "$ref": "#/components/schemas/ListaDeCadastrosBiometricosDto"
                 }
               }
             },
@@ -3420,7 +4238,7 @@
             "bearer": []
           }
         ],
-        "summary": "Chaves públicas do QR para o agente conferir a assinatura offline.",
+        "summary": "Face e biometria cadastradas do aluno (só o status, nunca o template).",
         "tags": [
           "acesso"
         ]
@@ -3813,7 +4631,7 @@
         ]
       }
     },
-    "/api/acesso/sincronizacao": {
+    "/api/agente/acessos": {
       "post": {
         "operationId": "sincronizarAcessosOffline",
         "parameters": [],
@@ -3839,10 +4657,264 @@
             "description": ""
           },
           "401": {
+            "description": "Credencial ausente, inválida ou revogada."
+          }
+        },
+        "summary": "Lote de acessos guardados offline: fora de ordem e repetidos são gravados uma vez cada (id de origem), na ordem do horário de origem.",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agente/alunos-autorizados": {
+      "get": {
+        "operationId": "baixarAlunosAutorizados",
+        "parameters": [
+          {
+            "description": "Versão que o agente já tem; sem ela (ou 0) é a carga completa.",
+            "in": "query",
+            "name": "desde",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDoCacheDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Credencial ausente, inválida ou revogada."
+          }
+        },
+        "summary": "Cache de autorização com versão: alunos com contrato, atraso e plano mais as regras. Sem `desde` é a carga completa; com `desde`, só o que mudou. Repita com a `versao` devolvida enquanto `maisPaginas`.",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agente/batimento": {
+      "post": {
+        "operationId": "enviarBatimentoDoAgente",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatimentoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoBatimentoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Credencial ausente, inválida ou revogada."
+          }
+        },
+        "summary": "Batimento a cada 30 s: mantém os dispositivos online e devolve os comandos pendentes e a versão do cache de autorização.",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agente/chaves-publicas": {
+      "get": {
+        "operationId": "listarChavesPublicasDoQr",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChavesPublicasDoQrDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Credencial ausente, inválida ou revogada."
+          }
+        },
+        "summary": "Chaves públicas do QR para o agente conferir a assinatura offline.",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agente/comandos/{id}/resposta": {
+      "post": {
+        "operationId": "responderComandoDoAgente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RespostaDeComandoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401": {
+            "description": "Credencial ausente, inválida ou revogada."
+          },
+          "404": {
+            "description": "Comando desconhecido, de outro agente ou expirado."
+          }
+        },
+        "summary": "Resposta a um comando recebido no batimento (ping, cadastro ou remoção biométrica).",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agente/credencial/rotacionar": {
+      "post": {
+        "operationId": "rotacionarCredencialDoAgente",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredencialDoAgenteDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Credencial ausente, inválida ou revogada."
+          }
+        },
+        "summary": "Troca a credencial por uma nova; a antiga deixa de valer na hora.",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agente/dispositivos": {
+      "get": {
+        "operationId": "listarDispositivosDoAgente",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListaDeDispositivosDoAgenteDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Credencial ausente, inválida ou revogada."
+          }
+        },
+        "summary": "Catracas e leitores que o agente controla ou pode adotar (ainda sem agente).",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agente/pareamento": {
+      "post": {
+        "operationId": "parearAgenteDaCatraca",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrocaDeCodigoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredencialDoAgenteDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Código inválido, vencido ou já usado."
+          }
+        },
+        "summary": "O agente troca o código de pareamento (vale 30 minutos e uma troca) pela credencial própria, mostrada uma vez.",
+        "tags": [
+          "agente"
+        ]
+      }
+    },
+    "/api/agentes-da-catraca": {
+      "get": {
+        "operationId": "listarAgentesDaCatraca",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListaDeAgentesDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
             "description": "Sem sessão válida."
           },
           "403": {
-            "description": "Exige a permissão acesso:criar."
+            "description": "Exige a permissão configuracoes.catraca:ver."
           }
         },
         "security": [
@@ -3850,9 +4922,167 @@
             "bearer": []
           }
         ],
-        "summary": "Recebe os acessos que o agente da catraca guardou offline: fora de ordem e repetidos são gravados uma vez cada, na ordem do horário de origem.",
+        "summary": "Agentes pareados, com status e a última sincronização.",
         "tags": [
-          "acesso"
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/agentes-da-catraca/codigos": {
+      "post": {
+        "operationId": "gerarCodigoDePareamento",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodigoDePareamentoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Gera o código de pareamento de 6 caracteres (vale 30 minutos e uma troca); o anterior não usado deixa de valer.",
+        "tags": [
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/agentes-da-catraca/testes/{comandoId}": {
+      "get": {
+        "operationId": "obterResultadoDoTesteDeConexao",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "comandoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoTesteDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:ver."
+          },
+          "404": {
+            "description": "Teste não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Resultado do Testar conexão: aguardando, ok (com a latência), falhou ou expirou (60 s).",
+        "tags": [
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/agentes-da-catraca/{id}/revogar": {
+      "post": {
+        "operationId": "revogarAgenteDaCatraca",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Revogado."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:editar."
+          },
+          "404": {
+            "description": "Agente não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revoga a credencial do agente: ele não envia mais acessos. Pareie de novo para reativar.",
+        "tags": [
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/agentes-da-catraca/{id}/testes": {
+      "post": {
+        "operationId": "testarConexaoDoAgente",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TesteDeConexaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Testar conexão (Passo 4): envia um ping ao agente. Consulte o resultado pelo id até \"ok\", \"falhou\" ou \"expirou\".",
+        "tags": [
+          "dispositivos"
         ]
       }
     },
@@ -6608,6 +7838,340 @@
         "summary": "Salva o bloco \"Contratos e atraso\" (auditoria sensível).",
         "tags": [
           "configuracoes"
+        ]
+      }
+    },
+    "/api/dispositivos": {
+      "get": {
+        "operationId": "listarDispositivos",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListaDeDispositivosDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Catracas e leitores com status online ou offline pelo último batimento.",
+        "tags": [
+          "dispositivos"
+        ]
+      },
+      "post": {
+        "operationId": "cadastrarDispositivo",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DispositivoEntradaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispositivoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Dados inválidos."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cadastra uma catraca ou leitor.",
+        "tags": [
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/dispositivos/alertas": {
+      "get": {
+        "operationId": "listarAlertasDeDispositivo",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListaDeAlertasDeDispositivoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão acesso:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quedas abertas e das últimas 24 h (\"Catraca 2 ficou 4 minutos sem resposta às 07:12 e já voltou\").",
+        "tags": [
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/dispositivos/{id}": {
+      "delete": {
+        "operationId": "excluirDispositivo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Excluído."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:excluir."
+          },
+          "404": {
+            "description": "Dispositivo não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Exclui um dispositivo e as quedas dele.",
+        "tags": [
+          "dispositivos"
+        ]
+      },
+      "get": {
+        "operationId": "obterDispositivo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispositivoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:ver."
+          },
+          "404": {
+            "description": "Dispositivo não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Um dispositivo com o seu status.",
+        "tags": [
+          "dispositivos"
+        ]
+      },
+      "put": {
+        "operationId": "editarDispositivo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DispositivoEntradaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispositivoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:editar."
+          },
+          "404": {
+            "description": "Dispositivo não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita um dispositivo.",
+        "tags": [
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/dispositivos/{id}/quedas": {
+      "get": {
+        "operationId": "listarQuedasDoDispositivo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListaDeAlertasDeDispositivoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:ver."
+          },
+          "404": {
+            "description": "Dispositivo não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Histórico de quedas do dispositivo (as 100 mais recentes).",
+        "tags": [
+          "dispositivos"
+        ]
+      }
+    },
+    "/api/dispositivos/{id}/testes": {
+      "post": {
+        "operationId": "testarConexaoDoDispositivo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TesteDeConexaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Dispositivo sem agente pareado."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.catraca:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Testar conexão: envia um ping ao agente do dispositivo. O agente responde no próximo batimento; consulte o resultado pelo id.",
+        "tags": [
+          "dispositivos"
         ]
       }
     },
