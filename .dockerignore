@@ -1,0 +1,12 @@
+.git
+.nx
+.angular
+node_modules
+dist
+coverage
+tmp
+.env
+.env.*
+!.env.example
+**/*.md
+!README.md
