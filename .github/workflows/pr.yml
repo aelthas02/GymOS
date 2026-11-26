@@ -79,7 +79,7 @@ jobs:
 
       - name: Cobertura (lcov)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cobertura
           path: coverage
@@ -145,7 +145,7 @@ jobs:
           exit $status
       - name: Publica o relatório
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: relatorio-de-bundle
           path: dist/reports
@@ -194,7 +194,7 @@ jobs:
           CI: 'true'
       - name: Relatório de diferenças
         if: always() && steps.telas.outputs.tocadas == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: relatorio-visual
           path: |
@@ -274,7 +274,7 @@ jobs:
           LHCI_APP: ${{ matrix.app }}
       - name: Publica o relatório
         if: steps.entrar.outputs.existe == 'true' && always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lighthouse-${{ matrix.app }}
           path: dist/reports/lighthouse-${{ matrix.app }}

@@ -6,7 +6,10 @@ import {
   WebPush,
 } from '../../application/portas';
 
-/** Par VAPID só do dev (o mesmo do `.env.example`): o fake devolve a chave pública para o T32 testar. */
+/**
+ * Chave pública fixa que o fake devolve para o T32 testar a inscrição. A privada deste par vazou
+ * (GitGuardian, 25/11/2026) e não deve ser usada: com o fake nada é enviado de verdade.
+ */
 export const CHAVE_PUBLICA_DO_FAKE =
   'BOMhRdHvlAQwovoiwXOvqqBDNnAO_MMOXoVtxyWF2M-oFpXd-iQb5Xs9iKxIYU6NLMtuX7o9uhPtOvehwX33Q8g';
 
