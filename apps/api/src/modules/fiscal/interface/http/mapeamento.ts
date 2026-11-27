@@ -37,7 +37,8 @@ function atencao(nota: NotaFiscal): string {
     case 'processando':
       return 'Aguardando o emissor';
     case 'pendente':
-      return 'Aguardando emissão';
+      // Nota de mensalidade em aberto (sem pagamento) espera o pagamento; a do pagamento, a emissão.
+      return nota.pagamentoId ? 'Aguardando emissão' : 'Aguardando pagamento';
     case 'cancelada':
       return nota.motivoDoCancelamento ?? 'Cancelada';
     default:

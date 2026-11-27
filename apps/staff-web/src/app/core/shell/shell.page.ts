@@ -10,6 +10,12 @@ import { montarMenu } from './menu';
   selector: 'app-shell-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AppShell, RouterOutlet],
+  // O outlet vazio não pode contar como item do `gap` do conteúdo (empurrava a tela 22px para baixo).
+  styles: `
+    router-outlet {
+      display: none;
+    }
+  `,
   template: `<ui-app-shell [sections]="secoes()"><router-outlet /></ui-app-shell>`,
 })
 export class ShellPage {
