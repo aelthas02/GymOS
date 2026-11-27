@@ -73,7 +73,14 @@ import { PagamentoSimuladoController } from './interface/http/pagamento-simulado
     RotinaDosAtrasos,
     VariavelLinkDePagamento,
   ],
-  exports: [Parcelas, Pagamentos, RotinaDosAtrasos, RepositorioDeParcelas, RepositorioDePagamentos],
+  exports: [
+    Parcelas,
+    Pagamentos,
+    RotinaDosAtrasos,
+    RepositorioDeParcelas,
+    RepositorioDePagamentos,
+    RepositorioDeFormasDePagamento,
+  ],
 })
 export class CobrancaModule implements OnModuleInit {
   constructor(

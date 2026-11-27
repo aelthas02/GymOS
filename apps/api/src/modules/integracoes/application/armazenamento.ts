@@ -63,6 +63,12 @@ export class Armazenamento {
     return { url: await this.objetos.urlAssinada(chave, expiraEm, agora), expiraEm };
   }
 
+  /** Conteúdo de um objeto do tenant (exportação de arquivos guardados, como os XMLs das notas). */
+  async ler(chave: string): Promise<Buffer | null> {
+    conferirChaveDoTenant(this.tenant.id(), chave);
+    return this.objetos.ler(chave);
+  }
+
   async remover(chave: string): Promise<void> {
     conferirChaveDoTenant(this.tenant.id(), chave);
     await this.objetos.remover(chave);

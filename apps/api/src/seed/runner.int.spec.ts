@@ -2,6 +2,7 @@ import type { INestApplicationContext } from '@nestjs/common';
 import { AcessoModule } from '../modules/acesso/acesso.module';
 import { AlunosModule } from '../modules/alunos/alunos.module';
 import { AvisosModule } from '../modules/avisos/avisos.module';
+import { FiscalModule } from '../modules/fiscal/fiscal.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
 import { ProtecaoDeDadosModule } from '../modules/platform/protecao-de-dados.module';
 import { criarModuloDeEventos } from '../modules/platform/testing/eventos-de-teste';
@@ -25,6 +26,7 @@ describe('runner de seed', () => {
       FuncionariosModule,
       AvisosModule,
       AcessoModule,
+      FiscalModule,
     ]);
   });
 
@@ -48,6 +50,7 @@ describe('runner de seed', () => {
       'parcelas',
       'pagamentos',
       'acesso',
+      'notas',
       'avisos',
       'sonda',
     ]);
@@ -72,10 +75,11 @@ describe('runner de seed', () => {
           'parcela',
           'pagamento',
           'aviso',
+          'nota_fiscal',
         ].map((tabela) => conexao.query<{ n: string }>(`SELECT count(*) AS n FROM ${tabela}`)),
       );
       return contagens.map((contagem) => contagem.rows[0]?.n);
     });
-    expect(total).toEqual(['1', '4', '6', '8', '8', '8', '25', '19', '5']);
+    expect(total).toEqual(['1', '4', '6', '8', '8', '8', '25', '19', '5', '7']);
   });
 });

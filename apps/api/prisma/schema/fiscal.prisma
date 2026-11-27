@@ -1,0 +1,74 @@
+// Modelos do domínio fiscal (T20, ADR-008): notas fiscais (NFS-e e NFC-e) e os dados fiscais da
+// academia. Tabelas criadas por `nx g @gymos/api:tabela`; campos na migração `campos_do_fiscal`. Sem FK
+// para aluno e pagamento: a exclusão do titular (LGPD) anonimiza o tomador e a nota fica pela guarda
+// fiscal de 5 anos.
+
+/// Nota fiscal. `id` é a chave de idempotência no emissor (a nota de um pagamento tem id derivado do
+/// tenant, do pagamento e do tipo). `situacao`: pendente, processando, emitida, rejeitada ou cancelada.
+/// `tomadorCpf` é cifrado (T13c). PDF e XML ficam no Armazenamento (T13d), pelas chaves.
+model NotaFiscal {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String    @map("tenant_id") @db.Uuid
+  criadoEm              DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  tipo                  String
+  situacao              String
+  numero                String?
+  pagamentoId           String?   @map("pagamento_id") @db.Uuid
+  parcelaId             String?   @map("parcela_id") @db.Uuid
+  alunoId               String?   @map("aluno_id") @db.Uuid
+  origem                String?
+  tomadorNome           String    @map("tomador_nome")
+  tomadorCpf            String?   @map("tomador_cpf")
+  descricao             String
+  codigoDoServico       String    @map("codigo_do_servico")
+  competencia           String
+  valorCentavos         Int       @map("valor_centavos")
+  aliquotaIssPontosBase Int       @map("aliquota_iss_pontos_base")
+  issCentavos           Int       @map("iss_centavos")
+  retencoesCentavos     Int       @default(0) @map("retencoes_centavos")
+  formaDePagamento      String?   @map("forma_de_pagamento")
+  motivoDaRejeicao      String?   @map("motivo_da_rejeicao")
+  motivoDoCancelamento  String?   @map("motivo_do_cancelamento")
+  pdfChave              String?   @map("pdf_chave")
+  xmlChave              String?   @map("xml_chave")
+  tentativas            Int       @default(0)
+  enviarAoAluno         Boolean   @default(false) @map("enviar_ao_aluno")
+  anexarArquivos        Boolean   @default(true) @map("anexar_arquivos")
+  registradaNaFicha     Boolean   @default(false) @map("registrada_na_ficha")
+  enviadaAoAlunoEm      DateTime? @map("enviada_ao_aluno_em") @db.Timestamptz(3)
+  emitidaEm             DateTime? @map("emitida_em") @db.Timestamptz(3)
+  canceladaEm           DateTime? @map("cancelada_em") @db.Timestamptz(3)
+  atualizadoEm          DateTime  @default(now()) @map("atualizado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, pagamentoId, tipo])
+  @@index([tenantId])
+  @@index([tenantId, competencia, criadoEm])
+  @@index([tenantId, situacao])
+  @@index([tenantId, alunoId])
+  @@index([tenantId, parcelaId])
+  @@map("nota_fiscal")
+}
+
+/// Dados fiscais da academia (uma linha por tenant) e a regra "Quando emitir". O certificado A1 vai ao
+/// emissor; aqui ficam só a validade e a situação.
+model ConfiguracaoFiscal {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String    @map("tenant_id") @db.Uuid
+  criadoEm              DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  razaoSocial           String    @map("razao_social")
+  cnpj                  String
+  regime                String
+  municipio             String
+  codigoDoServico       String    @map("codigo_do_servico")
+  aliquotaIssPontosBase Int       @map("aliquota_iss_pontos_base")
+  certificadoValidade   DateTime? @map("certificado_validade") @db.Date
+  emitirNfseAoConfirmar Boolean   @default(true) @map("emitir_nfse_ao_confirmar")
+  emitirNfceNaVenda     Boolean   @default(true) @map("emitir_nfce_na_venda")
+  enviarAoAluno         Boolean   @default(true) @map("enviar_ao_aluno")
+  emitirEmLote          Boolean   @default(false) @map("emitir_em_lote")
+  atualizadoEm          DateTime  @default(now()) @map("atualizado_em") @db.Timestamptz(3)
+
+  @@unique([tenantId])
+  @@index([tenantId])
+  @@map("configuracao_fiscal")
+}

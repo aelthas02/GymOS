@@ -103,6 +103,17 @@ export class ObjetosDeArmazenamentoS3 extends ObjetosDeArmazenamento implements 
     }
   }
 
+  async ler(chave: string): Promise<Buffer | null> {
+    const resposta = await fetch(this.url('GET', chave));
+    if (resposta.status === 404) {
+      return null;
+    }
+    if (!resposta.ok) {
+      throw new Error(`O armazenamento recusou a leitura (${resposta.status}).`);
+    }
+    return Buffer.from(await resposta.arrayBuffer());
+  }
+
   async urlAssinada(chave: string, expiraEm: Date, agora: Date): Promise<string> {
     const segundos = Math.max(1, Math.round((expiraEm.getTime() - agora.getTime()) / 1000));
     return this.url('GET', chave, segundos, agora);

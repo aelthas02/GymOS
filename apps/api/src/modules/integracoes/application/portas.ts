@@ -174,6 +174,8 @@ export abstract class RepositorioDeUsoDeIA {
 export abstract class ObjetosDeArmazenamento {
   abstract gravar(chave: string, conteudo: Buffer, tipo: string): Promise<void>;
   abstract remover(chave: string): Promise<void>;
+  /** Conteúdo do objeto; `null` se não existe. */
+  abstract ler(chave: string): Promise<Buffer | null>;
   /** URL que abre só este objeto até `expiraEm`. */
   abstract urlAssinada(chave: string, expiraEm: Date, agora: Date): Promise<string>;
 }

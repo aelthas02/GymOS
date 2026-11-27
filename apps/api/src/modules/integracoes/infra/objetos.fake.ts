@@ -30,6 +30,10 @@ export class ObjetosDeArmazenamentoFake extends ObjetosDeArmazenamento {
     this.objetos.delete(chave);
   }
 
+  async ler(chave: string): Promise<Buffer | null> {
+    return this.objetos.get(chave)?.conteudo ?? null;
+  }
+
   async urlAssinada(chave: string, expiraEm: Date): Promise<string> {
     const expira = String(expiraEm.getTime());
     const consulta = new URLSearchParams({
