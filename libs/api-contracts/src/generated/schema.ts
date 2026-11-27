@@ -1357,6 +1357,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/configuracoes/fiscal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dados fiscais, regra "Quando emitir", certificado A1 e o emissor. */
+        get: operations["obterDadosFiscais"];
+        /** Salva os dados e a regra de emissão. */
+        put: operations["salvarDadosFiscais"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/configuracoes/fiscal/certificado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** "Trocar": envia o certificado A1 ao emissor e guarda só a validade. */
+        put: operations["trocarCertificadoA1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/dispositivos": {
         parameters: {
             query?: never;
@@ -1703,6 +1738,245 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/notas-fiscais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** "Notas do mês": mais recentes primeiro, por cursor. */
+        get: operations["listarNotasFiscais"];
+        put?: never;
+        /** Emite a nota manual; sem resposta do emissor, fica "processando" e é conferida depois. */
+        post: operations["emitirNotaFiscal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/alunos/{alunoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notas registradas na ficha do aluno ("Aparece no financeiro dele"). */
+        get: operations["notasFiscaisDaFichaDoAluno"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/atencao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** "Precisa de atenção": rejeitadas, pendentes e em processamento. */
+        get: operations["notasFiscaisQuePrecisamDeAtencao"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/exportacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** "Exportar para o contador": ZIP com os XMLs e o CSV da competência. */
+        get: operations["exportarNotasParaOContador"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** "Resumo da nota": ISS calculado pela alíquota da academia e total. */
+        get: operations["previaDaNotaFiscal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/resumo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** KPIs do mês (emitidas, valor faturado, pendentes, rejeitadas) e o resumo por tipo. */
+        get: operations["resumoDasNotasFiscais"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/sugestao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preenche "Emitir nota": cliente do cadastro e serviço da mensalidade em aberto. */
+        get: operations["sugestaoDeNotaFiscal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detalhe da nota (drawer "Ver"). */
+        get: operations["obterNotaFiscal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/{id}/arquivos/{arquivo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** URL assinada do PDF ou do XML. */
+        get: operations["arquivoDaNotaFiscal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/{id}/cancelamento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancela no emissor e aqui. */
+        post: operations["cancelarNotaFiscal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/{id}/correcao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** "Corrigir": troca CPF, descrição ou valor da nota rejeitada e reenvia. */
+        post: operations["corrigirNotaFiscal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/{id}/envio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia ao aluno por e-mail e WhatsApp (transacional), com os links do PDF e do XML. */
+        post: operations["enviarNotaFiscalAoAluno"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/{id}/ficha": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra a nota na ficha do aluno. */
+        post: operations["registrarNotaFiscalNaFicha"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/notas-fiscais/{id}/reenvio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** "Emitir" ou "Reenviar": consulta o emissor pela chave antes de reemitir. */
+        post: operations["reenviarNotaFiscal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/planos": {
         parameters: {
             query?: never;
@@ -1923,6 +2197,12 @@ export interface components {
             /** @enum {string} */
             tipo: "sem_treinar" | "queda";
         };
+        ArquivoDaNotaDto: {
+            /** Format: date-time */
+            expiraEm: string;
+            /** @description URL assinada de leitura (5 minutos). */
+            url: string;
+        };
         ArquivoEnviadoDto: {
             /** @example tenant/6b1f…/treinos/0c9d….png */
             chave: string;
@@ -2062,8 +2342,27 @@ export interface components {
             /** @enum {string} */
             tipo: "facial" | "biometria";
         };
+        CancelamentoDaNotaDto: {
+            /** @example Emitida em duplicidade */
+            motivo: string;
+        };
         CancelarInscricaoDto: {
             endpoint: string;
+        };
+        CertificadoA1Dto: {
+            /** @description Arquivo .pfx em base64; vai ao emissor e não fica guardado aqui. */
+            arquivoBase64: string;
+            /** @description Senha do certificado; não fica guardada. */
+            senha: string;
+        };
+        CertificadoDto: {
+            /** @enum {string} */
+            situacao: "ausente" | "valido" | "vence_em_breve" | "vencido";
+            /**
+             * Format: date
+             * @example 2027-08-14
+             */
+            validade: string | null;
         };
         ChavePublicaDoPushDto: {
             /** @description Valor de `applicationServerKey` na inscrição do navegador. */
@@ -2130,6 +2429,17 @@ export interface components {
             dia: string;
             liberados: number;
             negados: number;
+        };
+        ClienteDaSugestaoDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** @example 123.456.789-09 */
+            cpf: string;
+            email: string | null;
+            /** @example Juliana Prado */
+            nome: string;
+            /** @example (11) 98888-1122 */
+            telefone: string | null;
         };
         CobrancaDto: {
             /** @enum {string} */
@@ -2358,6 +2668,13 @@ export interface components {
         ConviteEmLoteDto: {
             itens: components["schemas"]["FuncionarioCriadoDto"][];
         };
+        CorrecaoDaNotaDto: {
+            /** @example 123.456.789-09 */
+            cpf?: string;
+            descricao?: string;
+            /** @example 11900 */
+            valorCentavos?: number;
+        };
         CredencialDoAgenteDto: {
             /** Format: uuid */
             agenteId?: string;
@@ -2471,6 +2788,35 @@ export interface components {
              */
             valorTotalCentavos: number;
         };
+        DadosFiscaisDto: {
+            /**
+             * @description Alíquota do ISS em pontos-base (2,5% = 250).
+             * @example 250
+             */
+            aliquotaIssPontosBase: number;
+            certificado: components["schemas"]["CertificadoDto"];
+            /** @example 12.345.678/0001-95 */
+            cnpj: string;
+            /** @example 06.04 - Academia e ginástica */
+            codigoDoServico: string;
+            emissor: components["schemas"]["EmissorDto"];
+            /** @description Emitir em lote no fim do mês (22:00 do último dia, NFS-e). */
+            emitirEmLote: boolean;
+            /** @description Vendas da Loja (NFC-e): no momento da venda. */
+            emitirNfceNaVenda: boolean;
+            /** @description Mensalidades (NFS-e): ao confirmar o pagamento. */
+            emitirNfseAoConfirmar: boolean;
+            /** @description Enviar nota ao aluno por e-mail e WhatsApp. */
+            enviarAoAluno: boolean;
+            /** @example São Paulo - SP */
+            municipio: string;
+            /** @description Falso enquanto a academia não salvou os dados. */
+            preenchido: boolean;
+            /** @example Academia Ritmo Ltda */
+            razaoSocial: string;
+            /** @example Simples Nacional */
+            regime: string;
+        };
         DefinirPreferenciaDto: {
             /** @description Receber push desse tipo de aviso. */
             push: boolean;
@@ -2529,6 +2875,49 @@ export interface components {
             id: string;
             online: boolean;
         };
+        EmissorDto: {
+            conectado: boolean;
+            /** @example fiscal-fake */
+            provedor: string;
+        };
+        EmitidasPorTipoDto: {
+            /** @example 100 */
+            nfce: number;
+            /** @example 212 */
+            nfse: number;
+        };
+        EmitirNotaDto: {
+            /** Format: uuid */
+            alunoId: string;
+            /** @description Anexar PDF e XML (links) junto com a mensagem. */
+            anexarArquivos: boolean;
+            /** @example 2026-11 */
+            competencia: string;
+            /**
+             * @description Sem ele, o CPF do cadastro.
+             * @example 123.456.789-09
+             */
+            cpf?: string;
+            /** @example Mensalidade de novembro, plano Mensal */
+            descricao: string;
+            /** @description Enviar ao aluno por e-mail e WhatsApp. */
+            enviarAoAluno: boolean;
+            /** @example pix */
+            formaDePagamento?: string;
+            /**
+             * Format: uuid
+             * @description Mensalidade em aberto que a nota cobre.
+             */
+            parcelaId?: string;
+            /** @description Registrar na ficha do aluno. */
+            registrarNaFicha: boolean;
+            /** @example 0 */
+            retencoesCentavos?: number;
+            /** @enum {string} */
+            tipo: "nfse" | "nfce";
+            /** @example 11900 */
+            valorCentavos: number;
+        };
         EntrarNoAppDto: {
             /**
              * @description CPF (com ou sem pontuação) ou e-mail.
@@ -2548,6 +2937,17 @@ export interface components {
              * @enum {string}
              */
             forma: "pix" | "cartao" | "boleto" | "link";
+        };
+        EnvioDaNotaDto: {
+            /** @default true */
+            anexarArquivos: boolean;
+            /**
+             * @default [
+             *       "email",
+             *       "whatsapp"
+             *     ]
+             */
+            canais: ("email" | "whatsapp")[];
         };
         EsqueciSenhaDoAppDto: {
             /** @description CPF (com ou sem pontuação) ou e-mail. */
@@ -2751,6 +3151,150 @@ export interface components {
         };
         /** @enum {string} */
         ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
+        NotaFiscalDetalheDto: {
+            /**
+             * @description Botão da linha: Ver, Emitir (pendente) ou Corrigir (rejeitada).
+             * @enum {string}
+             */
+            acao: "ver" | "emitir" | "corrigir";
+            /** @example 250 */
+            aliquotaIssPontosBase: number;
+            /** Format: uuid */
+            alunoId: string | null;
+            /**
+             * @description Texto de "Precisa de atenção".
+             * @example CPF não encontrado na Receita Federal
+             */
+            atencao: string;
+            /** Format: date-time */
+            canceladaEm: string | null;
+            /** @example Paulo Reis */
+            cliente: string;
+            /** @example 06.04 - Academia e ginástica */
+            codigoDoServico: string;
+            /** @example 2026-11 */
+            competencia: string;
+            /** @example 11/2026 */
+            competenciaExibida: string;
+            /** @example 123.456.789-09 */
+            cpf: string | null;
+            /**
+             * @description Data da nota: a emissão ou, antes dela, a criação.
+             * @example 2026-11-10T13:00:00.000Z
+             */
+            data: string;
+            /** @example Mensalidade de novembro, plano Mensal */
+            descricao: string;
+            /** Format: date-time */
+            emitidaEm: string | null;
+            /** Format: date-time */
+            enviadaAoAlunoEm: string | null;
+            /** @example pix */
+            formaDePagamento: string | null;
+            /** Format: uuid */
+            id: string;
+            /** @example 298 */
+            issCentavos: number;
+            /** @example CPF não encontrado na Receita Federal */
+            motivoDaRejeicao: string | null;
+            motivoDoCancelamento: string | null;
+            /** @example 1287 */
+            numero: string | null;
+            registradaNaFicha: boolean;
+            /** @example 0 */
+            retencoesCentavos: number;
+            /**
+             * @description "1.287" na NFS-e e "NFC 0412" na NFC-e.
+             * @example 1.287
+             */
+            rotulo: string | null;
+            /** @enum {string} */
+            situacao: "pendente" | "processando" | "emitida" | "rejeitada" | "cancelada";
+            temPdf: boolean;
+            temXml: boolean;
+            /** @enum {string} */
+            tipo: "nfse" | "nfce";
+            /** @example NFS-e */
+            tipoExibido: string;
+            /**
+             * @description Valor menos as retenções.
+             * @example 11900
+             */
+            totalCentavos: number;
+            /** @example 11900 */
+            valorCentavos: number;
+        };
+        NotaFiscalDto: {
+            /**
+             * @description Botão da linha: Ver, Emitir (pendente) ou Corrigir (rejeitada).
+             * @enum {string}
+             */
+            acao: "ver" | "emitir" | "corrigir";
+            /** @example 250 */
+            aliquotaIssPontosBase: number;
+            /** Format: uuid */
+            alunoId: string | null;
+            /**
+             * @description Texto de "Precisa de atenção".
+             * @example CPF não encontrado na Receita Federal
+             */
+            atencao: string;
+            /** Format: date-time */
+            canceladaEm: string | null;
+            /** @example Paulo Reis */
+            cliente: string;
+            /** @example 06.04 - Academia e ginástica */
+            codigoDoServico: string;
+            /** @example 2026-11 */
+            competencia: string;
+            /** @example 11/2026 */
+            competenciaExibida: string;
+            /**
+             * @description Data da nota: a emissão ou, antes dela, a criação.
+             * @example 2026-11-10T13:00:00.000Z
+             */
+            data: string;
+            /** @example Mensalidade de novembro, plano Mensal */
+            descricao: string;
+            /** Format: date-time */
+            emitidaEm: string | null;
+            /** Format: date-time */
+            enviadaAoAlunoEm: string | null;
+            /** @example pix */
+            formaDePagamento: string | null;
+            /** Format: uuid */
+            id: string;
+            /** @example 298 */
+            issCentavos: number;
+            /** @example CPF não encontrado na Receita Federal */
+            motivoDaRejeicao: string | null;
+            motivoDoCancelamento: string | null;
+            /** @example 1287 */
+            numero: string | null;
+            registradaNaFicha: boolean;
+            /** @example 0 */
+            retencoesCentavos: number;
+            /**
+             * @description "1.287" na NFS-e e "NFC 0412" na NFC-e.
+             * @example 1.287
+             */
+            rotulo: string | null;
+            /** @enum {string} */
+            situacao: "pendente" | "processando" | "emitida" | "rejeitada" | "cancelada";
+            temPdf: boolean;
+            temXml: boolean;
+            /** @enum {string} */
+            tipo: "nfse" | "nfce";
+            /** @example NFS-e */
+            tipoExibido: string;
+            /**
+             * @description Valor menos as retenções.
+             * @example 11900
+             */
+            totalCentavos: number;
+            /** @example 11900 */
+            valorCentavos: number;
+        };
         NovaDataDto: {
             motivo?: string;
             /**
@@ -2848,6 +3392,10 @@ export interface components {
             pagina: number;
             /** @description Funcionários que passam pelo filtro, em todas as páginas. */
             total: number;
+        };
+        PaginaDeNotasDto: {
+            itens: components["schemas"]["NotaFiscalDto"][];
+            proximoCursor: string | null;
         };
         PaginaDoCacheDto: {
             alunos: components["schemas"]["AlunoAutorizadoDto"][];
@@ -3026,6 +3574,22 @@ export interface components {
             /** @description Soma das presenças (aluno-dia): base do rateio de receita (T21). */
             total: number;
         };
+        PreviaDaNotaDto: {
+            /** @example 250 */
+            aliquotaIssPontosBase: number;
+            /** @example 06.04 - Academia e ginástica */
+            codigoDoServico: string;
+            /** @description "Dados fiscais da academia conferidos". */
+            dadosFiscaisConferidos: boolean;
+            /** @example 298 */
+            issCentavos: number;
+            /** @example 0 */
+            retencoesCentavos: number;
+            /** @example 11900 */
+            totalCentavos: number;
+            /** @example 11900 */
+            valorCentavos: number;
+        };
         PreviaDoPlanoDto: {
             /** @example O aluno tem acesso por 12 meses e paga em 9 parcelas. As cobranças terminam na 9ª parcela, e o contrato segue ativo até o fim dos 12 meses. */
             explicacao: string;
@@ -3154,6 +3718,9 @@ export interface components {
             /** @description Quantos alunos receberam o aviso. */
             destinatarios: number;
         };
+        ResultadoDoEnvioDto: {
+            enviadaPor: ("email" | "whatsapp")[];
+        };
         ResultadoDoLoteDto: {
             /** @example 12 */
             enviadas: number;
@@ -3166,11 +3733,54 @@ export interface components {
             latenciaEmMs?: number;
             motivo?: string | null;
         };
+        ResumoDasNotasDto: {
+            /** @example 2026-11 */
+            competencia: string;
+            /** @example Novembro 2026 */
+            competenciaPorExtenso: string;
+            /** @example 312 */
+            emitidas: number;
+            emitidasPorTipo: components["schemas"]["EmitidasPorTipoDto"];
+            /**
+             * @description Pendentes e em processamento.
+             * @example 4
+             */
+            pendentes: number;
+            /** @example 2 */
+            rejeitadas: number;
+            /** @example 5490000 */
+            valorFaturadoCentavos: number;
+        };
         RetornoDaMetaDto: {
             /** @description Código devolvido pela Meta no fim do fluxo. */
             codigo: string;
             /** @description `state` devolvido junto do código, sem alteração. */
             state: string;
+        };
+        SalvarDadosFiscaisDto: {
+            /**
+             * @description Alíquota do ISS em pontos-base (2,5% = 250).
+             * @example 250
+             */
+            aliquotaIssPontosBase: number;
+            /** @example 12.345.678/0001-95 */
+            cnpj: string;
+            /** @example 06.04 - Academia e ginástica */
+            codigoDoServico: string;
+            /** @description Emitir em lote no fim do mês (22:00 do último dia, NFS-e). */
+            emitirEmLote: boolean;
+            /** @description Vendas da Loja (NFC-e): no momento da venda. */
+            emitirNfceNaVenda: boolean;
+            /** @description Mensalidades (NFS-e): ao confirmar o pagamento. */
+            emitirNfseAoConfirmar: boolean;
+            /** @description Enviar nota ao aluno por e-mail e WhatsApp. */
+            enviarAoAluno: boolean;
+            /** @example São Paulo - SP */
+            municipio: string;
+            /** @example Academia Ritmo Ltda */
+            razaoSocial: string;
+            /** @example Simples Nacional */
+            regime: string;
         };
         SegundaViaDoAppDto: {
             /**
@@ -3190,6 +3800,22 @@ export interface components {
              * @enum {string}
              */
             forma: "pix" | "cartao" | "boleto" | "link";
+        };
+        ServicoDaSugestaoDto: {
+            /** @example 06.04 - Academia e ginástica */
+            codigoDoServico: string;
+            /** @example 2026-11 */
+            competencia: string;
+            /** @example 11/2026 */
+            competenciaExibida: string;
+            /** @example Mensalidade de novembro, plano Mensal */
+            descricao: string;
+            /** @example PIX */
+            formaDePagamento: string | null;
+            /** Format: uuid */
+            parcelaId: string | null;
+            /** @example 11900 */
+            valorCentavos: number;
         };
         SessaoDto: {
             /** @description JWT de acesso, válido por 10 minutos (Authorization: Bearer). */
@@ -3213,6 +3839,16 @@ export interface components {
              * @enum {string}
              */
             situacaoDeVencimento: "em_dia" | "a_vencer" | "em_atraso";
+        };
+        SugestaoDeNotaDto: {
+            cliente: components["schemas"]["ClienteDaSugestaoDto"];
+            /**
+             * Format: date
+             * @example 2026-11-19
+             */
+            dataDeEmissao: string;
+            resumo: components["schemas"]["PreviaDaNotaDto"];
+            servico: components["schemas"]["ServicoDaSugestaoDto"];
         };
         TesteDeConexaoDto: {
             /**
@@ -6492,6 +7128,127 @@ export interface operations {
             };
         };
     };
+    obterDadosFiscais: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DadosFiscaisDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.fiscal:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    salvarDadosFiscais: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SalvarDadosFiscaisDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DadosFiscaisDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.fiscal:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description CNPJ ou alíquota inválidos. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    trocarCertificadoA1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificadoA1Dto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DadosFiscaisDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão configuracoes.fiscal:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Dados fiscais ausentes ou arquivo vazio. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     listarDispositivos: {
         parameters: {
             query?: never;
@@ -7551,6 +8308,623 @@ export interface operations {
             };
             /** @description Sem sessão válida. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarNotasFiscais: {
+        parameters: {
+            query?: {
+                /** @description Padrão: o mês atual (São Paulo). */
+                competencia?: string;
+                situacao?: "pendente" | "processando" | "emitida" | "rejeitada" | "cancelada";
+                limite?: number;
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDeNotasDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    emitirNotaFiscal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmitirNotaDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDetalheDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description CPF inválido ou dados fiscais ausentes. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notasFiscaisDaFichaDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notasFiscaisQuePrecisamDeAtencao: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    exportarNotasParaOContador: {
+        parameters: {
+            query?: {
+                /** @description Padrão: o mês atual (São Paulo). */
+                competencia?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Arquivo ZIP. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": string;
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    previaDaNotaFiscal: {
+        parameters: {
+            query: {
+                valorCentavos: number;
+                retencoesCentavos?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviaDaNotaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    resumoDasNotasFiscais: {
+        parameters: {
+            query?: {
+                /** @description Padrão: o mês atual (São Paulo). */
+                competencia?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumoDasNotasDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sugestaoDeNotaFiscal: {
+        parameters: {
+            query: {
+                alunoId: string;
+                tipo: "nfse" | "nfce";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SugestaoDeNotaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obterNotaFiscal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDetalheDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Nota não encontrada. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    arquivoDaNotaFiscal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                arquivo: "pdf" | "xml";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArquivoDaNotaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Nota ou arquivo não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cancelarNotaFiscal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelamentoDaNotaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDetalheDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:excluir. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Nota já cancelada ou em processamento. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    corrigirNotaFiscal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrecaoDaNotaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDetalheDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A nota não está rejeitada nem pendente. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description CPF ou valor inválido. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    enviarNotaFiscalAoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnvioDaNotaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDoEnvioDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A nota não está emitida. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registrarNotaFiscalNaFicha: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reenviarNotaFiscal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotaFiscalDetalheDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Nota já emitida ou cancelada. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

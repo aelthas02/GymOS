@@ -34,6 +34,12 @@ export const TIPOS_PERMITIDOS: Readonly<Record<string, RegraDeTipo>> = {
     limiteEmBytes: 10 * MB,
     assinatura: (b) => comeca(b, [0x25, 0x50, 0x44, 0x46]),
   },
+  /** XML das notas fiscais (T20). */
+  'application/xml': {
+    extensoes: ['xml'],
+    limiteEmBytes: 1 * MB,
+    assinatura: (b) => comeca(b, [0x3c, 0x3f, 0x78, 0x6d, 0x6c]),
+  },
   'video/mp4': {
     extensoes: ['mp4'],
     limiteEmBytes: 50 * MB,

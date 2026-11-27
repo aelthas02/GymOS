@@ -7,6 +7,7 @@ import { AlunosModule } from '../alunos/alunos.module';
 import { RepositorioDeAlunos } from '../alunos/application/portas';
 import { AcessoModule } from '../acesso/acesso.module';
 import { AvisosModule } from '../avisos/avisos.module';
+import { FiscalModule } from '../fiscal/fiscal.module';
 import { EnvioDeEmail } from '../autenticacao/application/portas';
 import { EnvioDeEmailFake } from '../autenticacao/infra/email/envio-de-email.fake';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
@@ -77,6 +78,7 @@ describe('Integrações de plataforma (Meta, Mensageria, IA e arquivos)', () => 
       FuncionariosModule,
       AvisosModule,
       AcessoModule,
+      FiscalModule,
     ]);
     await executarSeed(app, MODULOS_DE_SEED);
     const tenants = app.get(RepositorioDeTenants);

@@ -4,6 +4,7 @@ import { seedDosAvisos } from './avisos';
 import { seedDosFuncionarios } from './funcionarios';
 import { seedDaAutenticacao } from './autenticacao';
 import type { ModuloDeSeed } from './modulo-de-seed';
+import { seedDasNotas } from './notas';
 import { seedDosPagamentos } from './pagamentos';
 import { seedDasParcelas } from './parcelas';
 import { seedDaPlataforma } from './plataforma';
@@ -12,7 +13,7 @@ import { seedDaPlataforma } from './plataforma';
  * Módulos de seed registrados (T35). O dono de cada domínio acrescenta o seu aqui, ao criar
  * `seed/<dominio>.ts`, declarando `dependeDe`. O runner ordena (`pnpm seed`).
  *
- * Previstos: notas. O módulo `alunos` (T15a) cria também os planos e os contratos; `parcelas` e `pagamentos` são da cobrança (T19); `funcionarios` é do T26a.
+ * O módulo `alunos` (T15a) cria também os planos e os contratos; `parcelas` e `pagamentos` são da cobrança (T19); `funcionarios` é do T26a; `notas` é do fiscal (T20).
  */
 export const MODULOS_DE_SEED: readonly ModuloDeSeed[] = [
   seedDaPlataforma,
@@ -23,4 +24,5 @@ export const MODULOS_DE_SEED: readonly ModuloDeSeed[] = [
   seedDosPagamentos,
   seedDosAvisos,
   seedDoAcesso,
+  seedDasNotas,
 ];

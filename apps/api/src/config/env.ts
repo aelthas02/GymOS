@@ -67,6 +67,10 @@ export const envSchema = z
     PAGAMENTOS_WEBHOOK_SEGREDO: z.string().min(16).default('gymos-dev-segredo-dos-webhooks'),
     // Endereço público da API, usado nas páginas de pagamento simuladas do fake.
     PAGAMENTOS_URL_PUBLICA: required.default('http://localhost:3000'),
+    // Emissor fiscal (T20, ADR-008). Só o fake até o fornecedor ser escolhido; o segredo assina os
+    // webhooks do emissor (HMAC-SHA256 no cabeçalho x-assinatura).
+    FISCAL_PROVEDOR: z.enum(['fake']).default('fake'),
+    FISCAL_WEBHOOK_SEGREDO: z.string().min(16).default('gymos-dev-segredo-do-emissor-fiscal'),
     // Integrações de plataforma (T13d). Só adapters fake até haver contas reais (Meta, IA); o segredo
     // assina os webhooks de mensagem (HMAC-SHA256 no cabeçalho x-hub-signature-256).
     META_PROVEDOR: z.enum(['fake']).default('fake'),

@@ -419,6 +419,23 @@
         ],
         "type": "object"
       },
+      "ArquivoDaNotaDto": {
+        "properties": {
+          "expiraEm": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "url": {
+            "description": "URL assinada de leitura (5 minutos).",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "expiraEm"
+        ],
+        "type": "object"
+      },
       "ArquivoEnviadoDto": {
         "properties": {
           "chave": {
@@ -763,6 +780,18 @@
         ],
         "type": "object"
       },
+      "CancelamentoDaNotaDto": {
+        "properties": {
+          "motivo": {
+            "example": "Emitida em duplicidade",
+            "type": "string"
+          }
+        },
+        "required": [
+          "motivo"
+        ],
+        "type": "object"
+      },
       "CancelarInscricaoDto": {
         "properties": {
           "endpoint": {
@@ -772,6 +801,47 @@
         },
         "required": [
           "endpoint"
+        ],
+        "type": "object"
+      },
+      "CertificadoA1Dto": {
+        "properties": {
+          "arquivoBase64": {
+            "description": "Arquivo .pfx em base64; vai ao emissor e não fica guardado aqui.",
+            "type": "string"
+          },
+          "senha": {
+            "description": "Senha do certificado; não fica guardada.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "arquivoBase64",
+          "senha"
+        ],
+        "type": "object"
+      },
+      "CertificadoDto": {
+        "properties": {
+          "situacao": {
+            "enum": [
+              "ausente",
+              "valido",
+              "vence_em_breve",
+              "vencido"
+            ],
+            "type": "string"
+          },
+          "validade": {
+            "example": "2027-08-14",
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "validade",
+          "situacao"
         ],
         "type": "object"
       },
@@ -913,6 +983,39 @@
           "dia",
           "liberados",
           "negados"
+        ],
+        "type": "object"
+      },
+      "ClienteDaSugestaoDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "cpf": {
+            "example": "123.456.789-09",
+            "type": "string"
+          },
+          "email": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "example": "Juliana Prado",
+            "type": "string"
+          },
+          "telefone": {
+            "example": "(11) 98888-1122",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId",
+          "nome",
+          "cpf",
+          "email",
+          "telefone"
         ],
         "type": "object"
       },
@@ -1541,6 +1644,22 @@
         ],
         "type": "object"
       },
+      "CorrecaoDaNotaDto": {
+        "properties": {
+          "cpf": {
+            "example": "123.456.789-09",
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
       "CredencialDoAgenteDto": {
         "properties": {
           "agenteId": {
@@ -1813,6 +1932,77 @@
         ],
         "type": "object"
       },
+      "DadosFiscaisDto": {
+        "properties": {
+          "aliquotaIssPontosBase": {
+            "description": "Alíquota do ISS em pontos-base (2,5% = 250).",
+            "example": 250,
+            "type": "number"
+          },
+          "certificado": {
+            "$ref": "#/components/schemas/CertificadoDto"
+          },
+          "cnpj": {
+            "example": "12.345.678/0001-95",
+            "type": "string"
+          },
+          "codigoDoServico": {
+            "example": "06.04 - Academia e ginástica",
+            "type": "string"
+          },
+          "emissor": {
+            "$ref": "#/components/schemas/EmissorDto"
+          },
+          "emitirEmLote": {
+            "description": "Emitir em lote no fim do mês (22:00 do último dia, NFS-e).",
+            "type": "boolean"
+          },
+          "emitirNfceNaVenda": {
+            "description": "Vendas da Loja (NFC-e): no momento da venda.",
+            "type": "boolean"
+          },
+          "emitirNfseAoConfirmar": {
+            "description": "Mensalidades (NFS-e): ao confirmar o pagamento.",
+            "type": "boolean"
+          },
+          "enviarAoAluno": {
+            "description": "Enviar nota ao aluno por e-mail e WhatsApp.",
+            "type": "boolean"
+          },
+          "municipio": {
+            "example": "São Paulo - SP",
+            "type": "string"
+          },
+          "preenchido": {
+            "description": "Falso enquanto a academia não salvou os dados.",
+            "type": "boolean"
+          },
+          "razaoSocial": {
+            "example": "Academia Ritmo Ltda",
+            "type": "string"
+          },
+          "regime": {
+            "example": "Simples Nacional",
+            "type": "string"
+          }
+        },
+        "required": [
+          "razaoSocial",
+          "cnpj",
+          "regime",
+          "municipio",
+          "codigoDoServico",
+          "aliquotaIssPontosBase",
+          "emitirNfseAoConfirmar",
+          "emitirNfceNaVenda",
+          "enviarAoAluno",
+          "emitirEmLote",
+          "certificado",
+          "emissor",
+          "preenchido"
+        ],
+        "type": "object"
+      },
       "DefinirPreferenciaDto": {
         "properties": {
           "push": {
@@ -2015,6 +2205,107 @@
         ],
         "type": "object"
       },
+      "EmissorDto": {
+        "properties": {
+          "conectado": {
+            "type": "boolean"
+          },
+          "provedor": {
+            "example": "fiscal-fake",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provedor",
+          "conectado"
+        ],
+        "type": "object"
+      },
+      "EmitidasPorTipoDto": {
+        "properties": {
+          "nfce": {
+            "example": 100,
+            "type": "number"
+          },
+          "nfse": {
+            "example": 212,
+            "type": "number"
+          }
+        },
+        "required": [
+          "nfse",
+          "nfce"
+        ],
+        "type": "object"
+      },
+      "EmitirNotaDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "anexarArquivos": {
+            "description": "Anexar PDF e XML (links) junto com a mensagem.",
+            "type": "boolean"
+          },
+          "competencia": {
+            "example": "2026-11",
+            "type": "string"
+          },
+          "cpf": {
+            "description": "Sem ele, o CPF do cadastro.",
+            "example": "123.456.789-09",
+            "type": "string"
+          },
+          "descricao": {
+            "example": "Mensalidade de novembro, plano Mensal",
+            "type": "string"
+          },
+          "enviarAoAluno": {
+            "description": "Enviar ao aluno por e-mail e WhatsApp.",
+            "type": "boolean"
+          },
+          "formaDePagamento": {
+            "example": "pix",
+            "type": "string"
+          },
+          "parcelaId": {
+            "description": "Mensalidade em aberto que a nota cobre.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "registrarNaFicha": {
+            "description": "Registrar na ficha do aluno.",
+            "type": "boolean"
+          },
+          "retencoesCentavos": {
+            "example": 0,
+            "type": "number"
+          },
+          "tipo": {
+            "enum": [
+              "nfse",
+              "nfce"
+            ],
+            "type": "string"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "required": [
+          "tipo",
+          "alunoId",
+          "descricao",
+          "valorCentavos",
+          "competencia",
+          "enviarAoAluno",
+          "anexarArquivos",
+          "registrarNaFicha"
+        ],
+        "type": "object"
+      },
       "EntrarNoAppDto": {
         "properties": {
           "identificador": {
@@ -2062,6 +2353,29 @@
               "link"
             ],
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "EnvioDaNotaDto": {
+        "properties": {
+          "anexarArquivos": {
+            "default": true,
+            "type": "boolean"
+          },
+          "canais": {
+            "default": [
+              "email",
+              "whatsapp"
+            ],
+            "items": {
+              "enum": [
+                "email",
+                "whatsapp"
+              ],
+              "type": "string"
+            },
+            "type": "array"
           }
         },
         "type": "object"
@@ -2710,6 +3024,362 @@
         ],
         "type": "string"
       },
+      "NotaFiscalDetalheDto": {
+        "properties": {
+          "acao": {
+            "description": "Botão da linha: Ver, Emitir (pendente) ou Corrigir (rejeitada).",
+            "enum": [
+              "ver",
+              "emitir",
+              "corrigir"
+            ],
+            "type": "string"
+          },
+          "aliquotaIssPontosBase": {
+            "example": 250,
+            "type": "number"
+          },
+          "alunoId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "atencao": {
+            "description": "Texto de \"Precisa de atenção\".",
+            "example": "CPF não encontrado na Receita Federal",
+            "type": "string"
+          },
+          "canceladaEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "cliente": {
+            "example": "Paulo Reis",
+            "type": "string"
+          },
+          "codigoDoServico": {
+            "example": "06.04 - Academia e ginástica",
+            "type": "string"
+          },
+          "competencia": {
+            "example": "2026-11",
+            "type": "string"
+          },
+          "competenciaExibida": {
+            "example": "11/2026",
+            "type": "string"
+          },
+          "cpf": {
+            "example": "123.456.789-09",
+            "nullable": true,
+            "type": "string"
+          },
+          "data": {
+            "description": "Data da nota: a emissão ou, antes dela, a criação.",
+            "example": "2026-11-10T13:00:00.000Z",
+            "type": "string"
+          },
+          "descricao": {
+            "example": "Mensalidade de novembro, plano Mensal",
+            "type": "string"
+          },
+          "emitidaEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "enviadaAoAlunoEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "formaDePagamento": {
+            "example": "pix",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "issCentavos": {
+            "example": 298,
+            "type": "number"
+          },
+          "motivoDaRejeicao": {
+            "example": "CPF não encontrado na Receita Federal",
+            "nullable": true,
+            "type": "string"
+          },
+          "motivoDoCancelamento": {
+            "nullable": true,
+            "type": "string"
+          },
+          "numero": {
+            "example": "1287",
+            "nullable": true,
+            "type": "string"
+          },
+          "registradaNaFicha": {
+            "type": "boolean"
+          },
+          "retencoesCentavos": {
+            "example": 0,
+            "type": "number"
+          },
+          "rotulo": {
+            "description": "\"1.287\" na NFS-e e \"NFC 0412\" na NFC-e.",
+            "example": "1.287",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "pendente",
+              "processando",
+              "emitida",
+              "rejeitada",
+              "cancelada"
+            ],
+            "type": "string"
+          },
+          "temPdf": {
+            "type": "boolean"
+          },
+          "temXml": {
+            "type": "boolean"
+          },
+          "tipo": {
+            "enum": [
+              "nfse",
+              "nfce"
+            ],
+            "type": "string"
+          },
+          "tipoExibido": {
+            "example": "NFS-e",
+            "type": "string"
+          },
+          "totalCentavos": {
+            "description": "Valor menos as retenções.",
+            "example": 11900,
+            "type": "number"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "tipo",
+          "tipoExibido",
+          "situacao",
+          "numero",
+          "rotulo",
+          "alunoId",
+          "cliente",
+          "descricao",
+          "codigoDoServico",
+          "competencia",
+          "competenciaExibida",
+          "valorCentavos",
+          "aliquotaIssPontosBase",
+          "issCentavos",
+          "retencoesCentavos",
+          "totalCentavos",
+          "formaDePagamento",
+          "motivoDaRejeicao",
+          "motivoDoCancelamento",
+          "data",
+          "emitidaEm",
+          "canceladaEm",
+          "temPdf",
+          "temXml",
+          "registradaNaFicha",
+          "enviadaAoAlunoEm",
+          "acao",
+          "atencao",
+          "cpf"
+        ],
+        "type": "object"
+      },
+      "NotaFiscalDto": {
+        "properties": {
+          "acao": {
+            "description": "Botão da linha: Ver, Emitir (pendente) ou Corrigir (rejeitada).",
+            "enum": [
+              "ver",
+              "emitir",
+              "corrigir"
+            ],
+            "type": "string"
+          },
+          "aliquotaIssPontosBase": {
+            "example": 250,
+            "type": "number"
+          },
+          "alunoId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "atencao": {
+            "description": "Texto de \"Precisa de atenção\".",
+            "example": "CPF não encontrado na Receita Federal",
+            "type": "string"
+          },
+          "canceladaEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "cliente": {
+            "example": "Paulo Reis",
+            "type": "string"
+          },
+          "codigoDoServico": {
+            "example": "06.04 - Academia e ginástica",
+            "type": "string"
+          },
+          "competencia": {
+            "example": "2026-11",
+            "type": "string"
+          },
+          "competenciaExibida": {
+            "example": "11/2026",
+            "type": "string"
+          },
+          "data": {
+            "description": "Data da nota: a emissão ou, antes dela, a criação.",
+            "example": "2026-11-10T13:00:00.000Z",
+            "type": "string"
+          },
+          "descricao": {
+            "example": "Mensalidade de novembro, plano Mensal",
+            "type": "string"
+          },
+          "emitidaEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "enviadaAoAlunoEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "formaDePagamento": {
+            "example": "pix",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "issCentavos": {
+            "example": 298,
+            "type": "number"
+          },
+          "motivoDaRejeicao": {
+            "example": "CPF não encontrado na Receita Federal",
+            "nullable": true,
+            "type": "string"
+          },
+          "motivoDoCancelamento": {
+            "nullable": true,
+            "type": "string"
+          },
+          "numero": {
+            "example": "1287",
+            "nullable": true,
+            "type": "string"
+          },
+          "registradaNaFicha": {
+            "type": "boolean"
+          },
+          "retencoesCentavos": {
+            "example": 0,
+            "type": "number"
+          },
+          "rotulo": {
+            "description": "\"1.287\" na NFS-e e \"NFC 0412\" na NFC-e.",
+            "example": "1.287",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "pendente",
+              "processando",
+              "emitida",
+              "rejeitada",
+              "cancelada"
+            ],
+            "type": "string"
+          },
+          "temPdf": {
+            "type": "boolean"
+          },
+          "temXml": {
+            "type": "boolean"
+          },
+          "tipo": {
+            "enum": [
+              "nfse",
+              "nfce"
+            ],
+            "type": "string"
+          },
+          "tipoExibido": {
+            "example": "NFS-e",
+            "type": "string"
+          },
+          "totalCentavos": {
+            "description": "Valor menos as retenções.",
+            "example": 11900,
+            "type": "number"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "tipo",
+          "tipoExibido",
+          "situacao",
+          "numero",
+          "rotulo",
+          "alunoId",
+          "cliente",
+          "descricao",
+          "codigoDoServico",
+          "competencia",
+          "competenciaExibida",
+          "valorCentavos",
+          "aliquotaIssPontosBase",
+          "issCentavos",
+          "retencoesCentavos",
+          "totalCentavos",
+          "formaDePagamento",
+          "motivoDaRejeicao",
+          "motivoDoCancelamento",
+          "data",
+          "emitidaEm",
+          "canceladaEm",
+          "temPdf",
+          "temXml",
+          "registradaNaFicha",
+          "enviadaAoAlunoEm",
+          "acao",
+          "atencao"
+        ],
+        "type": "object"
+      },
       "NovaDataDto": {
         "properties": {
           "motivo": {
@@ -3027,6 +3697,25 @@
           "pagina",
           "limite",
           "contadores"
+        ],
+        "type": "object"
+      },
+      "PaginaDeNotasDto": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/NotaFiscalDto"
+            },
+            "type": "array"
+          },
+          "proximoCursor": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "itens",
+          "proximoCursor"
         ],
         "type": "object"
       },
@@ -3446,6 +4135,48 @@
         ],
         "type": "object"
       },
+      "PreviaDaNotaDto": {
+        "properties": {
+          "aliquotaIssPontosBase": {
+            "example": 250,
+            "type": "number"
+          },
+          "codigoDoServico": {
+            "example": "06.04 - Academia e ginástica",
+            "type": "string"
+          },
+          "dadosFiscaisConferidos": {
+            "description": "\"Dados fiscais da academia conferidos\".",
+            "type": "boolean"
+          },
+          "issCentavos": {
+            "example": 298,
+            "type": "number"
+          },
+          "retencoesCentavos": {
+            "example": 0,
+            "type": "number"
+          },
+          "totalCentavos": {
+            "example": 11900,
+            "type": "number"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "required": [
+          "valorCentavos",
+          "aliquotaIssPontosBase",
+          "issCentavos",
+          "retencoesCentavos",
+          "totalCentavos",
+          "codigoDoServico",
+          "dadosFiscaisConferidos"
+        ],
+        "type": "object"
+      },
       "PreviaDoPlanoDto": {
         "properties": {
           "explicacao": {
@@ -3836,6 +4567,24 @@
         ],
         "type": "object"
       },
+      "ResultadoDoEnvioDto": {
+        "properties": {
+          "enviadaPor": {
+            "items": {
+              "enum": [
+                "email",
+                "whatsapp"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "enviadaPor"
+        ],
+        "type": "object"
+      },
       "ResultadoDoLoteDto": {
         "properties": {
           "enviadas": {
@@ -3880,6 +4629,48 @@
         ],
         "type": "object"
       },
+      "ResumoDasNotasDto": {
+        "properties": {
+          "competencia": {
+            "example": "2026-11",
+            "type": "string"
+          },
+          "competenciaPorExtenso": {
+            "example": "Novembro 2026",
+            "type": "string"
+          },
+          "emitidas": {
+            "example": 312,
+            "type": "number"
+          },
+          "emitidasPorTipo": {
+            "$ref": "#/components/schemas/EmitidasPorTipoDto"
+          },
+          "pendentes": {
+            "description": "Pendentes e em processamento.",
+            "example": 4,
+            "type": "number"
+          },
+          "rejeitadas": {
+            "example": 2,
+            "type": "number"
+          },
+          "valorFaturadoCentavos": {
+            "example": 5490000,
+            "type": "number"
+          }
+        },
+        "required": [
+          "competencia",
+          "competenciaPorExtenso",
+          "emitidas",
+          "valorFaturadoCentavos",
+          "pendentes",
+          "rejeitadas",
+          "emitidasPorTipo"
+        ],
+        "type": "object"
+      },
       "RetornoDaMetaDto": {
         "properties": {
           "codigo": {
@@ -3894,6 +4685,64 @@
         "required": [
           "codigo",
           "state"
+        ],
+        "type": "object"
+      },
+      "SalvarDadosFiscaisDto": {
+        "properties": {
+          "aliquotaIssPontosBase": {
+            "description": "Alíquota do ISS em pontos-base (2,5% = 250).",
+            "example": 250,
+            "type": "number"
+          },
+          "cnpj": {
+            "example": "12.345.678/0001-95",
+            "type": "string"
+          },
+          "codigoDoServico": {
+            "example": "06.04 - Academia e ginástica",
+            "type": "string"
+          },
+          "emitirEmLote": {
+            "description": "Emitir em lote no fim do mês (22:00 do último dia, NFS-e).",
+            "type": "boolean"
+          },
+          "emitirNfceNaVenda": {
+            "description": "Vendas da Loja (NFC-e): no momento da venda.",
+            "type": "boolean"
+          },
+          "emitirNfseAoConfirmar": {
+            "description": "Mensalidades (NFS-e): ao confirmar o pagamento.",
+            "type": "boolean"
+          },
+          "enviarAoAluno": {
+            "description": "Enviar nota ao aluno por e-mail e WhatsApp.",
+            "type": "boolean"
+          },
+          "municipio": {
+            "example": "São Paulo - SP",
+            "type": "string"
+          },
+          "razaoSocial": {
+            "example": "Academia Ritmo Ltda",
+            "type": "string"
+          },
+          "regime": {
+            "example": "Simples Nacional",
+            "type": "string"
+          }
+        },
+        "required": [
+          "razaoSocial",
+          "cnpj",
+          "regime",
+          "municipio",
+          "codigoDoServico",
+          "aliquotaIssPontosBase",
+          "emitirNfseAoConfirmar",
+          "emitirNfceNaVenda",
+          "enviarAoAluno",
+          "emitirEmLote"
         ],
         "type": "object"
       },
@@ -3935,6 +4784,50 @@
         },
         "required": [
           "forma"
+        ],
+        "type": "object"
+      },
+      "ServicoDaSugestaoDto": {
+        "properties": {
+          "codigoDoServico": {
+            "example": "06.04 - Academia e ginástica",
+            "type": "string"
+          },
+          "competencia": {
+            "example": "2026-11",
+            "type": "string"
+          },
+          "competenciaExibida": {
+            "example": "11/2026",
+            "type": "string"
+          },
+          "descricao": {
+            "example": "Mensalidade de novembro, plano Mensal",
+            "type": "string"
+          },
+          "formaDePagamento": {
+            "example": "PIX",
+            "nullable": true,
+            "type": "string"
+          },
+          "parcelaId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "valorCentavos": {
+            "example": 11900,
+            "type": "number"
+          }
+        },
+        "required": [
+          "descricao",
+          "codigoDoServico",
+          "valorCentavos",
+          "competencia",
+          "competenciaExibida",
+          "parcelaId",
+          "formaDePagamento"
         ],
         "type": "object"
       },
@@ -4014,6 +4907,31 @@
           "situacaoDeVencimento",
           "avaliacao",
           "contrato"
+        ],
+        "type": "object"
+      },
+      "SugestaoDeNotaDto": {
+        "properties": {
+          "cliente": {
+            "$ref": "#/components/schemas/ClienteDaSugestaoDto"
+          },
+          "dataDeEmissao": {
+            "example": "2026-11-19",
+            "format": "date",
+            "type": "string"
+          },
+          "resumo": {
+            "$ref": "#/components/schemas/PreviaDaNotaDto"
+          },
+          "servico": {
+            "$ref": "#/components/schemas/ServicoDaSugestaoDto"
+          }
+        },
+        "required": [
+          "cliente",
+          "servico",
+          "dataDeEmissao",
+          "resumo"
         ],
         "type": "object"
       },
@@ -7841,6 +8759,129 @@
         ]
       }
     },
+    "/api/configuracoes/fiscal": {
+      "get": {
+        "operationId": "obterDadosFiscais",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DadosFiscaisDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.fiscal:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dados fiscais, regra \"Quando emitir\", certificado A1 e o emissor.",
+        "tags": [
+          "configuracoes"
+        ]
+      },
+      "put": {
+        "operationId": "salvarDadosFiscais",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalvarDadosFiscaisDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DadosFiscaisDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.fiscal:editar."
+          },
+          "422": {
+            "description": "CNPJ ou alíquota inválidos."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Salva os dados e a regra de emissão.",
+        "tags": [
+          "configuracoes"
+        ]
+      }
+    },
+    "/api/configuracoes/fiscal/certificado": {
+      "put": {
+        "operationId": "trocarCertificadoA1",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertificadoA1Dto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DadosFiscaisDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão configuracoes.fiscal:editar."
+          },
+          "422": {
+            "description": "Dados fiscais ausentes ou arquivo vazio."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Trocar\": envia o certificado A1 ao emissor e guarda só a validade.",
+        "tags": [
+          "configuracoes"
+        ]
+      }
+    },
     "/api/dispositivos": {
       "get": {
         "operationId": "listarDispositivos",
@@ -9014,6 +10055,768 @@
         "summary": "Quem está logado, permissões e módulos extras ativos (appPermission, menu lateral).",
         "tags": [
           "autenticacao"
+        ]
+      }
+    },
+    "/api/notas-fiscais": {
+      "get": {
+        "operationId": "listarNotasFiscais",
+        "parameters": [
+          {
+            "description": "Padrão: o mês atual (São Paulo).",
+            "in": "query",
+            "name": "competencia",
+            "required": false,
+            "schema": {
+              "example": "2026-11",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "situacao",
+            "required": false,
+            "schema": {
+              "enum": [
+                "pendente",
+                "processando",
+                "emitida",
+                "rejeitada",
+                "cancelada"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaDeNotasDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Notas do mês\": mais recentes primeiro, por cursor.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      },
+      "post": {
+        "operationId": "emitirNotaFiscal",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmitirNotaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotaFiscalDetalheDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "404": {
+            "description": "Aluno não encontrado."
+          },
+          "422": {
+            "description": "CPF inválido ou dados fiscais ausentes."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Emite a nota manual; sem resposta do emissor, fica \"processando\" e é conferida depois.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/alunos/{alunoId}": {
+      "get": {
+        "operationId": "notasFiscaisDaFichaDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotaFiscalDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Notas registradas na ficha do aluno (\"Aparece no financeiro dele\").",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/atencao": {
+      "get": {
+        "operationId": "notasFiscaisQuePrecisamDeAtencao",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotaFiscalDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Precisa de atenção\": rejeitadas, pendentes e em processamento.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/exportacao": {
+      "get": {
+        "operationId": "exportarNotasParaOContador",
+        "parameters": [
+          {
+            "description": "Padrão: o mês atual (São Paulo).",
+            "in": "query",
+            "name": "competencia",
+            "required": false,
+            "schema": {
+              "example": "2026-11",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Arquivo ZIP."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Exportar para o contador\": ZIP com os XMLs e o CSV da competência.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/previa": {
+      "get": {
+        "operationId": "previaDaNotaFiscal",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "valorCentavos",
+            "required": true,
+            "schema": {
+              "example": 11900,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "retencoesCentavos",
+            "required": false,
+            "schema": {
+              "example": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviaDaNotaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Resumo da nota\": ISS calculado pela alíquota da academia e total.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/resumo": {
+      "get": {
+        "operationId": "resumoDasNotasFiscais",
+        "parameters": [
+          {
+            "description": "Padrão: o mês atual (São Paulo).",
+            "in": "query",
+            "name": "competencia",
+            "required": false,
+            "schema": {
+              "example": "2026-11",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumoDasNotasDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "KPIs do mês (emitidas, valor faturado, pendentes, rejeitadas) e o resumo por tipo.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/sugestao": {
+      "get": {
+        "operationId": "sugestaoDeNotaFiscal",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tipo",
+            "required": true,
+            "schema": {
+              "enum": [
+                "nfse",
+                "nfce"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SugestaoDeNotaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          },
+          "404": {
+            "description": "Aluno não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preenche \"Emitir nota\": cliente do cadastro e serviço da mensalidade em aberto.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/{id}": {
+      "get": {
+        "operationId": "obterNotaFiscal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotaFiscalDetalheDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          },
+          "404": {
+            "description": "Nota não encontrada."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalhe da nota (drawer \"Ver\").",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/{id}/arquivos/{arquivo}": {
+      "get": {
+        "operationId": "arquivoDaNotaFiscal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "arquivo",
+            "required": true,
+            "schema": {
+              "enum": [
+                "pdf",
+                "xml"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArquivoDaNotaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          },
+          "404": {
+            "description": "Nota ou arquivo não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "URL assinada do PDF ou do XML.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/{id}/cancelamento": {
+      "post": {
+        "operationId": "cancelarNotaFiscal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelamentoDaNotaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotaFiscalDetalheDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:excluir."
+          },
+          "409": {
+            "description": "Nota já cancelada ou em processamento."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cancela no emissor e aqui.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/{id}/correcao": {
+      "post": {
+        "operationId": "corrigirNotaFiscal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrecaoDaNotaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotaFiscalDetalheDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "409": {
+            "description": "A nota não está rejeitada nem pendente."
+          },
+          "422": {
+            "description": "CPF ou valor inválido."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Corrigir\": troca CPF, descrição ou valor da nota rejeitada e reenvia.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/{id}/envio": {
+      "post": {
+        "operationId": "enviarNotaFiscalAoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvioDaNotaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoDoEnvioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "422": {
+            "description": "A nota não está emitida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Envia ao aluno por e-mail e WhatsApp (transacional), com os links do PDF e do XML.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/{id}/ficha": {
+      "post": {
+        "operationId": "registrarNotaFiscalNaFicha",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotaFiscalDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra a nota na ficha do aluno.",
+        "tags": [
+          "notas-fiscais"
+        ]
+      }
+    },
+    "/api/notas-fiscais/{id}/reenvio": {
+      "post": {
+        "operationId": "reenviarNotaFiscal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotaFiscalDetalheDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "409": {
+            "description": "Nota já emitida ou cancelada."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Emitir\" ou \"Reenviar\": consulta o emissor pela chave antes de reemitir.",
+        "tags": [
+          "notas-fiscais"
         ]
       }
     },

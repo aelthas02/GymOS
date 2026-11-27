@@ -69,7 +69,7 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
       (keyup.space)="$event.preventDefault()"
     >
       <span class="ui-toggle__track"><span class="ui-toggle__thumb"></span></span>
-      <span>{{ label() }}</span>
+      <span [class.ui-sr-only]="hideLabel()">{{ label() }}</span>
     </button>
   `,
 })
@@ -77,6 +77,8 @@ export class Toggle {
   readonly checked = model(false);
   readonly label = input.required<string>();
   readonly disabled = input(false);
+  /** Rótulo só para leitores de tela, quando o texto visível fica ao lado (linha de configuração). */
+  readonly hideLabel = input(false);
 
   protected alternar(): void {
     if (!this.disabled()) this.checked.update((valor) => !valor);
