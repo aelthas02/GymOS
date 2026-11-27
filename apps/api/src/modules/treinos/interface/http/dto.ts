@@ -35,7 +35,12 @@ const SITUACOES_DA_TELA = [...SITUACOES_GUARDADAS, 'vencida'] as const;
 // ---------- Treinos e exercícios da ficha ----------
 
 export class ExercicioDaFichaDto {
-  @ApiPropertyOptional({ format: 'uuid', nullable: true, description: 'Exercício da biblioteca.' })
+  @ApiProperty({
+    type: String,
+    format: 'uuid',
+    nullable: true,
+    description: 'Exercício da biblioteca.',
+  })
   @IsOptional()
   @IsUUID()
   exercicioId!: string | null;
@@ -70,7 +75,7 @@ export class ExercicioDaFichaDto {
   @Max(600)
   descansoSegundos!: number;
 
-  @ApiPropertyOptional({ type: String, nullable: true })
+  @ApiProperty({ type: String, nullable: true })
   @IsOptional()
   @IsString()
   @MaxLength(300)
@@ -235,6 +240,7 @@ export class DadosDaFichaDto {
   restricoes?: string | null;
 
   @ApiPropertyOptional({
+    type: String,
     format: 'uuid',
     nullable: true,
     description: 'Professor responsável (funcionário).',

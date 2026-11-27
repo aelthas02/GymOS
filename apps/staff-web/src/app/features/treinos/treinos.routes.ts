@@ -1,12 +1,20 @@
 import type { Routes } from '@angular/router';
 
-/** Rotas da feature; o dono troca a página provisória pelas telas reais. */
 export default [
+  { path: '', pathMatch: 'full', redirectTo: 'fichas' },
   {
-    path: '',
+    path: 'fichas',
     title: 'Treinos',
-    data: { titulo: 'Treinos' },
-    loadComponent: () =>
-      import('../../core/paginas/em-construcao.page').then((m) => m.EmConstrucaoPage),
+    loadComponent: () => import('./pages/fichas.page').then((m) => m.FichasPage),
+  },
+  {
+    path: 'modelos',
+    title: 'Modelos de treino',
+    loadComponent: () => import('./pages/modelos.page').then((m) => m.ModelosPage),
+  },
+  {
+    path: 'biblioteca',
+    title: 'Biblioteca de exercícios',
+    loadComponent: () => import('./pages/biblioteca.page').then((m) => m.BibliotecaPage),
   },
 ] satisfies Routes;

@@ -16,6 +16,7 @@ export type Contrato = Schemas['ContratoDto'];
 export type SituacaoDoAluno = Schemas['SituacaoDoAlunoDto'];
 export type Parcela = Schemas['ParcelaDto'];
 export type Pagamento = Schemas['PagamentoDto'];
+export type TreinoDoAluno = Schemas['AcompanhamentoDeTreinoDto'];
 
 /** Chips da lista: `todos` não manda filtro ao servidor. */
 export type FiltroDeSituacao = 'todos' | 'em_dia' | 'a_vencer' | 'em_atraso';

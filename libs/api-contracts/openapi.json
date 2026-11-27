@@ -2343,7 +2343,7 @@
             "description": "Exercício da biblioteca.",
             "format": "uuid",
             "nullable": true,
-            "type": "object"
+            "type": "string"
           },
           "nome": {
             "example": "Supino reto",
@@ -2368,11 +2368,13 @@
           }
         },
         "required": [
+          "exercicioId",
           "nome",
           "series",
           "repeticoes",
           "cargaKg",
-          "descansoSegundos"
+          "descansoSegundos",
+          "videoUrl"
         ],
         "type": "object"
       },
@@ -4765,7 +4767,7 @@
             "description": "Professor responsável (funcionário).",
             "format": "uuid",
             "nullable": true,
-            "type": "object"
+            "type": "string"
           },
           "restricoes": {
             "maxLength": 500,

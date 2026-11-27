@@ -10,11 +10,12 @@ import type {
   Parcela,
   Profissional,
   SituacaoDoAluno,
+  TreinoDoAluno,
 } from '../models/aluno';
 
 /**
  * Dados de `/alunos/:id/acompanhamento`. Cada bloco vem do seu dono: aluno e contrato (T15a),
- * pagamentos e parcelas (T19). Frequência, carga, esforço, ficha (T23a, T25) e observações do
+ * pagamentos e parcelas (T19), carga, esforço e ficha (T25). Frequência (T23a) e observações do
  * professor ainda não têm endpoint e a tela os mostra vazios.
  */
 @Injectable()
@@ -28,6 +29,7 @@ export class AcompanhamentoStore {
   readonly pagamentos = signal<readonly Pagamento[]>([]);
   readonly parcelas = signal<readonly Parcela[]>([]);
   readonly professor = signal<Profissional | null>(null);
+  readonly treino = signal<TreinoDoAluno | null>(null);
 
   readonly ultimoPagamento = computed(
     () =>
@@ -60,6 +62,9 @@ export class AcompanhamentoStore {
       parcelas: this.api
         .get('/api/cobranca/alunos/{alunoId}/parcelas', { caminho: { alunoId: id } })
         .pipe(opcional<readonly Parcela[]>([])),
+      treino: this.api
+        .get('/api/treinos/alunos/{alunoId}/acompanhamento', { caminho: { alunoId: id } })
+        .pipe(opcional<TreinoDoAluno | null>(null)),
       profissionais: this.api
         .get('/api/funcionarios/profissionais')
         .pipe(opcional<readonly Profissional[]>([])),
@@ -70,6 +75,7 @@ export class AcompanhamentoStore {
         this.situacao.set(dados.situacao);
         this.pagamentos.set(dados.pagamentos);
         this.parcelas.set(dados.parcelas);
+        this.treino.set(dados.treino);
         this.professor.set(
           dados.profissionais.find((item) => item.id === dados.aluno.professorId) ?? null,
         );

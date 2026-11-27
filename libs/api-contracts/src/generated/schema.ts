@@ -2915,14 +2915,14 @@ export interface components {
              * Format: uuid
              * @description Exercício da biblioteca.
              */
-            exercicioId?: Record<string, never> | null;
+            exercicioId: string | null;
             /** @example Supino reto */
             nome: string;
             /** @example 10 */
             repeticoes: number;
             /** @example 4 */
             series: number;
-            videoUrl?: string | null;
+            videoUrl: string | null;
         };
         ExercicioDto: {
             equipamento: string;
@@ -3708,7 +3708,7 @@ export interface components {
              * Format: uuid
              * @description Professor responsável (funcionário).
              */
-            professorId?: Record<string, never> | null;
+            professorId?: string | null;
             restricoes?: string | null;
             treinos: components["schemas"]["TreinoDaFichaDto"][];
             /** Format: date */
