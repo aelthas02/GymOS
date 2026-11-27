@@ -8,6 +8,7 @@ import { AlunosModule } from '../alunos/alunos.module';
 import { RepositorioDeAlunos } from '../alunos/application/portas';
 import { AvisosModule } from '../avisos/avisos.module';
 import { FiscalModule } from '../fiscal/fiscal.module';
+import { FinanceiroModule } from '../financeiro/financeiro.module';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
 import { RepositorioDeTenants } from '../platform/application/portas';
 import { Relogio } from '../platform/domain/relogio';
@@ -45,6 +46,7 @@ describe('Acesso (regras, QR, offline e alertas)', () => {
       AvisosModule,
       AcessoModule,
       FiscalModule,
+      FinanceiroModule,
     ]);
     vi.spyOn(app.get(Relogio), 'agora').mockImplementation(() => new Date(agora));
     await executarSeed(app, MODULOS_DE_SEED);

@@ -80,6 +80,7 @@ model Pagamento {
   @@unique([tenantId, provedor, idEventoExterno])
   @@index([tenantId])
   @@index([tenantId, alunoId, confirmadoEm])
+  @@index([tenantId, confirmadoEm])
   @@index([tenantId, parcelaId])
   @@map("pagamento")
 }

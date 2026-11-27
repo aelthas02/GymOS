@@ -5,6 +5,7 @@ import { DispositivosModule } from '../modules/dispositivos/dispositivos.module'
 import { AvisosModule } from '../modules/avisos/avisos.module';
 import { AlunosModule } from '../modules/alunos/alunos.module';
 import { FiscalModule } from '../modules/fiscal/fiscal.module';
+import { FinanceiroModule } from '../modules/financeiro/financeiro.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
 import { AuditoriaModule } from '../modules/platform/auditoria.module';
 import { AutenticacaoModule } from '../modules/autenticacao/autenticacao.module';
@@ -31,6 +32,7 @@ import { ObservabilidadeModule } from '../observabilidade/observabilidade.module
     AcessoModule,
     DispositivosModule,
     FiscalModule,
+    FinanceiroModule,
     // API de teste do E2E (T35): fora de produção só.
     ...(process.env['NODE_ENV'] === 'production' || process.env['APP_ENV'] === 'production'
       ? []
