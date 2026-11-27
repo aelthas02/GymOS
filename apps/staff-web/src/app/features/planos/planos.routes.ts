@@ -1,12 +1,9 @@
 import type { Routes } from '@angular/router';
 
-/** Rotas da feature; o dono troca a página provisória pelas telas reais. */
 export default [
   {
     path: '',
     title: 'Planos',
-    data: { titulo: 'Planos' },
-    loadComponent: () =>
-      import('../../core/paginas/em-construcao.page').then((m) => m.EmConstrucaoPage),
+    loadComponent: () => import('./pages/planos.page').then((m) => m.PlanosPage),
   },
 ] satisfies Routes;
