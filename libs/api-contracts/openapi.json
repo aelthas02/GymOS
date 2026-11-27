@@ -110,6 +110,42 @@
         ],
         "type": "object"
       },
+      "AcompanhamentoDeTreinoDto": {
+        "properties": {
+          "cargas": {
+            "items": {
+              "$ref": "#/components/schemas/EvolucaoDeCargaDto"
+            },
+            "type": "array"
+          },
+          "esforcoMedio": {
+            "nullable": true,
+            "type": "number"
+          },
+          "esforcoPorTreino": {
+            "items": {
+              "$ref": "#/components/schemas/EsforcoDoDiaDto"
+            },
+            "type": "array"
+          },
+          "ficha": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ResumoDaFichaDto"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          }
+        },
+        "required": [
+          "ficha",
+          "cargas",
+          "esforcoMedio",
+          "esforcoPorTreino"
+        ],
+        "type": "object"
+      },
       "AderirDto": {
         "properties": {
           "inicio": {
@@ -553,6 +589,18 @@
           "encerraEmDias",
           "encerradoEm",
           "motivoDoEncerramento"
+        ],
+        "type": "object"
+      },
+      "AvisoDeVencimentoDto": {
+        "properties": {
+          "avisados": {
+            "example": 14,
+            "type": "number"
+          }
+        },
+        "required": [
+          "avisados"
         ],
         "type": "object"
       },
@@ -1683,6 +1731,48 @@
         ],
         "type": "object"
       },
+      "DadosDoExercicioDto": {
+        "properties": {
+          "equipamento": {
+            "example": "Barra",
+            "maxLength": 60,
+            "type": "string"
+          },
+          "grupoMuscular": {
+            "enum": [
+              "Peito",
+              "Costas",
+              "Pernas",
+              "Ombros",
+              "Braços",
+              "Abdômen"
+            ],
+            "example": "Peito",
+            "type": "string"
+          },
+          "instrucoes": {
+            "maxLength": 500,
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "example": "Supino reto",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "videoUrl": {
+            "description": "Link do YouTube.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "grupoMuscular",
+          "equipamento"
+        ],
+        "type": "object"
+      },
       "DadosDoFuncionarioDto": {
         "properties": {
           "cargo": {
@@ -1738,6 +1828,43 @@
         "required": [
           "nome",
           "cargo"
+        ],
+        "type": "object"
+      },
+      "DadosDoModeloDto": {
+        "properties": {
+          "diasPorSemana": {
+            "example": 5,
+            "maximum": 7,
+            "minimum": 1,
+            "type": "number"
+          },
+          "divisao": {
+            "enum": [
+              "AB",
+              "ABC",
+              "ABCD",
+              "full_body"
+            ],
+            "type": "string"
+          },
+          "nome": {
+            "example": "Hipertrofia A/B/C",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "treinos": {
+            "items": {
+              "$ref": "#/components/schemas/TreinoDaFichaDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "nome",
+          "divisao",
+          "diasPorSemana",
+          "treinos"
         ],
         "type": "object"
       },
@@ -2066,6 +2193,22 @@
         },
         "type": "object"
       },
+      "EsforcoDoDiaDto": {
+        "properties": {
+          "dia": {
+            "format": "date",
+            "type": "string"
+          },
+          "esforco": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "dia",
+          "esforco"
+        ],
+        "type": "object"
+      },
       "EsqueciSenhaDoAppDto": {
         "properties": {
           "identificador": {
@@ -2108,6 +2251,40 @@
         ],
         "type": "object"
       },
+      "EvolucaoDeCargaDto": {
+        "properties": {
+          "exercicio": {
+            "example": "Supino reto",
+            "type": "string"
+          },
+          "pontos": {
+            "items": {
+              "$ref": "#/components/schemas/PontoDeCargaDto"
+            },
+            "type": "array"
+          },
+          "semanas": {
+            "example": 6,
+            "type": "number"
+          },
+          "texto": {
+            "example": "+8 kg em 6 semanas",
+            "type": "string"
+          },
+          "variacaoKg": {
+            "example": 8,
+            "type": "number"
+          }
+        },
+        "required": [
+          "exercicio",
+          "pontos",
+          "variacaoKg",
+          "semanas",
+          "texto"
+        ],
+        "type": "object"
+      },
       "ExcluirAlunoDto": {
         "properties": {
           "motivo": {
@@ -2116,6 +2293,129 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "ExecucaoDto": {
+        "properties": {
+          "cargaKg": {
+            "nullable": true,
+            "type": "number"
+          },
+          "esforco": {
+            "type": "number"
+          },
+          "exercicio": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "realizadoEm": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "exercicio",
+          "cargaKg",
+          "esforco",
+          "realizadoEm"
+        ],
+        "type": "object"
+      },
+      "ExercicioDaFichaDto": {
+        "properties": {
+          "cargaKg": {
+            "description": "Nulo é peso do corpo.",
+            "example": 40,
+            "nullable": true,
+            "type": "number"
+          },
+          "descansoSegundos": {
+            "example": 60,
+            "maximum": 600,
+            "minimum": 0,
+            "type": "number"
+          },
+          "exercicioId": {
+            "description": "Exercício da biblioteca.",
+            "format": "uuid",
+            "nullable": true,
+            "type": "object"
+          },
+          "nome": {
+            "example": "Supino reto",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "repeticoes": {
+            "example": 10,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "number"
+          },
+          "series": {
+            "example": 4,
+            "maximum": 20,
+            "minimum": 1,
+            "type": "number"
+          },
+          "videoUrl": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "series",
+          "repeticoes",
+          "cargaKg",
+          "descansoSegundos"
+        ],
+        "type": "object"
+      },
+      "ExercicioDto": {
+        "properties": {
+          "equipamento": {
+            "type": "string"
+          },
+          "grupoMuscular": {
+            "enum": [
+              "Peito",
+              "Costas",
+              "Pernas",
+              "Ombros",
+              "Braços",
+              "Abdômen"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "instrucoes": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "videoUrl": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "grupoMuscular",
+          "equipamento",
+          "videoUrl",
+          "instrucoes"
+        ],
         "type": "object"
       },
       "FaixaDeHorarioDto": {
@@ -2137,6 +2437,202 @@
           "hora",
           "entradas",
           "mediaPorDia"
+        ],
+        "type": "object"
+      },
+      "FichaDoAppDto": {
+        "properties": {
+          "divisao": {
+            "enum": [
+              "AB",
+              "ABC",
+              "ABCD",
+              "full_body"
+            ],
+            "type": "string"
+          },
+          "frequenciaSemanal": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nivel": {
+            "enum": [
+              "iniciante",
+              "intermediario",
+              "avancado"
+            ],
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "objetivo": {
+            "type": "string"
+          },
+          "treinos": {
+            "items": {
+              "$ref": "#/components/schemas/TreinoDaFichaDto"
+            },
+            "type": "array"
+          },
+          "validaAte": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "objetivo",
+          "nivel",
+          "frequenciaSemanal",
+          "divisao",
+          "validaAte",
+          "treinos"
+        ],
+        "type": "object"
+      },
+      "FichaDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "alunoNome": {
+            "type": "string"
+          },
+          "aprovadaEm": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "aprovadaPor": {
+            "description": "Quem aprovou (nome atual).",
+            "nullable": true,
+            "type": "string"
+          },
+          "divisao": {
+            "enum": [
+              "AB",
+              "ABC",
+              "ABCD",
+              "full_body"
+            ],
+            "type": "string"
+          },
+          "frequenciaSemanal": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nivel": {
+            "enum": [
+              "iniciante",
+              "intermediario",
+              "avancado"
+            ],
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "objetivo": {
+            "type": "string"
+          },
+          "origem": {
+            "enum": [
+              "manual",
+              "ia",
+              "modelo"
+            ],
+            "type": "string"
+          },
+          "professorId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "professorNome": {
+            "nullable": true,
+            "type": "string"
+          },
+          "restricoes": {
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "rascunho",
+              "aguardando_aprovacao",
+              "ativa",
+              "recusada",
+              "arquivada",
+              "vencida"
+            ],
+            "type": "string"
+          },
+          "treinos": {
+            "items": {
+              "$ref": "#/components/schemas/TreinoDaFichaDto"
+            },
+            "type": "array"
+          },
+          "validaAte": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "alunoId",
+          "alunoNome",
+          "nome",
+          "objetivo",
+          "nivel",
+          "frequenciaSemanal",
+          "divisao",
+          "validaAte",
+          "restricoes",
+          "professorId",
+          "professorNome",
+          "situacao",
+          "origem",
+          "aprovadaPor",
+          "aprovadaEm",
+          "treinos"
+        ],
+        "type": "object"
+      },
+      "FichaSugeridaDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "alunoNome": {
+            "type": "string"
+          },
+          "fichaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "resumo": {
+            "example": "Força A/B, 4 dias, sem restrição",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fichaId",
+          "alunoId",
+          "alunoNome",
+          "resumo"
         ],
         "type": "object"
       },
@@ -2355,6 +2851,55 @@
         ],
         "type": "object"
       },
+      "GerarFichaDto": {
+        "properties": {
+          "divisao": {
+            "enum": [
+              "AB",
+              "ABC",
+              "ABCD",
+              "full_body"
+            ],
+            "type": "string"
+          },
+          "frequenciaSemanal": {
+            "example": 4,
+            "maximum": 7,
+            "minimum": 1,
+            "type": "number"
+          },
+          "nivel": {
+            "enum": [
+              "iniciante",
+              "intermediario",
+              "avancado"
+            ],
+            "type": "string"
+          },
+          "objetivo": {
+            "example": "Hipertrofia",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "restricoes": {
+            "maxLength": 500,
+            "nullable": true,
+            "type": "string"
+          },
+          "validaAte": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "objetivo",
+          "nivel",
+          "frequenciaSemanal",
+          "divisao"
+        ],
+        "type": "object"
+      },
       "IdentidadeDoTenantDto": {
         "properties": {
           "corDestaque": {
@@ -2511,6 +3056,33 @@
         ],
         "type": "object"
       },
+      "KpisDeFichasDto": {
+        "properties": {
+          "aguardandoAprovacao": {
+            "example": 2,
+            "type": "number"
+          },
+          "ativas": {
+            "example": 310,
+            "type": "number"
+          },
+          "semFicha": {
+            "example": 2,
+            "type": "number"
+          },
+          "vencemEm30Dias": {
+            "example": 14,
+            "type": "number"
+          }
+        },
+        "required": [
+          "ativas",
+          "aguardandoAprovacao",
+          "vencemEm30Dias",
+          "semFicha"
+        ],
+        "type": "object"
+      },
       "LiberacaoManualDto": {
         "properties": {
           "alunoId": {
@@ -2575,6 +3147,61 @@
         "required": [
           "nome",
           "cpf"
+        ],
+        "type": "object"
+      },
+      "LinhaDeFichaDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "alunoNome": {
+            "type": "string"
+          },
+          "fichaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "example": "Hipertrofia A/B/C",
+            "type": "string"
+          },
+          "professorNome": {
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "rascunho",
+              "aguardando_aprovacao",
+              "ativa",
+              "recusada",
+              "arquivada",
+              "vencida"
+            ],
+            "type": "string"
+          },
+          "validaAte": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          },
+          "venceEmDias": {
+            "description": "Dias para o chip \"Vence em N dias\" (até 31); nulo fora da janela.",
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "fichaId",
+          "alunoId",
+          "alunoNome",
+          "nome",
+          "professorNome",
+          "validaAte",
+          "situacao",
+          "venceEmDias"
         ],
         "type": "object"
       },
@@ -2698,6 +3325,54 @@
           "idExterno",
           "telefone",
           "texto"
+        ],
+        "type": "object"
+      },
+      "ModeloDto": {
+        "properties": {
+          "diasPorSemana": {
+            "example": 5,
+            "maximum": 7,
+            "minimum": 1,
+            "type": "number"
+          },
+          "divisao": {
+            "enum": [
+              "AB",
+              "ABC",
+              "ABCD",
+              "full_body"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "example": "Hipertrofia A/B/C",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "totalDeExercicios": {
+            "description": "Total de exercícios dos treinos (calculado pela API).",
+            "example": 18,
+            "type": "number"
+          },
+          "treinos": {
+            "items": {
+              "$ref": "#/components/schemas/TreinoDaFichaDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "nome",
+          "divisao",
+          "diasPorSemana",
+          "treinos",
+          "id",
+          "totalDeExercicios"
         ],
         "type": "object"
       },
@@ -3078,6 +3753,49 @@
         ],
         "type": "object"
       },
+      "PainelDeFichasDto": {
+        "properties": {
+          "alunosComFicha": {
+            "example": 312,
+            "type": "number"
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaDeFichaDto"
+            },
+            "type": "array"
+          },
+          "kpis": {
+            "$ref": "#/components/schemas/KpisDeFichasDto"
+          },
+          "limite": {
+            "type": "number"
+          },
+          "pagina": {
+            "type": "number"
+          },
+          "sugeridas": {
+            "items": {
+              "$ref": "#/components/schemas/FichaSugeridaDto"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "Fichas que a tabela lista, em todas as páginas.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "kpis",
+          "itens",
+          "total",
+          "pagina",
+          "limite",
+          "alunosComFicha",
+          "sugeridas"
+        ],
+        "type": "object"
+      },
       "ParcelaDto": {
         "properties": {
           "contratoId": {
@@ -3154,6 +3872,36 @@
           "situacao",
           "pagoParcial",
           "diasDeAtraso"
+        ],
+        "type": "object"
+      },
+      "PendenciaDeFichaDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "alunoNome": {
+            "type": "string"
+          },
+          "fichaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "resumo": {
+            "type": "string"
+          },
+          "titulo": {
+            "example": "Ficha de treino para aprovar",
+            "type": "string"
+          }
+        },
+        "required": [
+          "titulo",
+          "fichaId",
+          "alunoId",
+          "alunoNome",
+          "resumo"
         ],
         "type": "object"
       },
@@ -3383,6 +4131,22 @@
         ],
         "type": "object"
       },
+      "PontoDeCargaDto": {
+        "properties": {
+          "cargaKg": {
+            "type": "number"
+          },
+          "dia": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dia",
+          "cargaKg"
+        ],
+        "type": "object"
+      },
       "PreferenciaDeAvisoDto": {
         "properties": {
           "push": {
@@ -3591,6 +4355,33 @@
         "required": [
           "token",
           "senha"
+        ],
+        "type": "object"
+      },
+      "RegistrarExecucaoDto": {
+        "properties": {
+          "cargaKg": {
+            "description": "Nulo é peso do corpo.",
+            "example": 40,
+            "nullable": true,
+            "type": "number"
+          },
+          "esforco": {
+            "example": 7,
+            "maximum": 10,
+            "minimum": 0,
+            "type": "number"
+          },
+          "exercicio": {
+            "example": "Supino reto",
+            "maxLength": 120,
+            "type": "string"
+          }
+        },
+        "required": [
+          "exercicio",
+          "cargaKg",
+          "esforco"
         ],
         "type": "object"
       },
@@ -3880,6 +4671,39 @@
         ],
         "type": "object"
       },
+      "ResumoDaFichaDto": {
+        "properties": {
+          "exercicios": {
+            "type": "number"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "rascunho",
+              "aguardando_aprovacao",
+              "ativa",
+              "recusada",
+              "arquivada",
+              "vencida"
+            ],
+            "type": "string"
+          },
+          "validaAte": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "situacao",
+          "validaAte",
+          "exercicios"
+        ],
+        "type": "object"
+      },
       "RetornoDaMetaDto": {
         "properties": {
           "codigo": {
@@ -3894,6 +4718,79 @@
         "required": [
           "codigo",
           "state"
+        ],
+        "type": "object"
+      },
+      "SalvarFichaDto": {
+        "properties": {
+          "divisao": {
+            "enum": [
+              "AB",
+              "ABC",
+              "ABCD",
+              "full_body"
+            ],
+            "type": "string"
+          },
+          "enviar": {
+            "description": "`true`: \"Salvar e enviar ao aluno\" (aprova e ativa). `false`: salva rascunho.",
+            "type": "boolean"
+          },
+          "frequenciaSemanal": {
+            "example": 4,
+            "maximum": 7,
+            "minimum": 1,
+            "type": "number"
+          },
+          "nivel": {
+            "enum": [
+              "iniciante",
+              "intermediario",
+              "avancado"
+            ],
+            "type": "string"
+          },
+          "nome": {
+            "description": "Vazio: objetivo + divisão.",
+            "example": "Hipertrofia A/B/C",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "objetivo": {
+            "example": "Hipertrofia",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "professorId": {
+            "description": "Professor responsável (funcionário).",
+            "format": "uuid",
+            "nullable": true,
+            "type": "object"
+          },
+          "restricoes": {
+            "maxLength": 500,
+            "nullable": true,
+            "type": "string"
+          },
+          "treinos": {
+            "items": {
+              "$ref": "#/components/schemas/TreinoDaFichaDto"
+            },
+            "type": "array"
+          },
+          "validaAte": {
+            "format": "date",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "objetivo",
+          "nivel",
+          "frequenciaSemanal",
+          "divisao",
+          "treinos",
+          "enviar"
         ],
         "type": "object"
       },
@@ -4078,6 +4975,32 @@
         ],
         "type": "object"
       },
+      "TreinoDaFichaDto": {
+        "properties": {
+          "exercicios": {
+            "items": {
+              "$ref": "#/components/schemas/ExercicioDaFichaDto"
+            },
+            "type": "array"
+          },
+          "foco": {
+            "example": "Peito e tríceps",
+            "maxLength": 80,
+            "type": "string"
+          },
+          "nome": {
+            "example": "A",
+            "maxLength": 30,
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "foco",
+          "exercicios"
+        ],
+        "type": "object"
+      },
       "TrocaDeCodigoDto": {
         "properties": {
           "codigo": {
@@ -4114,6 +5037,18 @@
         "required": [
           "url",
           "expiraEm"
+        ],
+        "type": "object"
+      },
+      "UsarModeloDto": {
+        "properties": {
+          "alunoId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "alunoId"
         ],
         "type": "object"
       }
@@ -6265,6 +7200,109 @@
           }
         ],
         "summary": "Inscreve o dispositivo no push; repetir o mesmo endpoint atualiza as chaves.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/treino": {
+      "get": {
+        "operationId": "minhaFichaDeTreino",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FichaDoAppDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "404": {
+            "description": "O aluno não tem ficha ativa."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "A ficha ativa do aluno da sessão. Rascunho e ficha aguardando aprovação não aparecem.",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/treino/evolucao": {
+      "get": {
+        "operationId": "minhaEvolucaoDeTreino",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcompanhamentoDeTreinoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Evolução de carga e esforço do aluno da sessão (Desempenho).",
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/api/app/treino/execucoes": {
+      "post": {
+        "operationId": "registrarExecucaoDeTreino",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrarExecucaoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecucaoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra um exercício feito: carga e esforço de 0 a 10.",
         "tags": [
           "app"
         ]
@@ -9376,6 +10414,748 @@
         "summary": "Nome, cor de destaque e logotipo (Primeiros passos e Configurações).",
         "tags": [
           "tenant"
+        ]
+      }
+    },
+    "/api/treinos/alunos/{alunoId}/acompanhamento": {
+      "get": {
+        "operationId": "acompanhamentoDeTreinoDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcompanhamentoDeTreinoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão alunos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Evolução de carga, esforço e resumo da ficha, para o Acompanhamento (T16).",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/alunos/{alunoId}/ficha": {
+      "get": {
+        "operationId": "buscarFichaDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FichaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:ver."
+          },
+          "404": {
+            "description": "O aluno não existe ou ainda não tem ficha."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "A ficha em andamento do aluno (rascunho, aguardando aprovação ou ativa).",
+        "tags": [
+          "treinos"
+        ]
+      },
+      "put": {
+        "operationId": "salvarFichaDoAluno",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalvarFichaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FichaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Treinos ou campos inválidos."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Salva o rascunho ou, com `enviar`, aprova e envia a ficha ao aluno.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/alunos/{alunoId}/ficha/gerar-com-ia": {
+      "post": {
+        "operationId": "gerarFichaComIA",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alunoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GerarFichaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FichaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:criar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Gera o rascunho pela IA a partir de objetivo, nível, frequência e restrições. Sempre nasce \"Aguardando aprovação\".",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/exercicios": {
+      "get": {
+        "operationId": "listarExercicios",
+        "parameters": [
+          {
+            "description": "Filtro por grupo muscular.",
+            "in": "query",
+            "name": "grupo",
+            "required": false,
+            "schema": {
+              "enum": [
+                "Peito",
+                "Costas",
+                "Pernas",
+                "Ombros",
+                "Braços",
+                "Abdômen"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExercicioDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Biblioteca de exercícios, por grupo.",
+        "tags": [
+          "treinos"
+        ]
+      },
+      "post": {
+        "operationId": "cadastrarExercicio",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoExercicioDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExercicioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos inválidos ou vídeo que não é do YouTube."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:criar."
+          },
+          "409": {
+            "description": "Já existe um exercício com esse nome."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cadastra um exercício na biblioteca.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/exercicios/{id}": {
+      "put": {
+        "operationId": "editarExercicio",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoExercicioDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExercicioDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:editar."
+          },
+          "404": {
+            "description": "Exercício não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita um exercício da biblioteca.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/fichas": {
+      "get": {
+        "operationId": "painelDeFichas",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pagina",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PainelDeFichasDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "KPIs, tabela de fichas e fichas sugeridas pela IA (TreinosFichas).",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/fichas/avisar-vencimentos": {
+      "post": {
+        "operationId": "avisarFichasQueVencem",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvisoDeVencimentoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:editar."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Avisar alunos\": notifica quem tem ficha vencendo em até 30 dias.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/fichas/{id}/aprovar": {
+      "post": {
+        "operationId": "aprovarFicha",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FichaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:editar."
+          },
+          "404": {
+            "description": "Ficha não está aguardando aprovação."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Aprova a ficha: registra o professor e a data, ativa e avisa o aluno.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/fichas/{id}/recusar": {
+      "post": {
+        "operationId": "recusarFicha",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:editar."
+          },
+          "404": {
+            "description": "Ficha não está aguardando aprovação."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Recusa a ficha sugerida pela IA.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/modelos": {
+      "get": {
+        "operationId": "listarModelosDeTreino",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModeloDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Modelos de ficha.",
+        "tags": [
+          "treinos"
+        ]
+      },
+      "post": {
+        "operationId": "criarModeloDeTreino",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoModeloDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModeloDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:criar."
+          },
+          "409": {
+            "description": "Já existe um modelo com esse nome."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria um modelo de ficha.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/modelos/{id}": {
+      "put": {
+        "operationId": "editarModeloDeTreino",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DadosDoModeloDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModeloDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:editar."
+          },
+          "404": {
+            "description": "Modelo não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita um modelo de ficha.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/modelos/{id}/usar": {
+      "post": {
+        "operationId": "usarModeloDeTreino",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsarModeloDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FichaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:criar."
+          },
+          "404": {
+            "description": "Modelo ou aluno não encontrado."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "\"Usar modelo\": cria o rascunho da ficha do aluno com os treinos do modelo.",
+        "tags": [
+          "treinos"
+        ]
+      }
+    },
+    "/api/treinos/pendencias": {
+      "get": {
+        "operationId": "listarPendenciasDeTreinos",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendenciaDeFichaDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão treinos:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fichas para aprovar: provedor de pendências do Início (\"Ficha de treino para aprovar\").",
+        "tags": [
+          "treinos"
         ]
       }
     }

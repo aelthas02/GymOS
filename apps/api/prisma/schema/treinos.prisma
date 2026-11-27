@@ -1,0 +1,80 @@
+// Modelos do domínio treinos (T25): biblioteca de exercícios, modelos, fichas e execuções. Tabelas
+// criadas por `nx g @gymos/api:tabela`; campos na migração `campos_dos_treinos`.
+
+/// Exercício da biblioteca. `videoUrl` é um link do YouTube (a tela usa o player oficial).
+model ExercicioDeTreino {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nome          String
+  grupoMuscular String   @map("grupo_muscular")
+  equipamento   String
+  videoUrl      String?  @map("video_url")
+  instrucoes    String?
+
+  @@unique([tenantId, nome])
+  @@index([tenantId])
+  @@index([tenantId, grupoMuscular])
+  @@map("exercicio_de_treino")
+}
+
+/// Modelo de ficha. `treinos` guarda os treinos (A, B, C...) com os exercícios na ordem de execução.
+model ModeloDeTreino {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  criadoEm      DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  nome          String
+  divisao       String
+  diasPorSemana Int      @map("dias_por_semana")
+  treinos       Json
+
+  @@unique([tenantId, nome])
+  @@index([tenantId])
+  @@map("modelo_de_treino")
+}
+
+/// Ficha do aluno. `situacao`: rascunho, aguardando_aprovacao, ativa ou recusada ("vencida" é derivada
+/// de `validaAte`). As restrições são dado de saúde: cifradas, e cada leitura vai para o log de acesso.
+model FichaDeTreino {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  criadoEm          DateTime  @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId           String    @map("aluno_id") @db.Uuid
+  professorId       String?   @map("professor_id") @db.Uuid
+  nome              String
+  objetivo          String
+  nivel             String
+  frequenciaSemanal Int       @map("frequencia_semanal")
+  divisao           String
+  validaAte         DateTime? @map("valida_ate") @db.Date
+  restricoes        String?
+  situacao          String
+  origem            String
+  treinos           Json
+  aprovadaPorId     String?   @map("aprovada_por_id") @db.Uuid
+  aprovadaEm        DateTime? @map("aprovada_em") @db.Timestamptz(3)
+  atualizadaEm      DateTime  @default(now()) @map("atualizada_em") @db.Timestamptz(3)
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([tenantId, alunoId, situacao])
+  @@index([tenantId, situacao])
+  @@map("ficha_de_treino")
+}
+
+/// Série registrada pelo aluno no app: exercício feito, carga (kg; nulo é peso do corpo) e esforço de 0 a 10.
+model ExecucaoDeTreino {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  criadoEm    DateTime @default(now()) @map("criado_em") @db.Timestamptz(3)
+  alunoId     String   @map("aluno_id") @db.Uuid
+  fichaId     String?  @map("ficha_id") @db.Uuid
+  exercicio   String
+  cargaKg     Float?   @map("carga_kg")
+  esforco     Int
+  realizadoEm DateTime @map("realizado_em") @db.Timestamptz(3)
+
+  @@index([tenantId])
+  @@index([tenantId, alunoId, realizadoEm])
+  @@map("execucao_de_treino")
+}
