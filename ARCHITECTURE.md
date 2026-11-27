@@ -356,6 +356,10 @@ Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso 
 | `revogou-agente-da-catraca`       | Revogou agente da catraca       | Configurações | sim      | revogar a credencial do agente (T23b)         |
 | `alterou-dispositivo`             | Alterou dispositivo             | Configurações | não      | cadastro de catraca ou leitor (T23b)          |
 | `cadastrou-biometria`             | Cadastrou biometria             | Acesso        | sim      | cadastro de face ou digital (T23b)            |
+| `emitiu-nota-fiscal`              | Emitiu nota fiscal              | Financeiro    | não      | emitir, emitir pendente e reenviar (T20)      |
+| `corrigiu-nota-fiscal`            | Corrigiu nota fiscal            | Financeiro    | não      | corrigir a rejeitada e reenviar (T20)         |
+| `cancelou-nota-fiscal`            | Cancelou nota fiscal            | Financeiro    | sim      | cancelar nota no painel (T20)                 |
+| `alterou-dados-fiscais`           | Alterou dados fiscais           | Configurações | sim      | dados fiscais e certificado A1 (T20)          |
 | `tentativa-negada`                | Tentativa negada                | da permissão  | sim      | gancho `aoNegarPermissao` (T13b)              |
 
 ### Alunos, planos e contratos
@@ -431,6 +435,43 @@ balcão ─ trava a parcela (FOR UPDATE) ─▶ PagamentoConfirmado · parcela j
 - **Pendências** (T18): `GET /api/cobranca/pendencias` ("Mensalidade em atraso" e pagamentos em
   duplicidade a estornar).
 - **LGPD**: pagamentos têm retenção fiscal (5 anos): a exclusão anonimiza e cancela o que estava a receber.
+
+### Notas fiscais
+
+`modules/fiscal` (T20, ADR-008). Regras puras em `domain/nota-fiscal.ts`; casos de uso em `NotasFiscais`,
+`ConfiguracaoFiscal` e `ExportacaoParaOContador`. O emissor terceirizado fica atrás da porta `EmissorFiscal`
+(só o adapter fake, `FISCAL_PROVEDOR=fake`, até o fornecedor ser escolhido).
+
+```
+PagamentoConfirmado ─ fiscal.emitir-nota ─▶ nota pendente (UNIQUE tenant, pagamento, tipo) ─ "Quando emitir" ─▶ emitir
+emitir ─ nota travada (FOR UPDATE) ─ já foi ao emissor? consulta pela chave ─ desconhecida ─▶ EmissorFiscal.emitir(chave = id)
+     sem resposta ─▶ processando + job fiscal.conferir-nota (30 s, 60 s… até 10 min) ─▶ consulta, nunca reemite o que o emissor conhece
+PagamentoEstornado (total) ─ fiscal.cancelar-nota ─▶ cancela no emissor (emitida) ou só aqui (pendente/rejeitada)
+```
+
+- **Tipo pela origem** (strategy): `mensalidade`, `plano`, `aula_avulsa`, `personal` e `nutricao` → NFS-e; `loja` → NFC-e.
+- **Idempotência**: a chave no emissor é o id da nota. A nota de um pagamento tem id derivado de tenant, pagamento e
+  tipo (`idDaNotaDoPagamento`): a reentrega de um evento cuja transação caiu depois de o emissor aceitar usa a mesma
+  chave, e a consulta acha a nota. A emissão roda na transação de quem pede (requisição, consumidor ou job).
+- **"Quando emitir"** (`momentoDaEmissao`): NFS-e ao confirmar o pagamento ou em lote; NFC-e no momento da venda;
+  desligado, fica pendente para "Emitir" à mão. **Lote**: `RotinaDoLoteFiscal` (a cada 5 min, só com `FILAS_PROCESSAR`)
+  agenda as NFS-e pendentes quando chega 22:00 de São Paulo do último dia do mês da competência (`noLote`).
+- **Valores**: ISS em pontos-base com `aplicarAliquota` (250 sobre R$ 119,00 = R$ 2,98); total = valor − retenções. A
+  alíquota é a dos dados fiscais no momento da emissão. Competência pelo calendário de São Paulo.
+- **Arquivos**: PDF e XML no `Armazenamento` (pasta `notas-fiscais`; o armazenamento passou a aceitar XML e ganhou
+  `ler`). Enviar ao aluno usa a `Mensageria` com finalidade `transacional`, por e-mail e WhatsApp, com links assinados
+  (1 h) do PDF e do XML: a mensageria ainda não tem anexo.
+- **Exportação para o contador**: `GET /api/notas-fiscais/exportacao?competencia=` devolve um ZIP (sem compressão) com
+  o XML de cada nota emitida ou cancelada e um CSV (`;`, UTF-8 com BOM).
+- **Fake** (`EmissorFiscalFake`): idempotente pela chave, numeração por CNPJ e tipo; recusa o CPF `529.982.247-25`
+  ("CPF não encontrado na Receita Federal"); `programar('resposta-perdida' | 'demora' | 'fora-do-ar')` para testes.
+  Webhook em `/api/webhooks/fiscal-fake/:tenantSlug` com HMAC do JSON em `x-assinatura` (`FISCAL_WEBHOOK_SEGREDO`).
+- **Endpoints**: `/api/notas-fiscais` (lista por cursor, `resumo`, `atencao`, `previa`, `sugestao`, `exportacao`,
+  `alunos/:alunoId` para a ficha, `:id`, `:id/arquivos/:pdf|xml`, `:id/reenvio`, `:id/correcao`, `:id/cancelamento`,
+  `:id/envio`, `:id/ficha`) e `/api/configuracoes/fiscal` (+ `certificado`), que a tela de Configurações (T26c) consome.
+  Ver e exportar = `financeiro:ver`; emitir, corrigir e enviar = `financeiro:criar`; cancelar = `financeiro:excluir`;
+  dados fiscais = `configuracoes.fiscal:ver|editar`.
+- **LGPD**: guarda fiscal de 5 anos; a exclusão do titular anonimiza o tomador (sem aluno e sem CPF, que é cifrado).
 
 ### Avisos e notificações
 
