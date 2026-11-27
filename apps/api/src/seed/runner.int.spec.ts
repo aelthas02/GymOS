@@ -54,6 +54,7 @@ describe('runner de seed', () => {
       'acesso',
       'notas',
       'avisos',
+      'lancamentos',
       'sonda',
     ]);
     await executarSeed(app, modulos);
