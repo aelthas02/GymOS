@@ -621,6 +621,22 @@
         ],
         "type": "object"
       },
+      "BarraDoGraficoDto": {
+        "properties": {
+          "rotulo": {
+            "example": "Planos de musculação",
+            "type": "string"
+          },
+          "valorCentavos": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "rotulo",
+          "valorCentavos"
+        ],
+        "type": "object"
+      },
       "BatimentoDto": {
         "properties": {
           "dispositivos": {
@@ -1131,6 +1147,40 @@
           "codigo",
           "codigoFormatado",
           "expiraEm"
+        ],
+        "type": "object"
+      },
+      "ColunaDaTabelaDto": {
+        "properties": {
+          "chave": {
+            "example": "receita",
+            "type": "string"
+          },
+          "rotulo": {
+            "example": "Receita bruta",
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "texto",
+              "brl",
+              "inteiro",
+              "percentual",
+              "situacao"
+            ],
+            "type": "string"
+          },
+          "vazio": {
+            "description": "Texto da célula nula.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "chave",
+          "rotulo",
+          "tipo",
+          "vazio"
         ],
         "type": "object"
       },
@@ -2029,6 +2079,27 @@
         ],
         "type": "object"
       },
+      "DespesaPorCategoriaDto": {
+        "properties": {
+          "categoria": {
+            "example": "folha",
+            "type": "string"
+          },
+          "centavos": {
+            "type": "number"
+          },
+          "rotulo": {
+            "example": "Folha",
+            "type": "string"
+          }
+        },
+        "required": [
+          "categoria",
+          "rotulo",
+          "centavos"
+        ],
+        "type": "object"
+      },
       "DispositivoDoAgenteDto": {
         "properties": {
           "id": {
@@ -2454,6 +2525,71 @@
         ],
         "type": "object"
       },
+      "FinanceiroGeralDto": {
+        "properties": {
+          "adesoesAtivas": {
+            "type": "number"
+          },
+          "brutaCentavos": {
+            "type": "number"
+          },
+          "cancelamentos": {
+            "type": "number"
+          },
+          "despesasCentavos": {
+            "type": "number"
+          },
+          "despesasPorCategoria": {
+            "items": {
+              "$ref": "#/components/schemas/DespesaPorCategoriaDto"
+            },
+            "type": "array"
+          },
+          "inadimplencia": {
+            "$ref": "#/components/schemas/InadimplenciaDto"
+          },
+          "novasAdesoes": {
+            "type": "number"
+          },
+          "periodo": {
+            "$ref": "#/components/schemas/PeriodoApuradoDto"
+          },
+          "porForma": {
+            "items": {
+              "$ref": "#/components/schemas/PorFormaDto"
+            },
+            "type": "array"
+          },
+          "receitaLiquida": {
+            "$ref": "#/components/schemas/ReceitaLiquidaDto"
+          },
+          "serieMensal": {
+            "description": "Últimos 6 meses até o fim do período.",
+            "items": {
+              "$ref": "#/components/schemas/PontoDaSerieDto"
+            },
+            "type": "array"
+          },
+          "taxasCentavos": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "periodo",
+          "receitaLiquida",
+          "brutaCentavos",
+          "taxasCentavos",
+          "despesasCentavos",
+          "adesoesAtivas",
+          "novasAdesoes",
+          "cancelamentos",
+          "inadimplencia",
+          "porForma",
+          "despesasPorCategoria",
+          "serieMensal"
+        ],
+        "type": "object"
+      },
       "FormaDePagamentoDoAlunoDto": {
         "properties": {
           "atualizadoEm": {
@@ -2669,6 +2805,28 @@
         ],
         "type": "object"
       },
+      "GraficoDaVisaoDto": {
+        "properties": {
+          "barras": {
+            "items": {
+              "$ref": "#/components/schemas/BarraDoGraficoDto"
+            },
+            "type": "array"
+          },
+          "subtitulo": {
+            "type": "string"
+          },
+          "titulo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "titulo",
+          "subtitulo",
+          "barras"
+        ],
+        "type": "object"
+      },
       "IdentidadeDoTenantDto": {
         "properties": {
           "corDestaque": {
@@ -2707,6 +2865,71 @@
         },
         "required": [
           "linhas"
+        ],
+        "type": "object"
+      },
+      "InadimplenciaDto": {
+        "properties": {
+          "ativos": {
+            "example": 312,
+            "type": "number"
+          },
+          "emAtraso": {
+            "example": 12,
+            "type": "number"
+          },
+          "pontosBase": {
+            "description": "Pontos-base: 385 = 3,85%.",
+            "example": 385,
+            "type": "number"
+          }
+        },
+        "required": [
+          "emAtraso",
+          "ativos",
+          "pontosBase"
+        ],
+        "type": "object"
+      },
+      "IndicadorDto": {
+        "properties": {
+          "formato": {
+            "enum": [
+              "brl",
+              "inteiro",
+              "percentual",
+              "texto"
+            ],
+            "type": "string"
+          },
+          "legenda": {
+            "example": "Soma dos setores",
+            "type": "string"
+          },
+          "positivo": {
+            "type": "boolean"
+          },
+          "rotulo": {
+            "example": "Receita bruta",
+            "type": "string"
+          },
+          "texto": {
+            "description": "Valor em texto (formato `texto`).",
+            "nullable": true,
+            "type": "string"
+          },
+          "valor": {
+            "description": "Centavos, contagem ou pontos-base, conforme o formato.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "rotulo",
+          "formato",
+          "valor",
+          "texto",
+          "legenda",
+          "positivo"
         ],
         "type": "object"
       },
@@ -2825,6 +3048,67 @@
         ],
         "type": "object"
       },
+      "LancamentoDto": {
+        "properties": {
+          "categoria": {
+            "enum": [
+              "aluguel",
+              "contas",
+              "outros"
+            ],
+            "type": "string"
+          },
+          "data": {
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "descricao": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "setor": {
+            "enum": [
+              "musculacao",
+              "aulas",
+              "lutas",
+              "loja",
+              "personal",
+              "nutricao"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "despesa",
+              "receita"
+            ],
+            "type": "string"
+          },
+          "unidadeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "valorCentavos": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "tipo",
+          "categoria",
+          "setor",
+          "valorCentavos",
+          "data",
+          "unidadeId",
+          "descricao"
+        ],
+        "type": "object"
+      },
       "LiberacaoManualDto": {
         "properties": {
           "alunoId": {
@@ -2889,6 +3173,49 @@
         "required": [
           "nome",
           "cpf"
+        ],
+        "type": "object"
+      },
+      "LinhaDaTabelaDto": {
+        "properties": {
+          "celulas": {
+            "additionalProperties": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "description": "Valor por `chave` de coluna.",
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          },
+          "link": {
+            "example": "/alunos/…",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "em_dia",
+              "em_atraso",
+              "a_vencer"
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "celulas",
+          "situacao",
+          "link"
         ],
         "type": "object"
       },
@@ -3394,6 +3721,121 @@
         },
         "required": [
           "vencimento"
+        ],
+        "type": "object"
+      },
+      "NovoLancamentoDto": {
+        "properties": {
+          "categoria": {
+            "enum": [
+              "aluguel",
+              "contas",
+              "outros"
+            ],
+            "type": "string"
+          },
+          "data": {
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "descricao": {
+            "maxLength": 200,
+            "nullable": true,
+            "type": "string"
+          },
+          "setor": {
+            "description": "Obrigatório na receita; a despesa sem setor é geral.",
+            "enum": [
+              "musculacao",
+              "aulas",
+              "lutas",
+              "loja",
+              "personal",
+              "nutricao"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "despesa",
+              "receita"
+            ],
+            "type": "string"
+          },
+          "unidadeId": {
+            "description": "Padrão: a primeira unidade.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "valorCentavos": {
+            "description": "Em centavos; maior que zero.",
+            "example": 120000,
+            "type": "number"
+          }
+        },
+        "required": [
+          "tipo",
+          "categoria",
+          "valorCentavos",
+          "data"
+        ],
+        "type": "object"
+      },
+      "OpcaoDeFiltroDto": {
+        "properties": {
+          "chave": {
+            "type": "string"
+          },
+          "rotulo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chave",
+          "rotulo"
+        ],
+        "type": "object"
+      },
+      "OpcoesDosFiltrosDto": {
+        "properties": {
+          "categorias": {
+            "items": {
+              "$ref": "#/components/schemas/OpcaoDeFiltroDto"
+            },
+            "type": "array"
+          },
+          "formas": {
+            "items": {
+              "$ref": "#/components/schemas/OpcaoDeFiltroDto"
+            },
+            "type": "array"
+          },
+          "modalidades": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "planos": {
+            "items": {
+              "$ref": "#/components/schemas/UnidadeOuPlanoDto"
+            },
+            "type": "array"
+          },
+          "unidades": {
+            "items": {
+              "$ref": "#/components/schemas/UnidadeOuPlanoDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "unidades",
+          "planos",
+          "modalidades",
+          "formas",
+          "categorias"
         ],
         "type": "object"
       },
@@ -3960,6 +4402,72 @@
         ],
         "type": "object"
       },
+      "PeriodoAnteriorDto": {
+        "properties": {
+          "ate": {
+            "example": "2026-10-31",
+            "type": "string"
+          },
+          "de": {
+            "example": "2026-10-01",
+            "type": "string"
+          },
+          "rotulo": {
+            "example": "Outubro 2026",
+            "type": "string"
+          }
+        },
+        "required": [
+          "de",
+          "ate",
+          "rotulo"
+        ],
+        "type": "object"
+      },
+      "PeriodoApuradoDto": {
+        "properties": {
+          "anterior": {
+            "$ref": "#/components/schemas/PeriodoAnteriorDto"
+          },
+          "ate": {
+            "example": "2026-11-30",
+            "type": "string"
+          },
+          "chave": {
+            "enum": [
+              "hoje",
+              "7-dias",
+              "este-mes",
+              "trimestre",
+              "ano",
+              "personalizado"
+            ],
+            "type": "string"
+          },
+          "de": {
+            "example": "2026-11-01",
+            "type": "string"
+          },
+          "escopo": {
+            "description": "Unidade filtrada ou todas.",
+            "example": "Unidade Centro",
+            "type": "string"
+          },
+          "rotulo": {
+            "example": "Novembro 2026",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chave",
+          "de",
+          "ate",
+          "rotulo",
+          "anterior",
+          "escopo"
+        ],
+        "type": "object"
+      },
       "PlanoDto": {
         "properties": {
           "acessosPorSemana": {
@@ -4069,6 +4577,69 @@
         "required": [
           "id",
           "nome"
+        ],
+        "type": "object"
+      },
+      "PontoDaSerieDto": {
+        "properties": {
+          "adesoesAtivas": {
+            "type": "number"
+          },
+          "brutaCentavos": {
+            "type": "number"
+          },
+          "despesasCentavos": {
+            "type": "number"
+          },
+          "liquidaCentavos": {
+            "type": "number"
+          },
+          "mes": {
+            "example": "2026-11",
+            "type": "string"
+          },
+          "novasAdesoes": {
+            "type": "number"
+          },
+          "rotulo": {
+            "example": "Nov",
+            "type": "string"
+          },
+          "taxasCentavos": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "mes",
+          "rotulo",
+          "brutaCentavos",
+          "taxasCentavos",
+          "despesasCentavos",
+          "liquidaCentavos",
+          "adesoesAtivas",
+          "novasAdesoes"
+        ],
+        "type": "object"
+      },
+      "PorFormaDto": {
+        "properties": {
+          "centavos": {
+            "type": "number"
+          },
+          "forma": {
+            "example": "pix",
+            "type": "string"
+          },
+          "percentual": {
+            "description": "Percentual inteiro; todos somam 100.",
+            "example": 54,
+            "type": "number"
+          }
+        },
+        "required": [
+          "forma",
+          "centavos",
+          "percentual"
         ],
         "type": "object"
       },
@@ -4305,6 +4876,30 @@
           "token",
           "expiraEm",
           "validadeSegundos"
+        ],
+        "type": "object"
+      },
+      "ReceitaLiquidaDto": {
+        "properties": {
+          "anteriorCentavos": {
+            "description": "Líquida do período anterior.",
+            "nullable": true,
+            "type": "number"
+          },
+          "centavos": {
+            "description": "Bruta − taxas − despesas, em centavos.",
+            "type": "number"
+          },
+          "variacaoPontosBase": {
+            "description": "Variação em pontos-base (482 = 4,82%).",
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "centavos",
+          "anteriorCentavos",
+          "variacaoPontosBase"
         ],
         "type": "object"
       },
@@ -4935,6 +5530,44 @@
         ],
         "type": "object"
       },
+      "TabelaDaVisaoDto": {
+        "properties": {
+          "colunas": {
+            "items": {
+              "$ref": "#/components/schemas/ColunaDaTabelaDto"
+            },
+            "type": "array"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaDaTabelaDto"
+            },
+            "type": "array"
+          },
+          "proximoCursor": {
+            "nullable": true,
+            "type": "string"
+          },
+          "subtitulo": {
+            "type": "string"
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "titulo",
+          "subtitulo",
+          "colunas",
+          "linhas",
+          "total",
+          "proximoCursor"
+        ],
+        "type": "object"
+      },
       "TesteDeConexaoDto": {
         "properties": {
           "comandoId": {
@@ -5019,6 +5652,22 @@
         ],
         "type": "object"
       },
+      "UnidadeOuPlanoDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
+        ],
+        "type": "object"
+      },
       "UrlAssinadaDto": {
         "properties": {
           "expiraEm": {
@@ -5032,6 +5681,44 @@
         "required": [
           "url",
           "expiraEm"
+        ],
+        "type": "object"
+      },
+      "VisaoFinanceiraDto": {
+        "properties": {
+          "grafico": {
+            "$ref": "#/components/schemas/GraficoDaVisaoDto"
+          },
+          "indicadores": {
+            "items": {
+              "$ref": "#/components/schemas/IndicadorDto"
+            },
+            "type": "array"
+          },
+          "periodo": {
+            "$ref": "#/components/schemas/PeriodoApuradoDto"
+          },
+          "tabela": {
+            "$ref": "#/components/schemas/TabelaDaVisaoDto"
+          },
+          "visao": {
+            "enum": [
+              "setores",
+              "funcionarios",
+              "alunos",
+              "aulas",
+              "planos",
+              "formas-de-pagamento"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "visao",
+          "periodo",
+          "indicadores",
+          "grafico",
+          "tabela"
         ],
         "type": "object"
       }
@@ -9262,6 +9949,474 @@
         "summary": "Convida por e-mail; o link cria a senha e vale por 7 dias.",
         "tags": [
           "equipe"
+        ]
+      }
+    },
+    "/api/financeiro/filtros": {
+      "get": {
+        "operationId": "opcoesDosFiltrosDoFinanceiro",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpcoesDosFiltrosDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unidades, planos, modalidades, formas e categorias dos filtros.",
+        "tags": [
+          "financeiro"
+        ]
+      }
+    },
+    "/api/financeiro/geral": {
+      "get": {
+        "operationId": "financeiroGeral",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "periodo",
+            "required": false,
+            "schema": {
+              "default": "este-mes",
+              "enum": [
+                "hoje",
+                "7-dias",
+                "este-mes",
+                "trimestre",
+                "ano",
+                "personalizado"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Início do período personalizado.",
+            "in": "query",
+            "name": "de",
+            "required": false,
+            "schema": {
+              "example": "2026-11-01",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Fim do período personalizado.",
+            "in": "query",
+            "name": "ate",
+            "required": false,
+            "schema": {
+              "example": "2026-11-30",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "unidadeId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "planoId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "modalidade",
+            "required": false,
+            "schema": {
+              "example": "Musculação",
+              "type": "string"
+            }
+          },
+          {
+            "description": "pix, cartao, boleto, dinheiro ou link.",
+            "in": "query",
+            "name": "forma",
+            "required": false,
+            "schema": {
+              "example": "pix",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tipo",
+            "required": false,
+            "schema": {
+              "default": "todos",
+              "enum": [
+                "todos",
+                "receitas",
+                "despesas"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categoria",
+            "required": false,
+            "schema": {
+              "enum": [
+                "aluguel",
+                "contas",
+                "outros",
+                "folha"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Compara com o período anterior.",
+            "in": "query",
+            "name": "comparar",
+            "required": false,
+            "schema": {
+              "default": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceiroGeralDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Período ou filtro inválido."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Visão geral: receita líquida com comparação, KPIs, formas de pagamento e série mensal.",
+        "tags": [
+          "financeiro"
+        ]
+      }
+    },
+    "/api/financeiro/lancamentos": {
+      "get": {
+        "operationId": "listarLancamentos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "de",
+            "required": true,
+            "schema": {
+              "example": "2026-11-01",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ate",
+            "required": true,
+            "schema": {
+              "example": "2026-11-30",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LancamentoDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          },
+          "422": {
+            "description": "Período inválido."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Despesas e receitas avulsas lançadas no período, mais recentes primeiro.",
+        "tags": [
+          "financeiro"
+        ]
+      },
+      "post": {
+        "operationId": "registrarLancamento",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoLancamentoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LancamentoDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:criar."
+          },
+          "422": {
+            "description": "Dados do lançamento inválidos."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cadastra uma despesa ou receita avulsa (a folha vem do custo do funcionário).",
+        "tags": [
+          "financeiro"
+        ]
+      }
+    },
+    "/api/financeiro/visoes/{visao}": {
+      "get": {
+        "operationId": "visaoDoFinanceiro",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "periodo",
+            "required": false,
+            "schema": {
+              "default": "este-mes",
+              "enum": [
+                "hoje",
+                "7-dias",
+                "este-mes",
+                "trimestre",
+                "ano",
+                "personalizado"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Início do período personalizado.",
+            "in": "query",
+            "name": "de",
+            "required": false,
+            "schema": {
+              "example": "2026-11-01",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Fim do período personalizado.",
+            "in": "query",
+            "name": "ate",
+            "required": false,
+            "schema": {
+              "example": "2026-11-30",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "unidadeId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "planoId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "modalidade",
+            "required": false,
+            "schema": {
+              "example": "Musculação",
+              "type": "string"
+            }
+          },
+          {
+            "description": "pix, cartao, boleto, dinheiro ou link.",
+            "in": "query",
+            "name": "forma",
+            "required": false,
+            "schema": {
+              "example": "pix",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tipo",
+            "required": false,
+            "schema": {
+              "default": "todos",
+              "enum": [
+                "todos",
+                "receitas",
+                "despesas"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categoria",
+            "required": false,
+            "schema": {
+              "enum": [
+                "aluguel",
+                "contas",
+                "outros",
+                "folha"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Compara com o período anterior.",
+            "in": "query",
+            "name": "comparar",
+            "required": false,
+            "schema": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "visao",
+            "required": true,
+            "schema": {
+              "enum": [
+                "setores",
+                "funcionarios",
+                "alunos",
+                "aulas",
+                "planos",
+                "formas-de-pagamento"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisaoFinanceiraDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Visão, período ou filtro inválido."
+          },
+          "401": {
+            "description": "Sem sessão válida."
+          },
+          "403": {
+            "description": "Exige a permissão financeiro:ver."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Visão do \"Visualizar por\": setores, funcionários, alunos, aulas, planos ou formas de pagamento (rateio da receita pelo ADR-020).",
+        "tags": [
+          "financeiro"
         ]
       }
     },

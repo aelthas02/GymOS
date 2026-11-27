@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { EmptyState } from '../states/empty-state';
 import { alturas } from './escala';
 import { GraficoDeSerie, GraficoTabela, graficoStyles } from './grafico-base';
 
-const LARGURA = 320;
 const LINHA = 34;
 
 /** Barras horizontais: rótulo e valor acima de cada barra (receita por setor, por aula, por funcionário). */
@@ -34,18 +33,18 @@ const LINHA = 34;
       <svg
         role="img"
         [attr.aria-label]="textoAlternativo()"
-        [attr.viewBox]="'0 0 ' + largura + ' ' + altura()"
+        [attr.viewBox]="'0 0 ' + largura() + ' ' + altura()"
       >
         @for (linha of linhas(); track $index) {
           <text class="ui-rotulo" x="0" [attr.y]="linha.y + 12">{{ linha.rotulo }}</text>
-          <text class="ui-valor" text-anchor="end" [attr.x]="largura" [attr.y]="linha.y + 12">
+          <text class="ui-valor" text-anchor="end" [attr.x]="largura()" [attr.y]="linha.y + 12">
             {{ linha.valor }}
           </text>
           <rect
             class="ui-trilho"
             x="0"
             [attr.y]="linha.y + 18"
-            [attr.width]="largura"
+            [attr.width]="largura()"
             height="8"
             rx="4"
           />
@@ -69,14 +68,15 @@ const LINHA = 34;
 })
 export class HorizontalBars extends GraficoDeSerie {
   protected override readonly nome = 'Gráfico de barras horizontais';
-  protected readonly largura = LARGURA;
+  /** Largura do desenho em unidades do viewBox (320 em cartão estreito; maior em cartão largo). */
+  readonly largura = input(320);
   protected readonly altura = computed(() => this.dados().length * LINHA);
 
   protected readonly linhas = computed(() => {
     const dados = this.dados();
     const larguras = alturas(
       dados.map((p) => p.valor),
-      LARGURA,
+      this.largura(),
     );
     const formatar = this.formato();
     return dados.map((ponto, i) => ({

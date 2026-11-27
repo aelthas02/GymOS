@@ -3,7 +3,6 @@ import { EmptyState } from '../states/empty-state';
 import { passoDeRotulos, pontosDaLinha, poligonoDaArea, pontosSvg } from './escala';
 import { GraficoDeSerie, GraficoTabela, graficoStyles } from './grafico-base';
 
-const LARGURA = 320;
 const ALTURA = 140;
 const AREA = 116;
 const MARGEM = 10;
@@ -45,10 +44,10 @@ const MAX_MARCADORES = 12;
       <svg
         role="img"
         [attr.aria-label]="textoAlternativo()"
-        [attr.viewBox]="'0 0 ' + largura + ' ' + altura"
+        [attr.viewBox]="'0 0 ' + largura() + ' ' + altura"
       >
         @for (y of grade(); track $index) {
-          <line class="ui-grade" x1="0" [attr.x2]="largura" [attr.y1]="y" [attr.y2]="y" />
+          <line class="ui-grade" x1="0" [attr.x2]="largura()" [attr.y1]="y" [attr.y2]="y" />
         }
         @if (area()) {
           <polygon class="ui-area" [attr.points]="poligono()" />
@@ -80,13 +79,14 @@ export class LineChart extends GraficoDeSerie {
   readonly baseZero = input(true);
 
   protected override readonly nome = 'Gráfico de linha';
-  protected readonly largura = LARGURA;
+  /** Largura do desenho em unidades do viewBox (320 em cartão estreito; maior em cartão largo). */
+  readonly largura = input(320);
   protected readonly altura = ALTURA;
 
   private readonly coordenadas = computed(() =>
     pontosDaLinha(
       this.dados().map((p) => p.valor),
-      { largura: LARGURA, altura: AREA, margem: MARGEM, baseZero: this.baseZero() },
+      { largura: this.largura(), altura: AREA, margem: MARGEM, baseZero: this.baseZero() },
     ),
   );
 

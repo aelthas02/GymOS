@@ -195,6 +195,7 @@ export class Financeiro {
       ate: periodo.ate,
       rotulo: this.rotuloDoPeriodo(periodo),
       anterior: { de: anterior.de, ate: anterior.ate, rotulo: this.rotuloDoPeriodo(anterior) },
+      escopo: '',
     };
   }
 
@@ -444,6 +445,7 @@ export class Financeiro {
       { visao: 'geral', periodo, filtro: pedido.filtro, comparar: pedido.comparar },
       async () => {
         const { filtro } = pedido;
+        const escopo = await this.escopo(filtro);
         const [atual, anterior, serie, base, adesoes] = await Promise.all([
           this.apurarPeriodo(periodo, filtro, false),
           pedido.comparar === false
@@ -470,7 +472,7 @@ export class Financeiro {
           .sort(([, a], [, b]) => b.bruto - a.bruto);
         const percentuais = porcentagensInteiras(formas.map(([, forma]) => forma.bruto));
         return {
-          periodo: this.apurado(periodo),
+          periodo: { ...this.apurado(periodo), escopo },
           receitaLiquida: {
             centavos: liquida,
             anteriorCentavos: liquidaAnterior,
@@ -513,6 +515,19 @@ export class Financeiro {
   ): Promise<VisaoFinanceira> {
     const periodo = this.resolver(pedido);
     return this.emCache({ visao: chave, periodo, filtro: pedido.filtro, paginacao }, async () => {
+      const visao = await this.calcularVisao(chave, periodo, pedido, paginacao);
+      visao.periodo.escopo = await this.escopo(pedido.filtro);
+      return visao;
+    });
+  }
+
+  private calcularVisao(
+    chave: ChaveDaVisao,
+    periodo: Periodo,
+    pedido: PedidoDoFinanceiro,
+    paginacao: { limite?: number; cursor?: string },
+  ): Promise<VisaoFinanceira> {
+    {
       switch (chave) {
         case 'setores':
           return this.visaoDosSetores(periodo, pedido.filtro);
@@ -527,7 +542,18 @@ export class Financeiro {
         case 'formas-de-pagamento':
           return this.visaoDasFormas(periodo, pedido.filtro);
       }
-    });
+    }
+  }
+
+  /** `Unidade Centro`, ou `Todas as unidades` quando não há filtro e a academia tem mais de uma. */
+  private async escopo(filtro: FiltroDoFinanceiro): Promise<string> {
+    const unidades = await this.leitura.unidades();
+    const escolhida = filtro.unidadeId
+      ? unidades.find((unidade) => unidade.id === filtro.unidadeId)
+      : unidades.length === 1
+        ? unidades[0]
+        : undefined;
+    return escolhida ? `Unidade ${escolhida.nome}` : 'Todas as unidades';
   }
 
   private coluna(

@@ -151,6 +151,9 @@ export class PeriodoApuradoDto {
 
   @ApiProperty({ type: PeriodoAnteriorDto })
   anterior!: PeriodoAnteriorDto;
+
+  @ApiProperty({ example: 'Unidade Centro', description: 'Unidade filtrada ou todas.' })
+  escopo!: string;
 }
 
 class ReceitaLiquidaDto {
@@ -442,7 +445,7 @@ export class NovoLancamentoDto {
   @IsUUID()
   unidadeId?: string;
 
-  @ApiPropertyOptional({ nullable: true, maxLength: 200 })
+  @ApiPropertyOptional({ type: String, nullable: true, maxLength: 200 })
   @IsOptional()
   @IsString()
   @MaxLength(200)

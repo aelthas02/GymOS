@@ -10,6 +10,8 @@ export interface PeriodoApurado {
   /** `Novembro 2026` (mês civil) ou `19/11/2026 a 25/11/2026`. */
   rotulo: string;
   anterior: { de: string; ate: string; rotulo: string };
+  /** `Unidade Centro` ou `Todas as unidades`. */
+  escopo: string;
 }
 
 export interface PontoDaSerie {

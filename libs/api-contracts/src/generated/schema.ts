@@ -1497,6 +1497,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/financeiro/filtros": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Unidades, planos, modalidades, formas e categorias dos filtros. */
+        get: operations["opcoesDosFiltrosDoFinanceiro"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/financeiro/geral": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Visão geral: receita líquida com comparação, KPIs, formas de pagamento e série mensal. */
+        get: operations["financeiroGeral"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/financeiro/lancamentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Despesas e receitas avulsas lançadas no período, mais recentes primeiro. */
+        get: operations["listarLancamentos"];
+        put?: never;
+        /** Cadastra uma despesa ou receita avulsa (a folha vem do custo do funcionário). */
+        post: operations["registrarLancamento"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/financeiro/visoes/{visao}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Visão do "Visualizar por": setores, funcionários, alunos, aulas, planos ou formas de pagamento (rateio da receita pelo ADR-020). */
+        get: operations["visaoDoFinanceiro"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/funcionarios": {
         parameters: {
             query?: never;
@@ -2273,6 +2342,11 @@ export interface components {
             tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
             titulo: string;
         };
+        BarraDoGraficoDto: {
+            /** @example Planos de musculação */
+            rotulo: string;
+            valorCentavos: number;
+        };
         BatimentoDto: {
             /** @description Sem a lista, todos os dispositivos do agente contam como vivos. */
             dispositivos?: components["schemas"]["DispositivoVistoDto"][];
@@ -2488,6 +2562,16 @@ export interface components {
              * @description Vale 30 minutos e uma troca.
              */
             expiraEm: string;
+        };
+        ColunaDaTabelaDto: {
+            /** @example receita */
+            chave: string;
+            /** @example Receita bruta */
+            rotulo: string;
+            /** @enum {string} */
+            tipo: "texto" | "brl" | "inteiro" | "percentual" | "situacao";
+            /** @description Texto da célula nula. */
+            vazio: string | null;
         };
         ComandoParaOAgenteDto: {
             dados: {
@@ -2826,6 +2910,13 @@ export interface components {
              */
             tipo: "plano" | "aula" | "reserva" | "ficha" | "comunicado" | "loja" | "saude";
         };
+        DespesaPorCategoriaDto: {
+            /** @example folha */
+            categoria: string;
+            centavos: number;
+            /** @example Folha */
+            rotulo: string;
+        };
         DispositivoDoAgenteDto: {
             /** Format: uuid */
             id: string;
@@ -2976,6 +3067,21 @@ export interface components {
             /** @description Média de entradas por dia, uma casa decimal. */
             mediaPorDia: number;
         };
+        FinanceiroGeralDto: {
+            adesoesAtivas: number;
+            brutaCentavos: number;
+            cancelamentos: number;
+            despesasCentavos: number;
+            despesasPorCategoria: components["schemas"]["DespesaPorCategoriaDto"][];
+            inadimplencia: components["schemas"]["InadimplenciaDto"];
+            novasAdesoes: number;
+            periodo: components["schemas"]["PeriodoApuradoDto"];
+            porForma: components["schemas"]["PorFormaDto"][];
+            receitaLiquida: components["schemas"]["ReceitaLiquidaDto"];
+            /** @description Últimos 6 meses até o fim do período. */
+            serieMensal: components["schemas"]["PontoDaSerieDto"][];
+            taxasCentavos: number;
+        };
         FormaDePagamentoDoAlunoDto: {
             /** Format: date-time */
             atualizadoEm: string;
@@ -3037,6 +3143,11 @@ export interface components {
             /** @description Nulo é "Sem acesso". */
             tipoDeAcesso: components["schemas"]["TipoDeAcessoResumidoDto"] | null;
         };
+        GraficoDaVisaoDto: {
+            barras: components["schemas"]["BarraDoGraficoDto"][];
+            subtitulo: string;
+            titulo: string;
+        };
         IdentidadeDoTenantDto: {
             /** @example #22C98A */
             corDestaque: string;
@@ -3050,6 +3161,30 @@ export interface components {
         };
         ImportarAlunosDto: {
             linhas: components["schemas"]["LinhaDaPlanilhaDto"][];
+        };
+        InadimplenciaDto: {
+            /** @example 312 */
+            ativos: number;
+            /** @example 12 */
+            emAtraso: number;
+            /**
+             * @description Pontos-base: 385 = 3,85%.
+             * @example 385
+             */
+            pontosBase: number;
+        };
+        IndicadorDto: {
+            /** @enum {string} */
+            formato: "brl" | "inteiro" | "percentual" | "texto";
+            /** @example Soma dos setores */
+            legenda: string;
+            positivo: boolean;
+            /** @example Receita bruta */
+            rotulo: string;
+            /** @description Valor em texto (formato `texto`). */
+            texto: string | null;
+            /** @description Centavos, contagem ou pontos-base, conforme o formato. */
+            valor: number;
         };
         IniciarConexaoDto: {
             /**
@@ -3096,6 +3231,22 @@ export interface components {
              */
             venceEmDias: number | null;
         };
+        LancamentoDto: {
+            /** @enum {string} */
+            categoria: "aluguel" | "contas" | "outros";
+            /** @example 2026-11-05 */
+            data: string;
+            descricao: string | null;
+            /** Format: uuid */
+            id: string;
+            /** @enum {string|null} */
+            setor: "musculacao" | "aulas" | "lutas" | "loja" | "personal" | "nutricao" | null;
+            /** @enum {string} */
+            tipo: "despesa" | "receita";
+            /** Format: uuid */
+            unidadeId: string;
+            valorCentavos: number;
+        };
         LiberacaoManualDto: {
             /** Format: uuid */
             alunoId: string;
@@ -3117,6 +3268,17 @@ export interface components {
             /** @description Nome do plano cadastrado. */
             plano?: string | null;
             telefone?: string | null;
+        };
+        LinhaDaTabelaDto: {
+            /** @description Valor por `chave` de coluna. */
+            celulas: {
+                [key: string]: (string | number) | null;
+            };
+            id: string;
+            /** @example /alunos/… */
+            link: string | null;
+            /** @enum {string|null} */
+            situacao: "em_dia" | "em_atraso" | "a_vencer" | null;
         };
         LinhaDoRelatorioDto: {
             cpf: string;
@@ -3302,6 +3464,41 @@ export interface components {
              * @example 2026-11-25
              */
             vencimento: string;
+        };
+        NovoLancamentoDto: {
+            /** @enum {string} */
+            categoria: "aluguel" | "contas" | "outros";
+            /** @example 2026-11-05 */
+            data: string;
+            descricao?: string | null;
+            /**
+             * @description Obrigatório na receita; a despesa sem setor é geral.
+             * @enum {string|null}
+             */
+            setor?: "musculacao" | "aulas" | "lutas" | "loja" | "personal" | "nutricao" | null;
+            /** @enum {string} */
+            tipo: "despesa" | "receita";
+            /**
+             * Format: uuid
+             * @description Padrão: a primeira unidade.
+             */
+            unidadeId?: string;
+            /**
+             * @description Em centavos; maior que zero.
+             * @example 120000
+             */
+            valorCentavos: number;
+        };
+        OpcaoDeFiltroDto: {
+            chave: string;
+            rotulo: string;
+        };
+        OpcoesDosFiltrosDto: {
+            categorias: components["schemas"]["OpcaoDeFiltroDto"][];
+            formas: components["schemas"]["OpcaoDeFiltroDto"][];
+            modalidades: string[];
+            planos: components["schemas"]["UnidadeOuPlanoDto"][];
+            unidades: components["schemas"]["UnidadeOuPlanoDto"][];
         };
         PagamentoDto: {
             /** @enum {string} */
@@ -3498,6 +3695,30 @@ export interface components {
             tipo: "staff" | "aluno";
             tipoDeAcesso: components["schemas"]["TipoDeAcessoResumoDto"] | null;
         };
+        PeriodoAnteriorDto: {
+            /** @example 2026-10-31 */
+            ate: string;
+            /** @example 2026-10-01 */
+            de: string;
+            /** @example Outubro 2026 */
+            rotulo: string;
+        };
+        PeriodoApuradoDto: {
+            anterior: components["schemas"]["PeriodoAnteriorDto"];
+            /** @example 2026-11-30 */
+            ate: string;
+            /** @enum {string} */
+            chave: "hoje" | "7-dias" | "este-mes" | "trimestre" | "ano" | "personalizado";
+            /** @example 2026-11-01 */
+            de: string;
+            /**
+             * @description Unidade filtrada ou todas.
+             * @example Unidade Centro
+             */
+            escopo: string;
+            /** @example Novembro 2026 */
+            rotulo: string;
+        };
         PlanoDto: {
             /**
              * @description null é ilimitado.
@@ -3557,6 +3778,28 @@ export interface components {
             id: string;
             /** @example Mensal */
             nome: string;
+        };
+        PontoDaSerieDto: {
+            adesoesAtivas: number;
+            brutaCentavos: number;
+            despesasCentavos: number;
+            liquidaCentavos: number;
+            /** @example 2026-11 */
+            mes: string;
+            novasAdesoes: number;
+            /** @example Nov */
+            rotulo: string;
+            taxasCentavos: number;
+        };
+        PorFormaDto: {
+            centavos: number;
+            /** @example pix */
+            forma: string;
+            /**
+             * @description Percentual inteiro; todos somam 100.
+             * @example 54
+             */
+            percentual: number;
         };
         PreferenciaDeAvisoDto: {
             push: boolean;
@@ -3636,6 +3879,14 @@ export interface components {
             token: string;
             /** @example 60 */
             validadeSegundos: number;
+        };
+        ReceitaLiquidaDto: {
+            /** @description Líquida do período anterior. */
+            anteriorCentavos: number | null;
+            /** @description Bruta − taxas − despesas, em centavos. */
+            centavos: number;
+            /** @description Variação em pontos-base (482 = 4,82%). */
+            variacaoPontosBase: number | null;
         };
         RedefinirSenhaDto: {
             senha: string;
@@ -3850,6 +4101,14 @@ export interface components {
             resumo: components["schemas"]["PreviaDaNotaDto"];
             servico: components["schemas"]["ServicoDaSugestaoDto"];
         };
+        TabelaDaVisaoDto: {
+            colunas: components["schemas"]["ColunaDaTabelaDto"][];
+            linhas: components["schemas"]["LinhaDaTabelaDto"][];
+            proximoCursor: string | null;
+            subtitulo: string;
+            titulo: string;
+            total: number;
+        };
         TesteDeConexaoDto: {
             /**
              * Format: uuid
@@ -3887,10 +4146,23 @@ export interface components {
             /** @example 1.0.0 */
             versao?: string;
         };
+        UnidadeOuPlanoDto: {
+            /** Format: uuid */
+            id: string;
+            nome: string;
+        };
         UrlAssinadaDto: {
             /** Format: date-time */
             expiraEm: string;
             url: string;
+        };
+        VisaoFinanceiraDto: {
+            grafico: components["schemas"]["GraficoDaVisaoDto"];
+            indicadores: components["schemas"]["IndicadorDto"][];
+            periodo: components["schemas"]["PeriodoApuradoDto"];
+            tabela: components["schemas"]["TabelaDaVisaoDto"];
+            /** @enum {string} */
+            visao: "setores" | "funcionarios" | "alunos" | "aulas" | "planos" | "formas-de-pagamento";
         };
     };
     responses: never;
@@ -7616,6 +7888,240 @@ export interface operations {
             };
             /** @description Já existe um usuário com este e-mail. */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    opcoesDosFiltrosDoFinanceiro: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpcoesDosFiltrosDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    financeiroGeral: {
+        parameters: {
+            query?: {
+                periodo?: "hoje" | "7-dias" | "este-mes" | "trimestre" | "ano" | "personalizado";
+                /** @description Início do período personalizado. */
+                de?: string;
+                /** @description Fim do período personalizado. */
+                ate?: string;
+                unidadeId?: string;
+                planoId?: string;
+                modalidade?: string;
+                /** @description pix, cartao, boleto, dinheiro ou link. */
+                forma?: string;
+                tipo?: "todos" | "receitas" | "despesas";
+                categoria?: "aluguel" | "contas" | "outros" | "folha";
+                /** @description Compara com o período anterior. */
+                comparar?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceiroGeralDto"];
+                };
+            };
+            /** @description Período ou filtro inválido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarLancamentos: {
+        parameters: {
+            query: {
+                de: string;
+                ate: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LancamentoDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Período inválido. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registrarLancamento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovoLancamentoDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LancamentoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Dados do lançamento inválidos. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    visaoDoFinanceiro: {
+        parameters: {
+            query?: {
+                periodo?: "hoje" | "7-dias" | "este-mes" | "trimestre" | "ano" | "personalizado";
+                /** @description Início do período personalizado. */
+                de?: string;
+                /** @description Fim do período personalizado. */
+                ate?: string;
+                unidadeId?: string;
+                planoId?: string;
+                modalidade?: string;
+                /** @description pix, cartao, boleto, dinheiro ou link. */
+                forma?: string;
+                tipo?: "todos" | "receitas" | "despesas";
+                categoria?: "aluguel" | "contas" | "outros" | "folha";
+                /** @description Compara com o período anterior. */
+                comparar?: boolean;
+                limite?: number;
+                cursor?: string;
+            };
+            header?: never;
+            path: {
+                visao: "setores" | "funcionarios" | "alunos" | "aulas" | "planos" | "formas-de-pagamento";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisaoFinanceiraDto"];
+                };
+            };
+            /** @description Visão, período ou filtro inválido. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão financeiro:ver. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
