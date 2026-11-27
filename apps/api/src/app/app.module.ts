@@ -6,6 +6,7 @@ import { AvisosModule } from '../modules/avisos/avisos.module';
 import { AlunosModule } from '../modules/alunos/alunos.module';
 import { FiscalModule } from '../modules/fiscal/fiscal.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
+import { TreinosModule } from '../modules/treinos/treinos.module';
 import { AuditoriaModule } from '../modules/platform/auditoria.module';
 import { AutenticacaoModule } from '../modules/autenticacao/autenticacao.module';
 import { PlatformModule } from '../modules/platform/platform.module';
@@ -26,6 +27,7 @@ import { ObservabilidadeModule } from '../observabilidade/observabilidade.module
     AuditoriaModule,
     AlunosModule,
     FuncionariosModule,
+    TreinosModule,
     IntegracoesModule,
     AvisosModule,
     AcessoModule,

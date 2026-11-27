@@ -231,7 +231,7 @@ const VARIANTE: Record<'em_dia' | 'a_vencer' | 'em_atraso', BadgeVariant> = {
           <div class="acomp__kpis">
             <ui-kpi label="Frequência no mês" value="—" legend="Sem dados de frequência ainda" />
             <ui-kpi label="Sequência" value="—" legend="Sem dados de frequência ainda" />
-            <ui-kpi label="Esforço médio" value="—" legend="Sem treinos avaliados ainda" />
+            <ui-kpi label="Esforço médio" [value]="esforcoMedio()" [legend]="legendaDoEsforco()" />
             <ui-kpi
               label="Adimplência"
               [value]="situacao()?.texto ?? '—'"
@@ -249,27 +249,66 @@ const VARIANTE: Record<'em_dia' | 'a_vencer' | 'em_atraso', BadgeVariant> = {
             </section>
             <section class="acomp__bloco" aria-labelledby="acomp-carga">
               <h2 id="acomp-carga">Evolução de carga</h2>
-              <ui-empty-state
-                heading="Sem dados ainda"
-                description="A carga aparece aqui depois dos primeiros treinos registrados."
-              />
+              @if (store.treino()?.cargas?.length) {
+                <dl>
+                  @for (carga of store.treino()?.cargas; track carga.exercicio) {
+                    <div class="acomp__linha">
+                      <dt>{{ carga.exercicio }}</dt>
+                      <dd>{{ carga.texto }}</dd>
+                    </div>
+                  }
+                </dl>
+              } @else {
+                <ui-empty-state
+                  heading="Sem dados ainda"
+                  description="A carga aparece aqui depois dos primeiros treinos registrados."
+                />
+              }
             </section>
             <section class="acomp__bloco" aria-labelledby="acomp-esforco">
               <h2 id="acomp-esforco">Esforço por treino</h2>
-              <ui-empty-state
-                heading="Sem dados ainda"
-                description="O aluno dá uma nota de 0 a 10 ao fim de cada treino."
-              />
+              @if (store.treino()?.esforcoPorTreino?.length) {
+                <dl>
+                  @for (dia of store.treino()?.esforcoPorTreino; track dia.dia) {
+                    <div class="acomp__linha">
+                      <dt>{{ dataDoEsforco(dia.dia) }}</dt>
+                      <dd>{{ dia.esforco }}</dd>
+                    </div>
+                  }
+                </dl>
+              } @else {
+                <ui-empty-state
+                  heading="Sem dados ainda"
+                  description="O aluno dá uma nota de 0 a 10 ao fim de cada treino."
+                />
+              }
             </section>
           </div>
 
           <div class="acomp__blocos">
             <section class="acomp__bloco acomp__bloco--largo" aria-labelledby="acomp-ficha">
               <h2 id="acomp-ficha">Resumo da ficha</h2>
-              <ui-empty-state
-                heading="Sem ficha ainda"
-                description="O resumo aparece quando o aluno tiver uma ficha de treino."
-              />
+              @if (store.treino()?.ficha; as ficha) {
+                <dl>
+                  <div class="acomp__linha">
+                    <dt>Ficha</dt>
+                    <dd>{{ ficha.nome }}</dd>
+                  </div>
+                  <div class="acomp__linha">
+                    <dt>Exercícios</dt>
+                    <dd>{{ ficha.exercicios }}</dd>
+                  </div>
+                  <div class="acomp__linha">
+                    <dt>Válida até</dt>
+                    <dd>{{ ficha.validaAte ? dataDoEsforco(ficha.validaAte) : '—' }}</dd>
+                  </div>
+                </dl>
+              } @else {
+                <ui-empty-state
+                  heading="Sem ficha ainda"
+                  description="O resumo aparece quando o aluno tiver uma ficha de treino."
+                />
+              }
             </section>
 
             <section class="acomp__bloco acomp__bloco--largo" aria-labelledby="acomp-plano">
@@ -334,6 +373,21 @@ export class AcompanhamentoPage {
           : 'Em dia';
     return { texto, variante: VARIANTE[dados.situacaoDeVencimento] };
   });
+
+  protected readonly esforcoMedio = computed(() => {
+    const media = this.store.treino()?.esforcoMedio;
+    return media === null || media === undefined ? '—' : String(media).replace('.', ',');
+  });
+
+  protected readonly legendaDoEsforco = computed(() =>
+    this.store.treino()?.esforcoMedio == null
+      ? 'Sem treinos avaliados ainda'
+      : 'De 0 a 10, nos treinos registrados',
+  );
+
+  protected dataDoEsforco(iso: string): string {
+    return dataDeIso(iso).slice(0, 5);
+  }
 
   protected readonly proximaParcela = computed(() => {
     const vencimento = this.store.contrato()?.proximoVencimento;

@@ -25,6 +25,19 @@ export default [
     loadComponent: () => import('./pages/importar.page').then((m) => m.ImportarPage),
   },
   {
+    // O T16 aponta para /alunos/:id/ficha; a ficha de treino (T25) vive em ficha-de-treino.
+    path: ':id/ficha',
+    pathMatch: 'full',
+    redirectTo: ':id/ficha-de-treino',
+  },
+  {
+    path: ':id/ficha-de-treino',
+    title: 'Ficha de treino',
+    canActivate: [permissionGuard('treinos:ver')],
+    loadComponent: () =>
+      import('../treinos/pages/ficha-do-aluno.page').then((m) => m.FichaDoAlunoPage),
+  },
+  {
     path: ':id/acompanhamento',
     title: 'Acompanhamento do aluno',
     loadComponent: () => import('./pages/acompanhamento.page').then((m) => m.AcompanhamentoPage),

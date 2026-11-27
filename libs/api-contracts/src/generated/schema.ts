@@ -808,6 +808,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/app/treino": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A ficha ativa do aluno da sessão. Rascunho e ficha aguardando aprovação não aparecem. */
+        get: operations["minhaFichaDeTreino"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/treino/evolucao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evolução de carga e esforço do aluno da sessão (Desempenho). */
+        get: operations["minhaEvolucaoDeTreino"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/app/treino/execucoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra um exercício feito: carga e esforço de 0 a 10. */
+        post: operations["registrarExecucaoDeTreino"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/arquivos": {
         parameters: {
             query?: never;
@@ -2065,6 +2116,230 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/treinos/alunos/{alunoId}/acompanhamento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evolução de carga, esforço e resumo da ficha, para o Acompanhamento (T16). */
+        get: operations["acompanhamentoDeTreinoDoAluno"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/alunos/{alunoId}/ficha": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A ficha em andamento do aluno (rascunho, aguardando aprovação ou ativa). */
+        get: operations["buscarFichaDoAluno"];
+        /** Salva o rascunho ou, com `enviar`, aprova e envia a ficha ao aluno. */
+        put: operations["salvarFichaDoAluno"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/alunos/{alunoId}/ficha/gerar-com-ia": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gera o rascunho pela IA a partir de objetivo, nível, frequência e restrições. Sempre nasce "Aguardando aprovação". */
+        post: operations["gerarFichaComIA"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/exercicios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Biblioteca de exercícios, por grupo. */
+        get: operations["listarExercicios"];
+        put?: never;
+        /** Cadastra um exercício na biblioteca. */
+        post: operations["cadastrarExercicio"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/exercicios/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Edita um exercício da biblioteca. */
+        put: operations["editarExercicio"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/fichas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** KPIs, tabela de fichas e fichas sugeridas pela IA (TreinosFichas). */
+        get: operations["painelDeFichas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/fichas/avisar-vencimentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** "Avisar alunos": notifica quem tem ficha vencendo em até 30 dias. */
+        post: operations["avisarFichasQueVencem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/fichas/{id}/aprovar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aprova a ficha: registra o professor e a data, ativa e avisa o aluno. */
+        post: operations["aprovarFicha"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/fichas/{id}/recusar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recusa a ficha sugerida pela IA. */
+        post: operations["recusarFicha"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/modelos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Modelos de ficha. */
+        get: operations["listarModelosDeTreino"];
+        put?: never;
+        /** Cria um modelo de ficha. */
+        post: operations["criarModeloDeTreino"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/modelos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Edita um modelo de ficha. */
+        put: operations["editarModeloDeTreino"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/modelos/{id}/usar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** "Usar modelo": cria o rascunho da ficha do aluno com os treinos do modelo. */
+        post: operations["usarModeloDeTreino"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treinos/pendencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Fichas para aprovar: provedor de pendências do Início ("Ficha de treino para aprovar"). */
+        get: operations["listarPendenciasDeTreinos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2095,6 +2370,12 @@ export interface components {
             registradoEm: string;
             /** @enum {string} */
             resultado: "liberado" | "tolerancia" | "negado";
+        };
+        AcompanhamentoDeTreinoDto: {
+            cargas: components["schemas"]["EvolucaoDeCargaDto"][];
+            esforcoMedio: number | null;
+            esforcoPorTreino: components["schemas"]["EsforcoDoDiaDto"][];
+            ficha: components["schemas"]["ResumoDaFichaDto"] | null;
         };
         AderirDto: {
             /**
@@ -2259,6 +2540,10 @@ export interface components {
             estado: "ativo" | "tolerancia" | "encerrado" | "trancado";
             /** @enum {string|null} */
             motivoDoEncerramento: "atraso" | "vigencia" | null;
+        };
+        AvisoDeVencimentoDto: {
+            /** @example 14 */
+            avisados: number;
         };
         AvisoDto: {
             /** Format: date-time */
@@ -2726,6 +3011,20 @@ export interface components {
             /** @example (11) 98888-7777 */
             telefone?: string | null;
         };
+        DadosDoExercicioDto: {
+            /** @example Barra */
+            equipamento: string;
+            /**
+             * @example Peito
+             * @enum {string}
+             */
+            grupoMuscular: "Peito" | "Costas" | "Pernas" | "Ombros" | "Braços" | "Abdômen";
+            instrucoes?: string | null;
+            /** @example Supino reto */
+            nome: string;
+            /** @description Link do YouTube. */
+            videoUrl?: string | null;
+        };
         DadosDoFuncionarioDto: {
             /**
              * @example professor
@@ -2750,6 +3049,15 @@ export interface components {
              * @description Tipo de acesso ao painel. Nulo ou o tipo "Sem acesso": só cadastro.
              */
             tipoDeAcessoId?: Record<string, never> | null;
+        };
+        DadosDoModeloDto: {
+            /** @example 5 */
+            diasPorSemana: number;
+            /** @enum {string} */
+            divisao: "AB" | "ABC" | "ABCD" | "full_body";
+            /** @example Hipertrofia A/B/C */
+            nome: string;
+            treinos: components["schemas"]["TreinoDaFichaDto"][];
         };
         DadosDoPlanoDto: {
             /**
@@ -2949,6 +3257,11 @@ export interface components {
              */
             canais: ("email" | "whatsapp")[];
         };
+        EsforcoDoDiaDto: {
+            /** Format: date */
+            dia: string;
+            esforco: number;
+        };
         EsqueciSenhaDoAppDto: {
             /** @description CPF (com ou sem pontuação) ou e-mail. */
             identificador: string;
@@ -2966,15 +3279,118 @@ export interface components {
              */
             valorCentavos?: number;
         };
+        EvolucaoDeCargaDto: {
+            /** @example Supino reto */
+            exercicio: string;
+            pontos: components["schemas"]["PontoDeCargaDto"][];
+            /** @example 6 */
+            semanas: number;
+            /** @example +8 kg em 6 semanas */
+            texto: string;
+            /** @example 8 */
+            variacaoKg: number;
+        };
         ExcluirAlunoDto: {
             /** @example Cadastro duplicado */
             motivo?: string;
+        };
+        ExecucaoDto: {
+            cargaKg: number | null;
+            esforco: number;
+            exercicio: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            realizadoEm: string;
+        };
+        ExercicioDaFichaDto: {
+            /**
+             * @description Nulo é peso do corpo.
+             * @example 40
+             */
+            cargaKg: number | null;
+            /** @example 60 */
+            descansoSegundos: number;
+            /**
+             * Format: uuid
+             * @description Exercício da biblioteca.
+             */
+            exercicioId: string | null;
+            /** @example Supino reto */
+            nome: string;
+            /** @example 10 */
+            repeticoes: number;
+            /** @example 4 */
+            series: number;
+            videoUrl: string | null;
+        };
+        ExercicioDto: {
+            equipamento: string;
+            /** @enum {string} */
+            grupoMuscular: "Peito" | "Costas" | "Pernas" | "Ombros" | "Braços" | "Abdômen";
+            /** Format: uuid */
+            id: string;
+            instrucoes: string | null;
+            nome: string;
+            videoUrl: string | null;
         };
         FaixaDeHorarioDto: {
             entradas: number;
             hora: number;
             /** @description Média de entradas por dia, uma casa decimal. */
             mediaPorDia: number;
+        };
+        FichaDoAppDto: {
+            /** @enum {string} */
+            divisao: "AB" | "ABC" | "ABCD" | "full_body";
+            frequenciaSemanal: number;
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            nivel: "iniciante" | "intermediario" | "avancado";
+            nome: string;
+            objetivo: string;
+            treinos: components["schemas"]["TreinoDaFichaDto"][];
+            /** Format: date */
+            validaAte: string | null;
+        };
+        FichaDto: {
+            /** Format: uuid */
+            alunoId: string;
+            alunoNome: string;
+            /** Format: date-time */
+            aprovadaEm: string | null;
+            /** @description Quem aprovou (nome atual). */
+            aprovadaPor: string | null;
+            /** @enum {string} */
+            divisao: "AB" | "ABC" | "ABCD" | "full_body";
+            frequenciaSemanal: number;
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            nivel: "iniciante" | "intermediario" | "avancado";
+            nome: string;
+            objetivo: string;
+            /** @enum {string} */
+            origem: "manual" | "ia" | "modelo";
+            /** Format: uuid */
+            professorId: string | null;
+            professorNome: string | null;
+            restricoes: string | null;
+            /** @enum {string} */
+            situacao: "rascunho" | "aguardando_aprovacao" | "ativa" | "recusada" | "arquivada" | "vencida";
+            treinos: components["schemas"]["TreinoDaFichaDto"][];
+            /** Format: date */
+            validaAte: string | null;
+        };
+        FichaSugeridaDto: {
+            /** Format: uuid */
+            alunoId: string;
+            alunoNome: string;
+            /** Format: uuid */
+            fichaId: string;
+            /** @example Força A/B, 4 dias, sem restrição */
+            resumo: string;
         };
         FormaDePagamentoDoAlunoDto: {
             /** Format: date-time */
@@ -3037,6 +3453,19 @@ export interface components {
             /** @description Nulo é "Sem acesso". */
             tipoDeAcesso: components["schemas"]["TipoDeAcessoResumidoDto"] | null;
         };
+        GerarFichaDto: {
+            /** @enum {string} */
+            divisao: "AB" | "ABC" | "ABCD" | "full_body";
+            /** @example 4 */
+            frequenciaSemanal: number;
+            /** @enum {string} */
+            nivel: "iniciante" | "intermediario" | "avancado";
+            /** @example Hipertrofia */
+            objetivo: string;
+            restricoes?: string | null;
+            /** Format: date */
+            validaAte?: string | null;
+        };
         IdentidadeDoTenantDto: {
             /** @example #22C98A */
             corDestaque: string;
@@ -3096,6 +3525,16 @@ export interface components {
              */
             venceEmDias: number | null;
         };
+        KpisDeFichasDto: {
+            /** @example 2 */
+            aguardandoAprovacao: number;
+            /** @example 310 */
+            ativas: number;
+            /** @example 2 */
+            semFicha: number;
+            /** @example 14 */
+            vencemEm30Dias: number;
+        };
         LiberacaoManualDto: {
             /** Format: uuid */
             alunoId: string;
@@ -3117,6 +3556,22 @@ export interface components {
             /** @description Nome do plano cadastrado. */
             plano?: string | null;
             telefone?: string | null;
+        };
+        LinhaDeFichaDto: {
+            /** Format: uuid */
+            alunoId: string;
+            alunoNome: string;
+            /** Format: uuid */
+            fichaId: string;
+            /** @example Hipertrofia A/B/C */
+            nome: string;
+            professorNome: string | null;
+            /** @enum {string} */
+            situacao: "rascunho" | "aguardando_aprovacao" | "ativa" | "recusada" | "arquivada" | "vencida";
+            /** Format: date */
+            validaAte: string | null;
+            /** @description Dias para o chip "Vence em N dias" (até 31); nulo fora da janela. */
+            venceEmDias: number | null;
         };
         LinhaDoRelatorioDto: {
             cpf: string;
@@ -3148,6 +3603,22 @@ export interface components {
             /** @description Telefone com DDI; só existe no adapter fake, nunca é gravado. */
             telefone: string;
             texto: string;
+        };
+        ModeloDto: {
+            /** @example 5 */
+            diasPorSemana: number;
+            /** @enum {string} */
+            divisao: "AB" | "ABC" | "ABCD" | "full_body";
+            /** Format: uuid */
+            id: string;
+            /** @example Hipertrofia A/B/C */
+            nome: string;
+            /**
+             * @description Total de exercícios dos treinos (calculado pela API).
+             * @example 18
+             */
+            totalDeExercicios: number;
+            treinos: components["schemas"]["TreinoDaFichaDto"][];
         };
         /** @enum {string} */
         ModuloExtra: "aulas" | "marketing" | "loja" | "saude";
@@ -3410,6 +3881,17 @@ export interface components {
             /** @description Nulo na última página. */
             proximoCursor: string | null;
         };
+        PainelDeFichasDto: {
+            /** @example 312 */
+            alunosComFicha: number;
+            itens: components["schemas"]["LinhaDeFichaDto"][];
+            kpis: components["schemas"]["KpisDeFichasDto"];
+            limite: number;
+            pagina: number;
+            sugeridas: components["schemas"]["FichaSugeridaDto"][];
+            /** @description Fichas que a tabela lista, em todas as páginas. */
+            total: number;
+        };
         ParcelaDto: {
             /** Format: uuid */
             contratoId: string;
@@ -3453,6 +3935,16 @@ export interface components {
              * @example 2026-11-13
              */
             vencimentoOriginal: string;
+        };
+        PendenciaDeFichaDto: {
+            /** Format: uuid */
+            alunoId: string;
+            alunoNome: string;
+            /** Format: uuid */
+            fichaId: string;
+            resumo: string;
+            /** @example Ficha de treino para aprovar */
+            titulo: string;
         };
         PendenciaDto: {
             /** Format: uuid */
@@ -3558,6 +4050,11 @@ export interface components {
             /** @example Mensal */
             nome: string;
         };
+        PontoDeCargaDto: {
+            cargaKg: number;
+            /** Format: date */
+            dia: string;
+        };
         PreferenciaDeAvisoDto: {
             push: boolean;
             /** @enum {string} */
@@ -3640,6 +4137,17 @@ export interface components {
         RedefinirSenhaDto: {
             senha: string;
             token: string;
+        };
+        RegistrarExecucaoDto: {
+            /**
+             * @description Nulo é peso do corpo.
+             * @example 40
+             */
+            cargaKg: number | null;
+            /** @example 7 */
+            esforco: number;
+            /** @example Supino reto */
+            exercicio: string;
         };
         RegistroOfflineDto: {
             /** Format: uuid */
@@ -3733,6 +4241,14 @@ export interface components {
             latenciaEmMs?: number;
             motivo?: string | null;
         };
+        ResumoDaFichaDto: {
+            exercicios: number;
+            nome: string;
+            /** @enum {string} */
+            situacao: "rascunho" | "aguardando_aprovacao" | "ativa" | "recusada" | "arquivada" | "vencida";
+            /** Format: date */
+            validaAte: string | null;
+        };
         ResumoDasNotasDto: {
             /** @example 2026-11 */
             competencia: string;
@@ -3781,6 +4297,32 @@ export interface components {
             razaoSocial: string;
             /** @example Simples Nacional */
             regime: string;
+        };
+        SalvarFichaDto: {
+            /** @enum {string} */
+            divisao: "AB" | "ABC" | "ABCD" | "full_body";
+            /** @description `true`: "Salvar e enviar ao aluno" (aprova e ativa). `false`: salva rascunho. */
+            enviar: boolean;
+            /** @example 4 */
+            frequenciaSemanal: number;
+            /** @enum {string} */
+            nivel: "iniciante" | "intermediario" | "avancado";
+            /**
+             * @description Vazio: objetivo + divisão.
+             * @example Hipertrofia A/B/C
+             */
+            nome?: string;
+            /** @example Hipertrofia */
+            objetivo: string;
+            /**
+             * Format: uuid
+             * @description Professor responsável (funcionário).
+             */
+            professorId?: string | null;
+            restricoes?: string | null;
+            treinos: components["schemas"]["TreinoDaFichaDto"][];
+            /** Format: date */
+            validaAte?: string | null;
         };
         SegundaViaDoAppDto: {
             /**
@@ -3876,6 +4418,13 @@ export interface components {
              */
             dias: number;
         };
+        TreinoDaFichaDto: {
+            exercicios: components["schemas"]["ExercicioDaFichaDto"][];
+            /** @example Peito e tríceps */
+            foco: string;
+            /** @example A */
+            nome: string;
+        };
         TrocaDeCodigoDto: {
             /**
              * @description Aceita minúsculas, espaço e hífen.
@@ -3891,6 +4440,10 @@ export interface components {
             /** Format: date-time */
             expiraEm: string;
             url: string;
+        };
+        UsarModeloDto: {
+            /** Format: uuid */
+            alunoId: string;
         };
     };
     responses: never;
@@ -5752,6 +6305,95 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    minhaFichaDeTreino: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FichaDoAppDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O aluno não tem ficha ativa. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    minhaEvolucaoDeTreino: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcompanhamentoDeTreinoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registrarExecucaoDeTreino: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistrarExecucaoDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExecucaoDto"];
+                };
             };
             /** @description Sem sessão válida. */
             401: {
@@ -9253,6 +9895,648 @@ export interface operations {
             };
             /** @description Academia não encontrada. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    acompanhamentoDeTreinoDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcompanhamentoDeTreinoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão alunos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    buscarFichaDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FichaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description O aluno não existe ou ainda não tem ficha. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    salvarFichaDoAluno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SalvarFichaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FichaDto"];
+                };
+            };
+            /** @description Treinos ou campos inválidos. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    gerarFichaComIA: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alunoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GerarFichaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FichaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarExercicios: {
+        parameters: {
+            query?: {
+                /** @description Filtro por grupo muscular. */
+                grupo?: "Peito" | "Costas" | "Pernas" | "Ombros" | "Braços" | "Abdômen";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExercicioDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cadastrarExercicio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoExercicioDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExercicioDto"];
+                };
+            };
+            /** @description Campos inválidos ou vídeo que não é do YouTube. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Já existe um exercício com esse nome. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editarExercicio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoExercicioDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExercicioDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exercício não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    painelDeFichas: {
+        parameters: {
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PainelDeFichasDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    avisarFichasQueVencem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvisoDeVencimentoDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    aprovarFicha: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FichaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ficha não está aguardando aprovação. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    recusarFicha: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ficha não está aguardando aprovação. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarModelosDeTreino: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModeloDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:ver. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    criarModeloDeTreino: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoModeloDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModeloDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Já existe um modelo com esse nome. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editarModeloDeTreino: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DadosDoModeloDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModeloDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:editar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Modelo não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    usarModeloDeTreino: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UsarModeloDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FichaDto"];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:criar. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Modelo ou aluno não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarPendenciasDeTreinos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendenciaDeFichaDto"][];
+                };
+            };
+            /** @description Sem sessão válida. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exige a permissão treinos:ver. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

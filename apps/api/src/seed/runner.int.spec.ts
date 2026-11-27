@@ -4,6 +4,7 @@ import { AlunosModule } from '../modules/alunos/alunos.module';
 import { AvisosModule } from '../modules/avisos/avisos.module';
 import { FiscalModule } from '../modules/fiscal/fiscal.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
+import { TreinosModule } from '../modules/treinos/treinos.module';
 import { ProtecaoDeDadosModule } from '../modules/platform/protecao-de-dados.module';
 import { criarModuloDeEventos } from '../modules/platform/testing/eventos-de-teste';
 import { usarBancoDeTeste } from '../modules/platform/testing/banco-de-teste';
@@ -24,6 +25,7 @@ describe('runner de seed', () => {
       ProtecaoDeDadosModule,
       AlunosModule,
       FuncionariosModule,
+      TreinosModule,
       AvisosModule,
       AcessoModule,
       FiscalModule,
@@ -52,6 +54,7 @@ describe('runner de seed', () => {
       'acesso',
       'notas',
       'avisos',
+      'treinos',
       'sonda',
     ]);
     await executarSeed(app, modulos);

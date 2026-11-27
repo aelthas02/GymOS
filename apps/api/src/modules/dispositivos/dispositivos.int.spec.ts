@@ -12,6 +12,7 @@ import { AcessoModule } from '../acesso/acesso.module';
 import { AvisosModule } from '../avisos/avisos.module';
 import { FiscalModule } from '../fiscal/fiscal.module';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
+import { TreinosModule } from '../treinos/treinos.module';
 import { Consentimentos } from '../platform/application/protecao-de-dados';
 import { RepositorioDeTenants } from '../platform/application/portas';
 import { Relogio } from '../platform/domain/relogio';
@@ -43,6 +44,7 @@ describe('Dispositivos, pareamento e tempo real', () => {
     ProtecaoDeDadosModule,
     AlunosModule,
     FuncionariosModule,
+    TreinosModule,
     AvisosModule,
     AcessoModule,
     DispositivosModule,
