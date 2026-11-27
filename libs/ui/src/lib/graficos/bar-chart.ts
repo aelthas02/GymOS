@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { EmptyState } from '../states/empty-state';
 import { alturas, indiceDestaque, passoDeRotulos } from './escala';
 import { GraficoDeSerie, GraficoTabela, graficoStyles } from './grafico-base';
 
-const LARGURA = 320;
 const ALTURA = 160;
 const BASE = 138;
 const ALTURA_MAX = 116;
@@ -34,11 +33,11 @@ const ALTURA_MAX = 116;
       <svg
         role="img"
         [attr.aria-label]="textoAlternativo()"
-        [attr.viewBox]="'0 0 ' + largura + ' ' + altura"
+        [attr.viewBox]="'0 0 ' + largura() + ' ' + altura"
       >
         <line
           x1="0"
-          [attr.x2]="largura"
+          [attr.x2]="largura()"
           [attr.y1]="base"
           [attr.y2]="base"
           stroke="var(--divider)"
@@ -85,7 +84,8 @@ const ALTURA_MAX = 116;
 })
 export class BarChart extends GraficoDeSerie {
   protected override readonly nome = 'Gráfico de barras';
-  protected readonly largura = LARGURA;
+  /** Largura do desenho em unidades do viewBox (320 em cartão estreito; maior em cartão largo, para o texto não crescer). */
+  readonly largura = input(320);
   protected readonly altura = ALTURA;
   protected readonly base = BASE;
 
@@ -95,7 +95,7 @@ export class BarChart extends GraficoDeSerie {
     const hs = alturas(valores, ALTURA_MAX);
     const pico = indiceDestaque(valores);
     const passo = passoDeRotulos(dados.length);
-    const faixa = LARGURA / dados.length;
+    const faixa = this.largura() / dados.length;
     const largura = Math.min(faixa * 0.72, 32);
     const formatar = this.formato();
 

@@ -11,6 +11,7 @@ import { Acessos } from '../acesso/application/acessos';
 import { AcessoModule } from '../acesso/acesso.module';
 import { AvisosModule } from '../avisos/avisos.module';
 import { FiscalModule } from '../fiscal/fiscal.module';
+import { FinanceiroModule } from '../financeiro/financeiro.module';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
 import { TreinosModule } from '../treinos/treinos.module';
 import { Consentimentos } from '../platform/application/protecao-de-dados';
@@ -49,6 +50,7 @@ describe('Dispositivos, pareamento e tempo real', () => {
     AcessoModule,
     DispositivosModule,
     FiscalModule,
+    FinanceiroModule,
   ];
   let replica1: INestApplicationContext; // registra e processa os eventos (workers ligados)
   let replica2: INestApplicationContext; // só recebe: o cliente SSE está conectado nela

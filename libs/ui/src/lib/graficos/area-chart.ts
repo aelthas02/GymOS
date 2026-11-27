@@ -17,6 +17,7 @@ import { LineChart } from './line-chart';
       [colunaRotulo]="colunaRotulo()"
       [colunaValor]="colunaValor()"
       [baseZero]="baseZero()"
+      [largura]="largura()"
     />
   `,
 })
@@ -28,4 +29,5 @@ export class AreaChart {
   readonly colunaRotulo = input('Item');
   readonly colunaValor = input('Valor');
   readonly baseZero = input(true);
+  readonly largura = input(320);
 }

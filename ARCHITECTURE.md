@@ -357,6 +357,7 @@ Quem grava cada ação do `Log.html` (o dono chama `registrarAtividade` no caso 
 | `alterou-dispositivo`             | Alterou dispositivo             | Configurações | não      | cadastro de catraca ou leitor (T23b)          |
 | `cadastrou-biometria`             | Cadastrou biometria             | Acesso        | sim      | cadastro de face ou digital (T23b)            |
 | `emitiu-nota-fiscal`              | Emitiu nota fiscal              | Financeiro    | não      | emitir, emitir pendente e reenviar (T20)      |
+| `registrou-lancamento`            | Registrou lançamento            | Financeiro    | não      | cadastrar despesa ou receita avulsa (T21)     |
 | `corrigiu-nota-fiscal`            | Corrigiu nota fiscal            | Financeiro    | não      | corrigir a rejeitada e reenviar (T20)         |
 | `cancelou-nota-fiscal`            | Cancelou nota fiscal            | Financeiro    | sim      | cancelar nota no painel (T20)                 |
 | `alterou-dados-fiscais`           | Alterou dados fiscais           | Configurações | sim      | dados fiscais e certificado A1 (T20)          |
@@ -500,6 +501,23 @@ PagamentoEstornado (total) ─ fiscal.cancelar-nota ─▶ cancela no emissor (e
   Ver e exportar = `financeiro:ver`; emitir, corrigir e enviar = `financeiro:criar`; cancelar = `financeiro:excluir`;
   dados fiscais = `configuracoes.fiscal:ver|editar`.
 - **LGPD**: guarda fiscal de 5 anos; a exclusão do titular anonimiza o tomador (sem aluno e sem CPF, que é cifrado).
+
+### Financeiro
+
+`modules/financeiro` (T21, ADR-020). Regras puras em `domain/financeiro.ts`; consultas em `Financeiro` e lançamentos em `Lancamentos`. Lê pagamentos e parcelas (Cobrança), contratos (Alunos), presenças (Acesso) e o custo da equipe (Funcionários) por portas (`LeituraFinanceira`, `PresencasParaORateio`, `EquipeParaOFinanceiro`, `OcupacaoDasAulas`).
+
+```
+período (calendário de São Paulo) ─ por mês ─▶ pagamentos agrupados ─ receita de plano de cada aluno ─▶ ratearPorPeso pelas presenças do mês
+check-in → setor principal do plano · presença em aula → setor, aula e professor (T28) · sem presença → 100% no setor principal
+personal, nutrição, loja e aula avulsa → direto ao setor · folha = custo mensal dos funcionários ativos (proporcional aos dias)
+```
+
+- **Período**: Hoje, 7 dias, Este mês, Trimestre e Ano (civis, em São Paulo) e Personalizado; a comparação usa o período anterior (mês, trimestre e ano civis, ou a janela de mesmo tamanho). Variação e inadimplência em pontos-base; porcentagens exibidas somam 100 pelo maior resto.
+- **Lançamento**: despesa ou receita avulsa (categoria Aluguel, Contas ou Outros; setor; valor em centavos; data; unidade). Receita exige setor. A folha **não** é lançamento.
+- **Setores**: musculação, aulas coletivas, lutas, loja, personal e nutrição. O setor principal do plano vem das modalidades (Musculação vence; só Lutas → Lutas; só Aulas, Spinning ou Funcional → Aulas). Despesas por setor: lançamentos com setor e o custo dos nutricionistas (Nutrição); taxas e o resto da folha ficam não alocados.
+- **Endpoints**: `GET /api/financeiro/geral`, `/filtros`, `/visoes/:visao` (setores, funcionarios, alunos, aulas, planos, formas-de-pagamento), `GET` e `POST /lancamentos`. Ver = `financeiro:ver`; lançar = `financeiro:criar`. Exportar CSV e XLSX é no front, a partir da tabela da visão.
+- **Cache**: `CacheComTenant` com a chave `financeiro/<geração>/<consulta>`. `PagamentoConfirmado`, `PagamentoEstornado`, `AcessoRegistrado` e o cadastro de lançamento invalidam a geração do tenant (`financeiro-geracao`); as chaves antigas expiram em 5 min.
+- **Sem T28**: presenças em aula, ocupação e receita por professor ficam vazias (adapters `OcupacaoDasAulasVazia` e `emAulas` vazio); o T28 troca os adapters.
 
 ### Avisos e notificações
 

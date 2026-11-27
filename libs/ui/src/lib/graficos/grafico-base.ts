@@ -40,6 +40,15 @@ export const graficoStyles = `
 @Component({
   selector: 'ui-grafico-tabela',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // A tabela é só para leitor de tela: o host a recorta, senão uma tabela larga alarga a página.
+  styles: `
+    :host {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+  `,
   template: `
     <table class="ui-sr-only">
       <caption>

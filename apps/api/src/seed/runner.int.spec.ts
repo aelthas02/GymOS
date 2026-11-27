@@ -3,6 +3,7 @@ import { AcessoModule } from '../modules/acesso/acesso.module';
 import { AlunosModule } from '../modules/alunos/alunos.module';
 import { AvisosModule } from '../modules/avisos/avisos.module';
 import { FiscalModule } from '../modules/fiscal/fiscal.module';
+import { FinanceiroModule } from '../modules/financeiro/financeiro.module';
 import { FuncionariosModule } from '../modules/funcionarios/funcionarios.module';
 import { TreinosModule } from '../modules/treinos/treinos.module';
 import { ProtecaoDeDadosModule } from '../modules/platform/protecao-de-dados.module';
@@ -29,6 +30,7 @@ describe('runner de seed', () => {
       AvisosModule,
       AcessoModule,
       FiscalModule,
+      FinanceiroModule,
     ]);
   });
 
@@ -55,6 +57,7 @@ describe('runner de seed', () => {
       'notas',
       'avisos',
       'treinos',
+      'lancamentos',
       'sonda',
     ]);
     await executarSeed(app, modulos);
