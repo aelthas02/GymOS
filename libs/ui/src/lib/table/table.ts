@@ -76,7 +76,8 @@ const ariaSort = { asc: 'ascending', desc: 'descending' } as const;
     .ui-table__row {
       display: grid;
       grid-template-columns: var(--ui-table-columns);
-      gap: 12px;
+      /* --ui-table-gap: as telas do protótipo variam entre 8, 10 e 12 px. */
+      gap: var(--ui-table-gap, 12px);
       align-items: center;
       padding: 12px 16px;
       border-top: 1px solid var(--divider);

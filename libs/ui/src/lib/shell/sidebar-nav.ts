@@ -30,6 +30,7 @@ export interface NavSection {
   styles: `
     :host {
       display: block;
+      height: 100%;
     }
     .ui-nav {
       display: flex;

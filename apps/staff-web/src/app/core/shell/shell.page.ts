@@ -10,6 +10,12 @@ import { montarMenu } from './menu';
   selector: 'app-shell-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AppShell, RouterOutlet],
+  // O <router-outlet> é só a âncora da tela; sem isto o gap do <main> abre um vazio acima dela.
+  styles: `
+    router-outlet {
+      display: none;
+    }
+  `,
   template: `<ui-app-shell [sections]="secoes()"><router-outlet /></ui-app-shell>`,
 })
 export class ShellPage {
