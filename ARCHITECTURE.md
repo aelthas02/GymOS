@@ -407,6 +407,34 @@ trancado → não entra em tolerância; trancar N dias estende a vigência em N 
 - **Permissões**: `equipe:ver|criar|editar|excluir`. Alterar custo e acesso são ações sensíveis da auditoria.
 - **LGPD**: o provedor `funcionarios` exporta o professor responsável do aluno e não tem o que excluir.
 
+### Treinos
+
+`modules/treinos` (T25). Regras puras em `domain/ficha.ts`; casos de uso na classe `Treinos`.
+
+```
+GeradorIA (sem nome nem CPF) ─▶ ficha "aguardando_aprovacao" ─ aprovar ─▶ ativa (professor e data) ─▶ aviso "Ficha atualizada"
+ativa com validaAte < hoje → "vencida" (derivada, não guardada) · aluno (app) só enxerga a ativa dentro da validade
+```
+
+- **Tabelas**: `exercicio_de_treino`, `modelo_de_treino`, `ficha_de_treino` e `execucao_de_treino`. Treinos e exercícios de uma
+  ficha ou modelo ficam em JSON (`treinos`, na ordem de execução: reordenar é gravar a nova ordem); as restrições da
+  ficha são dado de saúde (cifradas, cada leitura no log de acesso).
+- **Situações guardadas**: `rascunho`, `aguardando_aprovacao`, `ativa`, `recusada` e `arquivada` (a ativa trocada por outra). Aprovar
+  ativa a ficha, registra quem aprovou e quando (validade padrão de 90 dias, se vazia), arquiva a ativa anterior e avisa o aluno.
+- **Janelas de validade**: "Vencem em 30 dias" conta a ficha ativa que vence em até 30 dias (31 não entra); a tabela mostra o
+  chip "Vence em N dias" até 31 (`venceEmDias`). "Avisar alunos" notifica quem está na janela de 30 dias.
+- **IA**: `pedidoDeGeracao` leva só objetivo, nível, frequência, divisão e restrições. O provedor devolve texto livre; a ficha
+  nasce com os treinos de partida da divisão e o professor revisa. Com o adapter fake, os exercícios vêm do desenho padrão.
+- **Endpoints** (tag `treinos`): `GET /treinos/fichas` (KPIs, tabela e sugeridas), `POST /treinos/fichas/:id/aprovar|recusar`,
+  `POST /treinos/fichas/avisar-vencimentos`, `GET /treinos/pendencias` (provedor "Ficha de treino para aprovar" do Início),
+  `GET|PUT /treinos/alunos/:id/ficha`, `POST /treinos/alunos/:id/ficha/gerar-com-ia`, `GET /treinos/alunos/:id/acompanhamento`
+  (carga, esforço e resumo da ficha, para o Acompanhamento do T16), `GET|POST|PUT /treinos/exercicios` e `/treinos/modelos`,
+  `POST /treinos/modelos/:id/usar`. App do aluno (T33): `GET /app/treino`, `POST /app/treino/execucoes` (carga e esforço de 0 a 10)
+  e `GET /app/treino/evolucao`.
+- **Evolução de carga**: último registro menos o primeiro no período ("+8 kg em 6 semanas"), por exercício, os três com mais registros.
+- **Permissões**: `treinos:ver|criar|editar`; aprovar, salvar e avisar exigem `editar`, gerar com IA e usar modelo exigem `criar`.
+- **LGPD**: o provedor `treinos` exporta fichas (restrições reveladas) e execuções, e a exclusão apaga tudo (sem guarda legal).
+
 ### Cobrança e pagamentos
 
 `modules/cobranca` (T19, ADR-009 e ADR-018). Regras puras em `domain/parcela.ts` e

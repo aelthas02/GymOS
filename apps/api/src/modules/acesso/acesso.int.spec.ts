@@ -8,6 +8,7 @@ import { AlunosModule } from '../alunos/alunos.module';
 import { RepositorioDeAlunos } from '../alunos/application/portas';
 import { AvisosModule } from '../avisos/avisos.module';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
+import { TreinosModule } from '../treinos/treinos.module';
 import { RepositorioDeTenants } from '../platform/application/portas';
 import { Relogio } from '../platform/domain/relogio';
 import { ExecutorDeTenant } from '../platform/infra/contexto/executor-de-tenant';
@@ -41,6 +42,7 @@ describe('Acesso (regras, QR, offline e alertas)', () => {
       ProtecaoDeDadosModule,
       AlunosModule,
       FuncionariosModule,
+      TreinosModule,
       AvisosModule,
       AcessoModule,
     ]);

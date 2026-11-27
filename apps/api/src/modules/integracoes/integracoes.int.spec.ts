@@ -10,6 +10,7 @@ import { AvisosModule } from '../avisos/avisos.module';
 import { EnvioDeEmail } from '../autenticacao/application/portas';
 import { EnvioDeEmailFake } from '../autenticacao/infra/email/envio-de-email.fake';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
+import { TreinosModule } from '../treinos/treinos.module';
 import { RepositorioDeTenants } from '../platform/application/portas';
 import { Consentimentos } from '../platform/application/protecao-de-dados';
 import type { Tenant } from '../platform/domain/tenant';
@@ -75,6 +76,7 @@ describe('Integrações de plataforma (Meta, Mensageria, IA e arquivos)', () => 
       IntegracoesModule,
       AlunosModule,
       FuncionariosModule,
+      TreinosModule,
       AvisosModule,
       AcessoModule,
     ]);
