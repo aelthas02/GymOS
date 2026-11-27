@@ -209,7 +209,9 @@ const ariaSort = { asc: 'ascending', desc: 'descending' } as const;
 
     @if (total() !== undefined) {
       <div class="ui-table__footer">
-        <span>Mostrando {{ de() }} a {{ ate() }} de {{ total() }}</span>
+        <span
+          >Mostrando {{ de() }} a {{ ate() }} de {{ total() }}{{ unit() ? ' ' + unit() : '' }}</span
+        >
         <div class="ui-table__pager">
           <button type="button" [disabled]="page() <= 1" (click)="pageChange.emit(page() - 1)">
             Anterior
@@ -238,6 +240,8 @@ export class Table {
   readonly total = input<number>();
   readonly page = input(1);
   readonly pageSize = input(20);
+  /** Texto depois do total no rodapé: "de 312 alunos". */
+  readonly unit = input('');
   readonly pageChange = output<number>();
 
   /** Altura de cada linha, necessária ao viewport virtual. */
