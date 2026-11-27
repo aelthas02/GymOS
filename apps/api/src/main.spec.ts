@@ -27,5 +27,6 @@ describe('main.ts', () => {
 
     await vi.waitFor(() => expect(exit).toHaveBeenCalledWith(1));
     expect(logError.mock.calls.flat().map(String).join('\n')).toContain('DATABASE_URL');
-  });
+    // Importar o main carrega a API inteira (~14 s com a máquina carregada).
+  }, 60_000);
 });
